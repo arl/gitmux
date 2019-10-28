@@ -18,11 +18,12 @@ func check(err error, quiet bool) {
 	}
 }
 
-const version = "0.1"
-const usage = `gitstatus ` + version + `
-Usage: gitstatus [options] [dir]
+var version = "<<development version>>"
 
-gitstatus prints the status of a Git working tree.
+var usage = `gitmux ` + version + `
+Usage: gitmux [options] [dir]
+
+gitmux prints the status of a Git working tree.
 If directory is not given, it default to the working directory.  
 
 Options:
@@ -30,8 +31,9 @@ Options:
   -fmt            output format, defaults to json.
       json        prints status as a JSON object.
       tmux        prints status as a tmux format string.
-  -cfg cfgfile    gitstatus output configuration file.
+  -cfg cfgfile    use cfgfile when printing git status.
   -printcfg       prints default configuration file.
+  -V		  prints gitmux version and exits.
 `
 
 var defaultCfg = Config{Tmux: tmux.DefaultCfg}
@@ -41,6 +43,7 @@ func parseOptions() (dir string, format string, quiet bool, cfg Config) {
 	cfgOpt := flag.String("cfg", "", "")
 	printCfgOpt := flag.Bool("printcfg", false, "")
 	quietOpt := flag.Bool("q", false, "")
+	versionOpt := flag.Bool("V", false, "")
 	flag.Usage = func() {
 		fmt.Println(usage)
 	}
@@ -50,6 +53,10 @@ func parseOptions() (dir string, format string, quiet bool, cfg Config) {
 		dir = flag.Arg(0)
 	}
 	cfg = defaultCfg
+	if *versionOpt {
+		fmt.Println(version)
+		os.Exit(0)
+	}
 	if *printCfgOpt {
 		enc := yaml.NewEncoder(os.Stdout)
 		check(enc.Encode(&defaultCfg), *quietOpt)
