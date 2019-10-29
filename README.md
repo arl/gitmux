@@ -2,6 +2,8 @@
 
 Gitmux shows Git in your tmux status bar.
 
+![Gitmux in action](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
+
 ## Installation
 
 ### Install a binary release for your platform
