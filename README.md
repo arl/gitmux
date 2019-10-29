@@ -4,12 +4,12 @@ Gitmux shows Git in your tmux status bar.
 
 ## Installation
 
-### Pre-compiled binaries for all supported platforms
+### Install a binary release for your platform
 
-[Download](https://github.com/arl/gitmux/releases/latest) the latest binary release.  
+[Download](https://github.com/arl/gitmux/releases/latest) the latest pre-compiled binary release.  
 Add it to your `$PATH`.
 
-### Build from source
+### Or, build from source
 
 [Download](https://golang.org/dl/) the latest Go binary.  
 Get **gitmux** source and and build it:
