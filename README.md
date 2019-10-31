@@ -1,8 +1,8 @@
-# Gitmux
+# GiTmux
 
-Gitmux shows Git in your tmux status bar.
+GiTmux shows Git in your tmux status bar.
 
-![Gitmux in action](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
+![GiTmux in action](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
 
 ## Installation
 
@@ -14,7 +14,7 @@ Add it to your `$PATH`.
 ### Or, build from source
 
 [Download](https://golang.org/dl/) the latest Go binary.  
-Get **gitmux** source and and build it:
+Get **GiTmux** source and and build it:
 
 ```bash
 go get github.com/arl/gitmux
