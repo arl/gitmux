@@ -1,8 +1,7 @@
 language: go
 
 go:
-  - "1.13"
-  - tip
+  - "1.13.x"
 
 # calls goreleaser
 deploy:
@@ -11,5 +10,3 @@ deploy:
   script: curl -sL https://git.io/goreleaser | bash
   on:
     tags: true
-    condition: $TRAVIS_OS_NAME = linux
-    condition: $TRAVIS_GO_VERSION = 1.13
