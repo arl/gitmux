@@ -18,6 +18,8 @@ archives:
   -
     replacements:
       darwin: macOS
+    files:
+    - none*
 checksum:
   name_template: 'checksums.txt'
 snapshot:
