@@ -13,12 +13,11 @@ builds:
       - amd64
       - arm
       - arm64
+      - 386
 archives:
-- replacements:
-    darwin: macOS
-    linux: linux
-    386: x86
-    amd64: amd64
+  -
+    replacements:
+      darwin: macOS
 checksum:
   name_template: 'checksums.txt'
 snapshot:
