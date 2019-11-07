@@ -1,4 +1,4 @@
-# GiTmux [![Build Status](https://travis-ci.org/arl/gitmux.svg?branch=master)](https://travis-ci.org/arl/gitmux) [![Go Report Card](https://goreportcard.com/badge/github.com/arl/gitmux)](https://goreportcard.com/report/github.com/arl/gitstatus)
+# GiTmux [![Build Status](https://travis-ci.com/arl/gitmux.svg?branch=master)](https://travis-ci.com/arl/gitmux) [![Go Report Card](https://goreportcard.com/badge/github.com/arl/gitmux)](https://goreportcard.com/report/github.com/arl/gitmux)
 
 ![GiTmux in action](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
 
