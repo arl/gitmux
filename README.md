@@ -1,24 +1,24 @@
-# GiTmux [![Build Status](https://travis-ci.com/arl/gitmux.svg?branch=master)](https://travis-ci.com/arl/gitmux) [![Go Report Card](https://goreportcard.com/badge/github.com/arl/gitmux)](https://goreportcard.com/report/github.com/arl/gitmux)
+# Gitmux [![Build Status](https://travis-ci.com/arl/gitmux.svg?branch=master)](https://travis-ci.com/arl/gitmux) [![Go Report Card](https://goreportcard.com/badge/github.com/arl/gitmux)](https://goreportcard.com/report/github.com/arl/gitmux)
 
-![GiTmux in action](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
+![Gitmux in action](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
 
-**GiTmux** shows **Git** status in your **Tmux** status bar.
+**Gitmux** shows **Git** status in your **Tmux** status bar.
 
 ## Description
 
-If the working directory is managed by Git, **GiTmux** will show **Git status**
+If the working directory is managed by Git, **Gitmux** will show **Git status**
 information in a **minimal** and useful manner, right in Tmux status bar.  
-GiTmux gets _out of your way_ when it has nothing to say (out of a Git
+Gitmux gets _out of your way_ when it has nothing to say (out of a Git
 working tree).
 
-**GiTmux** comes with sensible defaults though you can customize everything: colors, symbols, which information to show.
+**Gitmux** comes with sensible defaults though you can customize everything: colors, symbols, which information to show.
 
 **To sum things up**:
  - you use **Tmux**
  - you're tired to type `git status`, or you're just _lazy_, like me
  - you want to keep your prompt tidy
 
-then **GiTmux** is made for you!
+then **Gitmux** is made for you!
 
 ## Installation
 
