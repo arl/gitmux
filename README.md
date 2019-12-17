@@ -1,24 +1,28 @@
 # Gitmux [![Build Status](https://travis-ci.com/arl/gitmux.svg?branch=master)](https://travis-ci.com/arl/gitmux) [![Go Report Card](https://goreportcard.com/badge/github.com/arl/gitmux)](https://goreportcard.com/report/github.com/arl/gitmux)
 
-![Gitmux in action](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
+## **Gitmux** shows **Git** status in your **Tmux** status bar.
 
-**Gitmux** shows **Git** status in your **Tmux** status bar.
+![Gitmux in action](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
 
 ## Description
 
-If the working directory is managed by Git, **Gitmux** will show **Git status**
-information in a **minimal** and useful manner, right in Tmux status bar.  
-Gitmux gets _out of your way_ when it has nothing to say (out of a Git
-working tree).
+Gitmux is a tmux addon that shows a minimal but useful **Git status** info in your tmux status bar.  
+If the directory you're in is not a Git repository, **Gitmux** gets _out of your way_.
 
-**Gitmux** comes with sensible defaults though you can customize everything: colors, symbols, which information to show.
+Many solutions already exist to keep an eye on Git status:
+ - you can type git status each time you need it...we're too lazy for that!
+ - you can embed git status into your shell prompt... that's overwhelming! I like to keep a small and tidy prompt.
+
+And generally there's always a lot of empty space left in tmux status bar.
+
+**Gitmux** comes with sensible defaults but you can customize everything: colors, symbols, information to show.
 
 **To sum things up**:
  - you use **Tmux**
- - you're tired to type `git status`, or you're just _lazy_, like me
- - you want to keep your prompt tidy
+ - you're tired to type `git status`
+ - you like a clean prompt
 
-then **Gitmux** is made for you!
+**Gitmux** might be just for you!
 
 ## Installation
 
