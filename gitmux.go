@@ -1,26 +1,16 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"os"
 
-	"github.com/arl/gitmux/format/json"
-	"github.com/arl/gitmux/format/tmux"
 	"github.com/arl/gitstatus"
 	"gopkg.in/yaml.v2"
+
+	"github.com/arl/gitmux/format/json"
+	"github.com/arl/gitmux/format/tmux"
 )
-
-func check(err error, dbg bool) {
-	if err != nil && dbg {
-		fmt.Fprintln(os.Stderr, "error:", err)
-		os.Exit(1)
-	}
-}
-
-// Config configures output formatting.
-type Config struct{ Tmux tmux.Config }
 
 var version = "<<development version>>"
 
@@ -37,6 +27,9 @@ Options:
   -V              prints gitmux version and exits.
 `
 
+// Config configures output formatting.
+type Config struct{ Tmux tmux.Config }
+
 var defaultCfg = Config{Tmux: tmux.DefaultCfg}
 
 func parseOptions() (dir string, dbg bool, cfg Config) {
@@ -48,50 +41,58 @@ func parseOptions() (dir string, dbg bool, cfg Config) {
 		fmt.Println(usage)
 	}
 	flag.Parse()
+
 	dir = "."
 	if flag.NArg() > 0 {
 		dir = flag.Arg(0)
 	}
-	cfg = defaultCfg
+
 	if *versionOpt {
 		fmt.Println(version)
 		os.Exit(0)
 	}
+
 	if *printCfgOpt {
 		enc := yaml.NewEncoder(os.Stdout)
 		check(enc.Encode(&defaultCfg), *dbgOpt)
 		enc.Close()
 		os.Exit(0)
 	}
+
+	cfg = defaultCfg
+
 	if *cfgOpt != "" {
 		f, err := os.Open(*cfgOpt)
 		check(err, *dbgOpt)
+
 		dec := yaml.NewDecoder(f)
 		check(dec.Decode(&cfg), *dbgOpt)
 	}
+
 	return dir, *dbgOpt, cfg
 }
 
-type popdir func() error
-
-func pushdir(dir string) (popdir, error) {
-	pwd, err := os.Getwd()
-	if err != nil {
+func pushdir(dir string) (popdir func() error, err error) {
+	pwd := ""
+	if pwd, err = os.Getwd(); err != nil {
 		return nil, err
 	}
 
-	err = os.Chdir(dir)
-	if err != nil {
+	if err = os.Chdir(dir); err != nil {
 		return nil, err
 	}
 
 	return func() error { return os.Chdir(pwd) }, nil
 }
 
-var errUnknownOutputFormat = errors.New("unknown output format")
+func check(err error, dbg bool) {
+	if err != nil && dbg {
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
+	}
+}
 
 func main() {
-	// parse cli options.
 	dir, dbg, cfg := parseOptions()
 
 	// handle directory change.
@@ -107,13 +108,12 @@ func main() {
 	st, err := gitstatus.New()
 	check(err, dbg)
 
-	// select formater
+	// select defauit formater
 	var formater formater = &tmux.Formater{Config: cfg.Tmux}
 	if dbg {
 		formater = &json.Formater{}
 	}
 
 	// format and print
-	err = formater.Format(os.Stdout, st)
-	check(err, dbg)
+	check(formater.Format(os.Stdout, st), dbg)
 }

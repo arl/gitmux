@@ -98,6 +98,7 @@ fileCounts:
 	f.flags()
 
 	_, err := f.b.WriteTo(w)
+
 	return err
 }
 
@@ -149,11 +150,13 @@ func (f *Formater) currentRef() {
 
 func (f *Formater) divergence() {
 	f.clear()
+
 	pref := " "
 	if f.st.BehindCount != 0 {
 		fmt.Fprintf(&f.b, " %s%d", f.Symbols.Behind, f.st.BehindCount)
 		pref = ""
 	}
+
 	if f.st.AheadCount != 0 {
 		fmt.Fprintf(&f.b, "%s%s%d", pref, f.Symbols.Ahead, f.st.AheadCount)
 	}
@@ -162,6 +165,7 @@ func (f *Formater) divergence() {
 func (f *Formater) flags() {
 	f.clear()
 	f.b.WriteString(" - ")
+
 	if f.st.IsClean {
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Clean, f.Symbols.Clean)
 		return
@@ -173,21 +177,26 @@ func (f *Formater) flags() {
 		flags = append(flags,
 			fmt.Sprintf("%s%s%d", f.Styles.Staged, f.Symbols.Staged, f.st.NumStaged))
 	}
+
 	if f.st.NumConflicts != 0 {
 		flags = append(flags,
 			fmt.Sprintf("%s%s%d", f.Styles.Conflict, f.Symbols.Conflict, f.st.NumConflicts))
 	}
+
 	if f.st.NumModified != 0 {
 		flags = append(flags,
 			fmt.Sprintf("%s%s%d", f.Styles.Modified, f.Symbols.Modified, f.st.NumModified))
 	}
+
 	if f.st.NumStashed != 0 {
 		flags = append(flags,
 			fmt.Sprintf("%s%s%d", f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
 	}
+
 	if f.st.NumUntracked != 0 {
 		flags = append(flags,
 			fmt.Sprintf("%s%s%d", f.Styles.Untracked, f.Symbols.Untracked, f.st.NumUntracked))
 	}
+
 	f.b.WriteString(strings.Join(flags, " "))
 }
