@@ -12,9 +12,9 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func check(err error, quiet bool) {
+func check(err error, dbg bool) {
 	if err != nil {
-		if !quiet {
+		if dbg {
 			fmt.Println("error:", err)
 		}
 		os.Exit(1)
@@ -29,26 +29,22 @@ var version = "<<development version>>"
 var usage = `gitmux ` + version + `
 Usage: gitmux [options] [dir]
 
-gitmux prints the status of a Git working tree.
+gitmux prints the status of a Git working tree as a tmux format string.
 If directory is not given, it default to the working directory.  
 
 Options:
-  -q              be quiet. In case of errors, don't print nothing.
-  -fmt            output format, defaults to json.
-      json        prints status as a JSON object.
-      tmux        prints status as a tmux format string.
   -cfg cfgfile    use cfgfile when printing git status.
   -printcfg       prints default configuration file.
-  -V		  prints gitmux version and exits.
+  -dbg            outputs Git status as JSON and print errors.
+  -V              prints gitmux version and exits.
 `
 
 var defaultCfg = Config{Tmux: tmux.DefaultCfg}
 
-func parseOptions() (dir string, format string, quiet bool, cfg Config) {
-	fmtOpt := flag.String("fmt", "json", "")
+func parseOptions() (dir string, dbg bool, cfg Config) {
+	dbgOpt := flag.Bool("dbg", false, "")
 	cfgOpt := flag.String("cfg", "", "")
 	printCfgOpt := flag.Bool("printcfg", false, "")
-	quietOpt := flag.Bool("q", false, "")
 	versionOpt := flag.Bool("V", false, "")
 	flag.Usage = func() {
 		fmt.Println(usage)
@@ -65,17 +61,17 @@ func parseOptions() (dir string, format string, quiet bool, cfg Config) {
 	}
 	if *printCfgOpt {
 		enc := yaml.NewEncoder(os.Stdout)
-		check(enc.Encode(&defaultCfg), *quietOpt)
+		check(enc.Encode(&defaultCfg), *dbgOpt)
 		enc.Close()
 		os.Exit(0)
 	}
 	if *cfgOpt != "" {
 		f, err := os.Open(*cfgOpt)
-		check(err, *quietOpt)
+		check(err, *dbgOpt)
 		dec := yaml.NewDecoder(f)
-		check(dec.Decode(&cfg), *quietOpt)
+		check(dec.Decode(&cfg), *dbgOpt)
 	}
-	return dir, *fmtOpt, *quietOpt, cfg
+	return dir, *dbgOpt, cfg
 }
 
 type popdir func() error
@@ -98,32 +94,28 @@ var errUnknownOutputFormat = errors.New("unknown output format")
 
 func main() {
 	// parse cli options.
-	dir, format, quiet, cfg := parseOptions()
+	dir, dbg, cfg := parseOptions()
 
 	// handle directory change.
 	if dir != "." {
 		popDir, err := pushdir(dir)
-		check(err, quiet)
+		check(err, dbg)
 		defer func() {
-			check(popDir(), quiet)
+			check(popDir(), dbg)
 		}()
 	}
 
 	// retrieve git status.
 	st, err := gitstatus.New()
-	check(err, quiet)
+	check(err, dbg)
 
-	// register formaters
-	formaters := make(map[string]formater)
-	formaters["json"] = &json.Formater{}
-	formaters["tmux"] = &tmux.Formater{Config: cfg.Tmux}
-
-	formater, ok := formaters[format]
-	if !ok {
-		check(errUnknownOutputFormat, quiet)
+	// select formater
+	var formater formater = &tmux.Formater{Config: cfg.Tmux}
+	if dbg {
+		formater = &json.Formater{}
 	}
 
 	// format and print
 	err = formater.Format(os.Stdout, st)
-	check(err, quiet)
+	check(err, dbg)
 }
