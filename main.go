@@ -13,10 +13,8 @@ import (
 )
 
 func check(err error, dbg bool) {
-	if err != nil {
-		if dbg {
-			fmt.Println("error:", err)
-		}
+	if err != nil && dbg {
+		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)
 	}
 }
