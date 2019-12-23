@@ -37,6 +37,8 @@ func parseOptions() (dir string, dbg bool, cfg Config) {
 	cfgOpt := flag.String("cfg", "", "")
 	printCfgOpt := flag.Bool("printcfg", false, "")
 	versionOpt := flag.Bool("V", false, "")
+	flag.Bool("q", true, "")   // unused, kept for retrocompatibility.
+	flag.String("fmt", "", "") // unused, kept for retrocompatibility.
 	flag.Usage = func() {
 		fmt.Println(usage)
 	}
