@@ -15,8 +15,10 @@ type Formater struct{}
 func (Formater) Format(w io.Writer, st *gitstatus.Status) error {
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", " ")
+
 	if err := enc.Encode(st); err != nil {
 		return fmt.Errorf("can't format status to json: %v", err)
 	}
+
 	return nil
 }
