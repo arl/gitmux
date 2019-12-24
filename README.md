@@ -1,8 +1,10 @@
 # Gitmux [![Build Status](https://travis-ci.com/arl/gitmux.svg?branch=master)](https://travis-ci.com/arl/gitmux) [![Go Report Card](https://goreportcard.com/badge/github.com/arl/gitmux)](https://goreportcard.com/report/github.com/arl/gitmux)
 
+
 ## **Gitmux** shows **Git** status in your **Tmux** status bar.
 
 ![Gitmux in action](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
+
 
 ## Description
 
@@ -24,6 +26,7 @@ And generally there's always a lot of empty space left in tmux status bar.
 
 **Gitmux** might be just for you!
 
+
 ## Installation
 
 * **Install a binary release for your platform** (preferred and simplest way) 
@@ -42,11 +45,43 @@ go get -u github.com/arl/gitmux
 
 ## Usage
 
-Simply add this line to your  `.tmux.conf`
+Simply add this line to your  `.tmux.conf`:
 
 ```
 # Show Git working tree status
-set -g status-right '#(gitmux -q -fmt tmux #{pane_current_path})'
+set -g status-right '#(gitmux #{pane_current_path})'
+```
+
+
+## Customize status string
+
+Nothing simpler! First save `gitmux` config in a file:
+
+```
+gitmux -printcfg > .gitmux.conf
+```
+
+`gitmux` config is divided in 2 sections:
+ - symbols are unicode characters
+ - styles are tmux format strings (man tmux for reference)
+
+Modify it, then feed that config each time you run `gitmux`:
+
+```
+gitmux -cfg .gitmux.conf
+```
+
+## Troubleshooting
+
+If something goes wrong, please [file an issue](https://github.com/arl/gitmux/issues/new)
+and indicate your tmux and gitmux versions,  
+what you did, what you saw and what you expected yo see.  
+Also you can run `gitmux -dbg` for debugging output.
+
+```
+tmux -V
+gitmux -V
+gitmux -dbg
 ```
 
 ## Contributing
