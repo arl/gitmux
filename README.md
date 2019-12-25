@@ -61,9 +61,9 @@ Nothing simpler! First save `gitmux` config in a file:
 gitmux -printcfg > .gitmux.conf
 ```
 
-`gitmux` config is divided in 2 sections:
+`gitmux` configuration is divided in 2 sections:
  - symbols are unicode characters
- - styles are tmux format strings (man tmux for reference)
+ - styles are tmux format strings (`man tmux` for reference)
 
 Modify it, then feed that config each time you run `gitmux`:
 
