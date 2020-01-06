@@ -1,8 +1,20 @@
-<img width="140" height="140" src="https://github.com/arl/gitmux/raw/readme-images/logo-white.png" align="right" />
+<p align="center">
+<img width="50%" height="50%" src="https://github.com/arl/gitmux/raw/readme-images/logo-transparent.png" />
+</p>
+<p align="center">Gitmux shows git status in your tmux status bar</p>
+<hr>
 
-# Gitmux [![Build Status](https://travis-ci.com/arl/gitmux.svg?branch=master)](https://travis-ci.com/arl/gitmux) [![Go Report Card](https://goreportcard.com/badge/github.com/arl/gitmux)](https://goreportcard.com/report/github.com/arl/gitmux)
-
-> Gitmux shows git status in your tmux status bar
+<p align="center">
+<a href="https://travis-ci.com/arl/gitmux">
+  <img alt="travis-ci" src="https://travis-ci.com/arl/gitmux.svg?branch=master" />
+</a>
+<a href="https://goreportcard.com/report/github.com/arl/gitmux">
+  <img alt="goreport" src="https://goreportcard.com/badge/github.com/arl/gitmux" />
+</a>
+<a href="https://opensource.org/licenses/MIT">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+</a>
+</p>
 
 ![demo](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
 
