@@ -18,6 +18,8 @@ type Config struct {
 	// Styles contains the tmux style strings for symbols and Git status
 	// components.
 	Styles styles
+	// Display sets the output format of the Git status.
+	Display []string `yaml:",flow"`
 }
 
 type symbols struct {
@@ -71,6 +73,7 @@ var DefaultCfg = Config{
 		Stashed:   "#[fg=cyan,bold]",
 		Clean:     "#[fg=green,bold]",
 	},
+	Display: []string{"branch", "..", "remote", " - ", "flags"},
 }
 
 // A Formater formats git status to a tmux style string.
@@ -88,18 +91,29 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 	// overall working tree state
 	if f.st.IsInitial {
 		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch, f.st.LocalBranch)
-		goto fileCounts
+		f.flags()
+		_, err := f.b.WriteTo(w)
+		return err
 	}
-
-	f.specialState()
-	f.remote()
-
-fileCounts:
-	f.flags()
-
+	f.format()
 	_, err := f.b.WriteTo(w)
 
 	return err
+}
+
+func (f *Formater) format() {
+	for _, order := range f.Display {
+		switch order {
+		case "branch":
+			f.specialState()
+		case "remote":
+			f.remote()
+		case "flags":
+			f.flags()
+		default:
+			f.b.WriteString(order)
+		}
+	}
 }
 
 func (f *Formater) specialState() {
@@ -128,7 +142,7 @@ func (f *Formater) specialState() {
 func (f *Formater) remote() {
 	f.clear()
 	if f.st.RemoteBranch != "" {
-		fmt.Fprintf(&f.b, "..%s%s", f.Styles.Remote, f.st.RemoteBranch)
+		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, f.st.RemoteBranch)
 		f.divergence()
 	}
 }
@@ -164,7 +178,6 @@ func (f *Formater) divergence() {
 
 func (f *Formater) flags() {
 	f.clear()
-	f.b.WriteString(" - ")
 
 	if f.st.IsClean {
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Clean, f.Symbols.Clean)
