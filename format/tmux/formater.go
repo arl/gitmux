@@ -18,7 +18,7 @@ type Config struct {
 	// Styles contains the tmux style strings for symbols and Git status
 	// components.
 	Styles  styles
-	Options flags
+	Display display
 }
 
 type symbols struct {
@@ -34,6 +34,7 @@ type symbols struct {
 	Untracked string // Untracked is the string shown before the count of untracked files.
 	Stashed   string // Stashed is the string shown before the count of stash entries.
 	Clean     string // Clean is the string shown when the working tree is clean.
+	Delimiter string // Delimiter is the string shown before flags
 }
 
 type styles struct {
@@ -48,8 +49,8 @@ type styles struct {
 	Clean     string // Clean is the style string printed before the clean symbols.
 }
 
-type flags struct {
-	ShowRemote bool // Shows or hides remote information.
+type display struct {
+	Output []string // Display order and visiblity of options
 }
 
 var DefaultCfg = Config{
@@ -64,6 +65,7 @@ var DefaultCfg = Config{
 		Ahead:      "↑·",
 		Behind:     "↓·",
 		HashPrefix: ":",
+		Delimiter:  " - ",
 	},
 	Styles: styles{
 		State:     "#[fg=red,bold]",
@@ -76,8 +78,8 @@ var DefaultCfg = Config{
 		Stashed:   "#[fg=cyan,bold]",
 		Clean:     "#[fg=green,bold]",
 	},
-	Options: flags{
-		ShowRemote: true,
+	Display: display{
+		Output: []string{"branch", "remote", "flags"},
 	},
 }
 
@@ -96,16 +98,19 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 	// overall working tree state
 	if f.st.IsInitial {
 		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch, f.st.LocalBranch)
-		goto fileCounts
+		f.flags()
+	} else {
+		for _, order := range f.Display.Output {
+			switch order {
+			case "branch":
+				f.specialState()
+			case "remote":
+				f.remote()
+			case "flags":
+				f.flags()
+			}
+		}
 	}
-
-	f.specialState()
-	if f.Options.ShowRemote {
-		f.remote()
-	}
-
-fileCounts:
-	f.flags()
 
 	_, err := f.b.WriteTo(w)
 
@@ -174,7 +179,7 @@ func (f *Formater) divergence() {
 
 func (f *Formater) flags() {
 	f.clear()
-	f.b.WriteString(" - ")
+	f.b.WriteString(f.Symbols.Delimiter)
 
 	if f.st.IsClean {
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Clean, f.Symbols.Clean)
