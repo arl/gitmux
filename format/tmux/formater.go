@@ -17,7 +17,8 @@ type Config struct {
 	Symbols symbols
 	// Styles contains the tmux style strings for symbols and Git status
 	// components.
-	Styles styles
+	Styles  styles
+	Options flags
 }
 
 type symbols struct {
@@ -47,6 +48,10 @@ type styles struct {
 	Clean     string // Clean is the style string printed before the clean symbols.
 }
 
+type flags struct {
+	ShowRemote bool // Shows or hides remote information.
+}
+
 var DefaultCfg = Config{
 	Symbols: symbols{
 		Branch:     "⎇ ",
@@ -71,6 +76,9 @@ var DefaultCfg = Config{
 		Stashed:   "#[fg=cyan,bold]",
 		Clean:     "#[fg=green,bold]",
 	},
+	Options: flags{
+		ShowRemote: true,
+	},
 }
 
 // A Formater formats git status to a tmux style string.
@@ -92,7 +100,9 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 	}
 
 	f.specialState()
-	f.remote()
+	if f.Options.ShowRemote {
+		f.remote()
+	}
 
 fileCounts:
 	f.flags()
