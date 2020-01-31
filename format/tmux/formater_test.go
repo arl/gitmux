@@ -21,7 +21,8 @@ func TestFormater_flags(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Clean: "CleanSymbol",
+				Clean:     "CleanSymbol",
+				Delimiter: " - ",
 			},
 			st: &gitstatus.Status{
 				IsClean: true,
@@ -36,9 +37,10 @@ func TestFormater_flags(t *testing.T) {
 				Staged:   "StyleStaged",
 			},
 			symbols: symbols{
-				Modified: "SymbolMod",
-				Stashed:  "SymbolStash",
-				Staged:   "SymbolStaged",
+				Modified:  "SymbolMod",
+				Stashed:   "SymbolStash",
+				Staged:    "SymbolStaged",
+				Delimiter: " - ",
 			},
 			st: &gitstatus.Status{
 				NumStashed: 1,
@@ -58,6 +60,7 @@ func TestFormater_flags(t *testing.T) {
 			symbols: symbols{
 				Conflict:  "SymbolConflict",
 				Untracked: "SymbolUntracked",
+				Delimiter: " - ",
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
