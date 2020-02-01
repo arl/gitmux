@@ -196,7 +196,26 @@ func TestFormater_Format(t *testing.T) {
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+..#\[fg=default][\w\/.-]+#\[fg=default] - #\[fg=default].+`),
+			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+..(#\[fg=default][\w\/.-]+)?#\[fg=default] - #\[fg=default].+`),
+		},
+		{
+			name: "default format with diff delimiters",
+			styles: styles{
+				Clean: "CleanStyle",
+			},
+			symbols: symbols{
+				Branch:     "⎇ ",
+				Clean:      "CleanSymbol",
+				Delimiter0: "~~",
+				Delimiter1: " | ",
+			},
+			display: display{
+				Output: []string{"branch", "delimiter0", "remote", "delimiter1", "flags"},
+			},
+			st: &gitstatus.Status{
+				IsClean: true,
+			},
+			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+~~(#\[fg=default][\w\/.-]+)?#\[fg=default] | #\[fg=default].+`),
 		},
 		{
 			name: "no branch or delimiter0",
@@ -215,7 +234,7 @@ func TestFormater_Format(t *testing.T) {
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: regexp.MustCompile(`#\[fg=default][\w\/.-]+#\[fg=default] - #\[fg=default].+`),
+			want: regexp.MustCompile(`(#\[fg=default][\w\/.-]+)?#\[fg=default] - #\[fg=default].+`),
 		},
 		{
 			name: "no remote and delimiter0",
@@ -310,7 +329,7 @@ func TestFormater_Format(t *testing.T) {
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+#\[fg=default][\w\/.-]+#\[fg=default]#\[fg=default].+`),
+			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+(#\[fg=default][\w\/.-]+)?#\[fg=default]#\[fg=default].+`),
 		},
 	}
 	for _, tc := range tests {
