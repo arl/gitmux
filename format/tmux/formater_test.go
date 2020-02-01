@@ -291,7 +291,7 @@ func TestFormater_Format(t *testing.T) {
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: regexp.MustCompile(`#\[fg=default][\w\/.-]+#\[fg=default]`),
+			want: regexp.MustCompile(`(#\[fg=default][\w\/.-]+)?#\[fg=default]`),
 		},
 		{
 			name: "flags only",
