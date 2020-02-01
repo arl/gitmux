@@ -17,7 +17,8 @@ type Config struct {
 	Symbols symbols
 	// Styles contains the tmux style strings for symbols and Git status
 	// components.
-	Styles  styles
+	Styles styles
+	// Display sets the output format of the Git status.
 	Display display
 }
 
@@ -28,13 +29,14 @@ type symbols struct {
 	Ahead  string // Ahead is the string shown before the ahead count for the local/upstream branch divergence.
 	Behind string // Behind is the string shown before the behind count for the local/upstream branch divergence.
 
-	Staged    string // Staged is the string shown before the count of staged files.
-	Conflict  string // Conflict is the string shown before the count of files with conflicts.
-	Modified  string // Modified is the string shown before the count of modified files.
-	Untracked string // Untracked is the string shown before the count of untracked files.
-	Stashed   string // Stashed is the string shown before the count of stash entries.
-	Clean     string // Clean is the string shown when the working tree is clean.
-	Delimiter string // Delimiter is the string shown before flags
+	Staged     string // Staged is the string shown before the count of staged files.
+	Conflict   string // Conflict is the string shown before the count of files with conflicts.
+	Modified   string // Modified is the string shown before the count of modified files.
+	Untracked  string // Untracked is the string shown before the count of untracked files.
+	Stashed    string // Stashed is the string shown before the count of stash entries.
+	Clean      string // Clean is the string shown when the working tree is clean.
+	Delimiter0 string // Delimiter0 is a custom string to be used as a seperator.
+	Delimiter1 string // Delimiter1 is a custom string to be used as a seperator.
 }
 
 type styles struct {
@@ -50,7 +52,7 @@ type styles struct {
 }
 
 type display struct {
-	Output []string // Display order and visiblity of options
+	Output []string // Output sets the display order and visiblity of options
 }
 
 var DefaultCfg = Config{
@@ -65,7 +67,8 @@ var DefaultCfg = Config{
 		Ahead:      "↑·",
 		Behind:     "↓·",
 		HashPrefix: ":",
-		Delimiter:  " - ",
+		Delimiter0: " - ",
+		Delimiter1: "..",
 	},
 	Styles: styles{
 		State:     "#[fg=red,bold]",
@@ -79,7 +82,7 @@ var DefaultCfg = Config{
 		Clean:     "#[fg=green,bold]",
 	},
 	Display: display{
-		Output: []string{"branch", "remote", "flags"},
+		Output: []string{"branch", "delimiter0", "remote", "delimiter1", "flags"},
 	},
 }
 
@@ -99,22 +102,30 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 	if f.st.IsInitial {
 		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch, f.st.LocalBranch)
 		f.flags()
-	} else {
-		for _, order := range f.Display.Output {
-			switch order {
-			case "branch":
-				f.specialState()
-			case "remote":
-				f.remote()
-			case "flags":
-				f.flags()
-			}
-		}
+		_, err := f.b.WriteTo(w)
+		return err
 	}
-
+	f.format()
 	_, err := f.b.WriteTo(w)
 
 	return err
+}
+
+func (f *Formater) format() {
+	for _, order := range f.Display.Output {
+		switch order {
+		case "branch":
+			f.specialState()
+		case "remote":
+			f.remote()
+		case "flags":
+			f.flags()
+		case "delimiter0":
+			f.b.WriteString(f.Symbols.Delimiter0)
+		case "delimiter1":
+			f.b.WriteString(f.Symbols.Delimiter1)
+		}
+	}
 }
 
 func (f *Formater) specialState() {
@@ -143,7 +154,7 @@ func (f *Formater) specialState() {
 func (f *Formater) remote() {
 	f.clear()
 	if f.st.RemoteBranch != "" {
-		fmt.Fprintf(&f.b, "..%s%s", f.Styles.Remote, f.st.RemoteBranch)
+		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, f.st.RemoteBranch)
 		f.divergence()
 	}
 }
@@ -179,7 +190,6 @@ func (f *Formater) divergence() {
 
 func (f *Formater) flags() {
 	f.clear()
-	f.b.WriteString(f.Symbols.Delimiter)
 
 	if f.st.IsClean {
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Clean, f.Symbols.Clean)
