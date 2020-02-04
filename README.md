@@ -70,7 +70,7 @@ Modify the line in `.tmux.conf`, passing the path of the configuration file as a
 `gitmux` configuration is split into 3 sections:
  - symbols: they are just strings of unicode characters
  - styles: they are tmux format strings (`man tmux` for reference)
- - display: defines the `output:` layout in the form of a YAML array
+ - display: defines the layout in the form of a YAML array, seperators should be surrounded in single quotes as and example `display: [branch, '..', remote, ' - ', flags]`
 
 
 ## Troubleshooting
