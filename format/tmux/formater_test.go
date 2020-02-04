@@ -14,7 +14,7 @@ func TestFormater_flags(t *testing.T) {
 		name    string
 		styles  styles
 		symbols symbols
-		display display
+		display []string
 		st      *gitstatus.Status
 		want    string
 	}{
@@ -24,13 +24,9 @@ func TestFormater_flags(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Clean:      "CleanSymbol",
-				Delimiter0: "..",
-				Delimiter1: " - ",
+				Clean: "CleanSymbol",
 			},
-			display: display{
-				Output: []string{"branch", "delimiter0", "remote", "delimiter1", "flags"},
-			},
+			display: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -44,15 +40,11 @@ func TestFormater_flags(t *testing.T) {
 				Staged:   "StyleStaged",
 			},
 			symbols: symbols{
-				Modified:   "SymbolMod",
-				Stashed:    "SymbolStash",
-				Staged:     "SymbolStaged",
-				Delimiter0: "..",
-				Delimiter1: " - ",
+				Modified: "SymbolMod",
+				Stashed:  "SymbolStash",
+				Staged:   "SymbolStaged",
 			},
-			display: display{
-				Output: []string{"branch", "delimiter0", "remote", "delimiter1", "flags"},
-			},
+			display: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				NumStashed: 1,
 				Porcelain: gitstatus.Porcelain{
@@ -175,7 +167,7 @@ func TestFormater_Format(t *testing.T) {
 		name    string
 		styles  styles
 		symbols symbols
-		display display
+		display []string
 		st      *gitstatus.Status
 		want    *regexp.Regexp
 	}{
@@ -185,14 +177,10 @@ func TestFormater_Format(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Branch:     "⎇ ",
-				Clean:      "CleanSymbol",
-				Delimiter0: "..",
-				Delimiter1: " - ",
+				Branch: "⎇ ",
+				Clean:  "CleanSymbol",
 			},
-			display: display{
-				Output: []string{"branch", "delimiter0", "remote", "delimiter1", "flags"},
-			},
+			display: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -204,14 +192,10 @@ func TestFormater_Format(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Branch:     "⎇ ",
-				Clean:      "CleanSymbol",
-				Delimiter0: "~~",
-				Delimiter1: " | ",
+				Branch: "⎇ ",
+				Clean:  "CleanSymbol",
 			},
-			display: display{
-				Output: []string{"branch", "delimiter0", "remote", "delimiter1", "flags"},
-			},
+			display: []string{"branch", "~~", "remote", " | ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -223,14 +207,10 @@ func TestFormater_Format(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Branch:     "⎇ ",
-				Clean:      "CleanSymbol",
-				Delimiter0: "..",
-				Delimiter1: " - ",
+				Branch: "⎇ ",
+				Clean:  "CleanSymbol",
 			},
-			display: display{
-				Output: []string{"remote", "delimiter1", "flags"},
-			},
+			display: []string{"remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -242,14 +222,10 @@ func TestFormater_Format(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Branch:     "⎇ ",
-				Clean:      "CleanSymbol",
-				Delimiter0: "..",
-				Delimiter1: " - ",
+				Branch: "⎇ ",
+				Clean:  "CleanSymbol",
 			},
-			display: display{
-				Output: []string{"branch", "delimiter1", "flags"},
-			},
+			display: []string{"branch", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -261,14 +237,10 @@ func TestFormater_Format(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Branch:     "⎇ ",
-				Clean:      "CleanSymbol",
-				Delimiter0: "..",
-				Delimiter1: " - ",
+				Branch: "⎇ ",
+				Clean:  "CleanSymbol",
 			},
-			display: display{
-				Output: []string{"branch"},
-			},
+			display: []string{"branch"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -280,14 +252,10 @@ func TestFormater_Format(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Branch:     "⎇ ",
-				Clean:      "CleanSymbol",
-				Delimiter0: "..",
-				Delimiter1: " - ",
+				Branch: "⎇ ",
+				Clean:  "CleanSymbol",
 			},
-			display: display{
-				Output: []string{"remote"},
-			},
+			display: []string{"remote"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -299,14 +267,10 @@ func TestFormater_Format(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Branch:     "⎇ ",
-				Clean:      "CleanSymbol",
-				Delimiter0: "..",
-				Delimiter1: " - ",
+				Branch: "⎇ ",
+				Clean:  "CleanSymbol",
 			},
-			display: display{
-				Output: []string{"flags"},
-			},
+			display: []string{"flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -318,14 +282,10 @@ func TestFormater_Format(t *testing.T) {
 				Clean: "CleanStyle",
 			},
 			symbols: symbols{
-				Branch:     "⎇ ",
-				Clean:      "CleanSymbol",
-				Delimiter0: "..",
-				Delimiter1: " - ",
+				Branch: "⎇ ",
+				Clean:  "CleanSymbol",
 			},
-			display: display{
-				Output: []string{"branch", "remote", "flags"},
-			},
+			display: []string{"branch", "remote", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},

@@ -19,7 +19,7 @@ type Config struct {
 	// components.
 	Styles styles
 	// Display sets the output format of the Git status.
-	Display display
+	Display []string `yaml:",flow"`
 }
 
 type symbols struct {
@@ -29,14 +29,12 @@ type symbols struct {
 	Ahead  string // Ahead is the string shown before the ahead count for the local/upstream branch divergence.
 	Behind string // Behind is the string shown before the behind count for the local/upstream branch divergence.
 
-	Staged     string // Staged is the string shown before the count of staged files.
-	Conflict   string // Conflict is the string shown before the count of files with conflicts.
-	Modified   string // Modified is the string shown before the count of modified files.
-	Untracked  string // Untracked is the string shown before the count of untracked files.
-	Stashed    string // Stashed is the string shown before the count of stash entries.
-	Clean      string // Clean is the string shown when the working tree is clean.
-	Delimiter0 string // Delimiter0 is a custom string to be used as a seperator.
-	Delimiter1 string // Delimiter1 is a custom string to be used as a seperator.
+	Staged    string // Staged is the string shown before the count of staged files.
+	Conflict  string // Conflict is the string shown before the count of files with conflicts.
+	Modified  string // Modified is the string shown before the count of modified files.
+	Untracked string // Untracked is the string shown before the count of untracked files.
+	Stashed   string // Stashed is the string shown before the count of stash entries.
+	Clean     string // Clean is the string shown when the working tree is clean.
 }
 
 type styles struct {
@@ -51,10 +49,6 @@ type styles struct {
 	Clean     string // Clean is the style string printed before the clean symbols.
 }
 
-type display struct {
-	Output []string // Output sets the display order and visiblity of options
-}
-
 var DefaultCfg = Config{
 	Symbols: symbols{
 		Branch:     "⎇ ",
@@ -67,8 +61,6 @@ var DefaultCfg = Config{
 		Ahead:      "↑·",
 		Behind:     "↓·",
 		HashPrefix: ":",
-		Delimiter0: " - ",
-		Delimiter1: "..",
 	},
 	Styles: styles{
 		State:     "#[fg=red,bold]",
@@ -81,9 +73,7 @@ var DefaultCfg = Config{
 		Stashed:   "#[fg=cyan,bold]",
 		Clean:     "#[fg=green,bold]",
 	},
-	Display: display{
-		Output: []string{"branch", "delimiter0", "remote", "delimiter1", "flags"},
-	},
+	Display: []string{"branch", "..", "remote", " - ", "flags"},
 }
 
 // A Formater formats git status to a tmux style string.
@@ -112,7 +102,7 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 }
 
 func (f *Formater) format() {
-	for _, order := range f.Display.Output {
+	for _, order := range f.Display {
 		switch order {
 		case "branch":
 			f.specialState()
@@ -120,10 +110,8 @@ func (f *Formater) format() {
 			f.remote()
 		case "flags":
 			f.flags()
-		case "delimiter0":
-			f.b.WriteString(f.Symbols.Delimiter0)
-		case "delimiter1":
-			f.b.WriteString(f.Symbols.Delimiter1)
+		default:
+			f.b.WriteString(order)
 		}
 	}
 }
