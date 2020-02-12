@@ -46,7 +46,7 @@ Run `go get` to build and install `gitmux`:
 
 Add this line to your  `.tmux.conf`:
 
-    set -g status-right '#(gitmux #{pane_current_path})'
+    set -g status-right '#(gitmux "#{pane_current_path}")'
 
 
 ## Customizing
