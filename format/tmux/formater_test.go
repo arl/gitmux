@@ -2,7 +2,6 @@ package tmux
 
 import (
 	"os"
-	"regexp"
 	"testing"
 
 	"github.com/arl/gitstatus"
@@ -21,16 +20,16 @@ func TestFormater_flags(t *testing.T) {
 		{
 			name: "clean flag",
 			styles: styles{
-				Clean: "CleanStyle",
+				Clean: "StyleClean",
 			},
 			symbols: symbols{
-				Clean: "CleanSymbol",
+				Clean: "SymbolClean",
 			},
 			display: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: clear + "CleanStyleCleanSymbol",
+			want: clear + "StyleCleanSymbolClean",
 		},
 		{
 			name: "mixed flags",
@@ -169,140 +168,103 @@ func TestFormater_Format(t *testing.T) {
 		symbols symbols
 		display []string
 		st      *gitstatus.Status
-		want    *regexp.Regexp
+		want    string
 	}{
 		{
 			name: "default format",
 			styles: styles{
-				Clean: "CleanStyle",
+				Clean:    "StyleClean",
+				Branch:   "StyleBranch",
+				Modified: "StyleMod",
+				Remote:   "StyleRemote",
 			},
 			symbols: symbols{
-				Branch: "⎇ ",
-				Clean:  "CleanSymbol",
+				Branch:   "SymbolBranch",
+				Clean:    "SymbolClean",
+				Modified: "SymbolMod",
 			},
 			display: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
-				IsClean: true,
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "Local",
+					RemoteBranch: "Remote",
+					NumModified:  2,
+				},
 			},
-			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+..(#\[fg=default][\w\/.-]+)?#\[fg=default] - #\[fg=default].+`),
+			want: clear + "StyleBranchSymbolBranch" + clear + "Local" + ".." + clear + "StyleRemoteRemote" + clear + " - " + clear + "StyleModSymbolMod2",
 		},
 		{
-			name: "default format with diff delimiters",
+			name: "branch, different delimiter, flags",
 			styles: styles{
-				Clean: "CleanStyle",
+				Branch:   "StyleBranch",
+				Remote:   "StyleRemote",
+				Modified: "StyleMod",
 			},
 			symbols: symbols{
-				Branch: "⎇ ",
-				Clean:  "CleanSymbol",
+				Branch:   "SymbolBranch",
+				Ahead:    "SymbolAhead",
+				Modified: "SymbolMod",
 			},
-			display: []string{"branch", "~~", "remote", " | ", "flags"},
+			display: []string{"branch", " ~~ ", "flags"},
 			st: &gitstatus.Status{
-				IsClean: true,
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "Local",
+					RemoteBranch: "Remote",
+					NumModified:  2,
+					AheadCount:   1,
+				},
 			},
-			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+~~(#\[fg=default][\w\/.-]+)?#\[fg=default] | #\[fg=default].+`),
-		},
-		{
-			name: "no branch or delimiter0",
-			styles: styles{
-				Clean: "CleanStyle",
-			},
-			symbols: symbols{
-				Branch: "⎇ ",
-				Clean:  "CleanSymbol",
-			},
-			display: []string{"remote", " - ", "flags"},
-			st: &gitstatus.Status{
-				IsClean: true,
-			},
-			want: regexp.MustCompile(`(#\[fg=default][\w\/.-]+)?#\[fg=default] - #\[fg=default].+`),
-		},
-		{
-			name: "no remote and delimiter0",
-			styles: styles{
-				Clean: "CleanStyle",
-			},
-			symbols: symbols{
-				Branch: "⎇ ",
-				Clean:  "CleanSymbol",
-			},
-			display: []string{"branch", " - ", "flags"},
-			st: &gitstatus.Status{
-				IsClean: true,
-			},
-			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+ - #\[fg=default].+`),
-		},
-		{
-			name: "branch only",
-			styles: styles{
-				Clean: "CleanStyle",
-			},
-			symbols: symbols{
-				Branch: "⎇ ",
-				Clean:  "CleanSymbol",
-			},
-			display: []string{"branch"},
-			st: &gitstatus.Status{
-				IsClean: true,
-			},
-			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+`),
+			want: clear + "StyleBranchSymbolBranch" + clear + "Local" + " ~~ " + clear + "StyleModSymbolMod2",
 		},
 		{
 			name: "remote only",
 			styles: styles{
-				Clean: "CleanStyle",
+				Branch: "StyleBranch",
+				Remote: "StyleRemote",
 			},
 			symbols: symbols{
-				Branch: "⎇ ",
-				Clean:  "CleanSymbol",
+				Branch: "SymbolBranch",
+				Ahead:  "SymbolAhead",
 			},
 			display: []string{"remote"},
 			st: &gitstatus.Status{
-				IsClean: true,
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "Local",
+					RemoteBranch: "Remote",
+					AheadCount:   1,
+				},
 			},
-			want: regexp.MustCompile(`(#\[fg=default][\w\/.-]+)?#\[fg=default]`),
+			want: clear + "StyleRemoteRemote" + clear + " SymbolAhead1",
 		},
 		{
-			name: "flags only",
+			name: "empty",
 			styles: styles{
-				Clean: "CleanStyle",
+				Branch:   "StyleBranch",
+				Modified: "StyleMod",
 			},
 			symbols: symbols{
-				Branch: "⎇ ",
-				Clean:  "CleanSymbol",
+				Branch:   "SymbolBranch",
+				Modified: "SymbolMod",
 			},
-			display: []string{"flags"},
+			display: []string{},
 			st: &gitstatus.Status{
-				IsClean: true,
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch: "Local",
+					NumModified: 2,
+				},
 			},
-			want: regexp.MustCompile(`#\[fg=default].+`),
-		},
-		{
-			name: "no delimiters",
-			styles: styles{
-				Clean: "CleanStyle",
-			},
-			symbols: symbols{
-				Branch: "⎇ ",
-				Clean:  "CleanSymbol",
-			},
-			display: []string{"branch", "remote", "flags"},
-			st: &gitstatus.Status{
-				IsClean: true,
-			},
-			want: regexp.MustCompile(`#\[fg=default]⎇ #\[fg=default][\w\/.-]+(#\[fg=default][\w\/.-]+)?#\[fg=default]#\[fg=default].+`),
+			want: "",
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			f := &Formater{
 				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Display: tc.display},
-				st:     tc.st,
 			}
-			st, _ := gitstatus.New()
 
-			f.Format(os.Stdout, st)
+			f.Format(os.Stdout, tc.st)
 			f.format()
-			require.Regexp(t, tc.want, f.b.String())
+			require.EqualValues(t, tc.want, f.b.String())
 		})
 	}
 }
