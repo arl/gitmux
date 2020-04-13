@@ -51,13 +51,13 @@ Add this line to your  `.tmux.conf`:
 
 ## Customizing
 
-`gitmux` output can be customized via a configuration file in YAML format.  
+`gitmux` output can be customized via a configuration file in YAML format.
 
 First, save the default configuration to a new file
 
     gitmux -printcfg > .gitmux.conf
 
-Open `.gitmux.conf` and modify it, replacing symbols and colors to suit your needs.  
+Open `.gitmux.conf` and modify it, replacing symbols and colors to suit your needs.
 Ensure the file is valid by adding the `-dbg` flag
 
     gitmux -dbg -cfg .gitmux.conf
@@ -66,10 +66,17 @@ Modify the line in `.tmux.conf`, passing the path of the configuration file as a
 
     gitmux -cfg .gitmux.conf
 
-
-`gitmux` configuration is split into 2 sections:
+`gitmux` configuration is split into 3 sections:
  - symbols: they are just strings of unicode characters
  - styles: they are tmux format strings (`man tmux` for reference)
+ - layout: is the layout of git components & separators
+
+Example layouts:
+```
+layout: [branch, '..', remote, ' - ', flags]
+layout: [branch]
+layout: [flags, ' && ', branch]
+```
 
 
 ## Troubleshooting
@@ -78,6 +85,7 @@ Please report anything by [filing an issue](https://github.com/arl/gitmux/issues
 
 
 ## Contributing
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 

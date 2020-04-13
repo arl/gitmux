@@ -1,6 +1,7 @@
 package tmux
 
 import (
+	"os"
 	"testing"
 
 	"github.com/arl/gitstatus"
@@ -12,21 +13,23 @@ func TestFormater_flags(t *testing.T) {
 		name    string
 		styles  styles
 		symbols symbols
+		layout  []string
 		st      *gitstatus.Status
 		want    string
 	}{
 		{
 			name: "clean flag",
 			styles: styles{
-				Clean: "CleanStyle",
+				Clean: "StyleClean",
 			},
 			symbols: symbols{
-				Clean: "CleanSymbol",
+				Clean: "SymbolClean",
 			},
+			layout: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: clear + " - CleanStyleCleanSymbol",
+			want: clear + "StyleCleanSymbolClean",
 		},
 		{
 			name: "mixed flags",
@@ -40,6 +43,7 @@ func TestFormater_flags(t *testing.T) {
 				Stashed:  "SymbolStash",
 				Staged:   "SymbolStaged",
 			},
+			layout: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				NumStashed: 1,
 				Porcelain: gitstatus.Porcelain{
@@ -47,7 +51,7 @@ func TestFormater_flags(t *testing.T) {
 					NumStaged:   3,
 				},
 			},
-			want: clear + " - StyleStagedSymbolStaged3 StyleModSymbolMod2 StyleStashSymbolStash1",
+			want: clear + "StyleStagedSymbolStaged3 StyleModSymbolMod2 StyleStashSymbolStash1",
 		},
 		{
 			name: "mixed flags 2",
@@ -65,13 +69,13 @@ func TestFormater_flags(t *testing.T) {
 					NumUntracked: 17,
 				},
 			},
-			want: clear + " - StyleConflictSymbolConflict42 StyleUntrackedSymbolUntracked17",
+			want: clear + "StyleConflictSymbolConflict42 StyleUntrackedSymbolUntracked17",
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols},
+				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout},
 				st:     tc.st,
 			}
 			f.flags()
@@ -152,6 +156,114 @@ func TestFormater_divergence(t *testing.T) {
 				st:     tc.st,
 			}
 			f.divergence()
+			require.EqualValues(t, tc.want, f.b.String())
+		})
+	}
+}
+
+func TestFormater_Format(t *testing.T) {
+	tests := []struct {
+		name    string
+		styles  styles
+		symbols symbols
+		layout  []string
+		st      *gitstatus.Status
+		want    string
+	}{
+		{
+			name: "default format",
+			styles: styles{
+				Clean:    "StyleClean",
+				Branch:   "StyleBranch",
+				Modified: "StyleMod",
+				Remote:   "StyleRemote",
+			},
+			symbols: symbols{
+				Branch:   "SymbolBranch",
+				Clean:    "SymbolClean",
+				Modified: "SymbolMod",
+			},
+			layout: []string{"branch", "..", "remote", " - ", "flags"},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "Local",
+					RemoteBranch: "Remote",
+					NumModified:  2,
+				},
+			},
+			want: clear + "StyleBranchSymbolBranch" + clear + "Local" + ".." + clear + "StyleRemoteRemote" + clear + " - " + clear + "StyleModSymbolMod2",
+		},
+		{
+			name: "branch, different delimiter, flags",
+			styles: styles{
+				Branch:   "StyleBranch",
+				Remote:   "StyleRemote",
+				Modified: "StyleMod",
+			},
+			symbols: symbols{
+				Branch:   "SymbolBranch",
+				Ahead:    "SymbolAhead",
+				Modified: "SymbolMod",
+			},
+			layout: []string{"branch", " ~~ ", "flags"},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "Local",
+					RemoteBranch: "Remote",
+					NumModified:  2,
+					AheadCount:   1,
+				},
+			},
+			want: clear + "StyleBranchSymbolBranch" + clear + "Local" + " ~~ " + clear + "StyleModSymbolMod2",
+		},
+		{
+			name: "remote only",
+			styles: styles{
+				Branch: "StyleBranch",
+				Remote: "StyleRemote",
+			},
+			symbols: symbols{
+				Branch: "SymbolBranch",
+				Ahead:  "SymbolAhead",
+			},
+			layout: []string{"remote"},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "Local",
+					RemoteBranch: "Remote",
+					AheadCount:   1,
+				},
+			},
+			want: clear + "StyleRemoteRemote" + clear + " SymbolAhead1",
+		},
+		{
+			name: "empty",
+			styles: styles{
+				Branch:   "StyleBranch",
+				Modified: "StyleMod",
+			},
+			symbols: symbols{
+				Branch:   "SymbolBranch",
+				Modified: "SymbolMod",
+			},
+			layout: []string{},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch: "Local",
+					NumModified: 2,
+				},
+			},
+			want: "",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			f := &Formater{
+				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout},
+			}
+
+			f.Format(os.Stdout, tc.st)
+			f.format()
 			require.EqualValues(t, tc.want, f.b.String())
 		})
 	}
