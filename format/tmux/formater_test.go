@@ -13,7 +13,7 @@ func TestFormater_flags(t *testing.T) {
 		name    string
 		styles  styles
 		symbols symbols
-		display []string
+		layout  []string
 		st      *gitstatus.Status
 		want    string
 	}{
@@ -25,7 +25,7 @@ func TestFormater_flags(t *testing.T) {
 			symbols: symbols{
 				Clean: "SymbolClean",
 			},
-			display: []string{"branch", "..", "remote", " - ", "flags"},
+			layout: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -43,7 +43,7 @@ func TestFormater_flags(t *testing.T) {
 				Stashed:  "SymbolStash",
 				Staged:   "SymbolStaged",
 			},
-			display: []string{"branch", "..", "remote", " - ", "flags"},
+			layout: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				NumStashed: 1,
 				Porcelain: gitstatus.Porcelain{
@@ -75,7 +75,7 @@ func TestFormater_flags(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Display: tc.display},
+				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout},
 				st:     tc.st,
 			}
 			f.flags()
@@ -166,7 +166,7 @@ func TestFormater_Format(t *testing.T) {
 		name    string
 		styles  styles
 		symbols symbols
-		display []string
+		layout  []string
 		st      *gitstatus.Status
 		want    string
 	}{
@@ -183,7 +183,7 @@ func TestFormater_Format(t *testing.T) {
 				Clean:    "SymbolClean",
 				Modified: "SymbolMod",
 			},
-			display: []string{"branch", "..", "remote", " - ", "flags"},
+			layout: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
 					LocalBranch:  "Local",
@@ -205,7 +205,7 @@ func TestFormater_Format(t *testing.T) {
 				Ahead:    "SymbolAhead",
 				Modified: "SymbolMod",
 			},
-			display: []string{"branch", " ~~ ", "flags"},
+			layout: []string{"branch", " ~~ ", "flags"},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
 					LocalBranch:  "Local",
@@ -226,7 +226,7 @@ func TestFormater_Format(t *testing.T) {
 				Branch: "SymbolBranch",
 				Ahead:  "SymbolAhead",
 			},
-			display: []string{"remote"},
+			layout: []string{"remote"},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
 					LocalBranch:  "Local",
@@ -246,7 +246,7 @@ func TestFormater_Format(t *testing.T) {
 				Branch:   "SymbolBranch",
 				Modified: "SymbolMod",
 			},
-			display: []string{},
+			layout: []string{},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
 					LocalBranch: "Local",
@@ -259,7 +259,7 @@ func TestFormater_Format(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Display: tc.display},
+				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout},
 			}
 
 			f.Format(os.Stdout, tc.st)

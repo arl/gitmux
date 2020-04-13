@@ -18,8 +18,8 @@ type Config struct {
 	// Styles contains the tmux style strings for symbols and Git status
 	// components.
 	Styles styles
-	// Display sets the output format of the Git status.
-	Display []string `yaml:",flow"`
+	// Layout sets the output format of the Git status.
+	Layout []string `yaml:",flow"`
 }
 
 type symbols struct {
@@ -73,7 +73,7 @@ var DefaultCfg = Config{
 		Stashed:   "#[fg=cyan,bold]",
 		Clean:     "#[fg=green,bold]",
 	},
-	Display: []string{"branch", "..", "remote", " - ", "flags"},
+	Layout: []string{"branch", "..", "remote", " - ", "flags"},
 }
 
 // A Formater formats git status to a tmux style string.
@@ -102,7 +102,7 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 }
 
 func (f *Formater) format() {
-	for _, order := range f.Display {
+	for _, order := range f.Layout {
 		switch order {
 		case "branch":
 			f.specialState()
