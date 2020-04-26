@@ -49,6 +49,7 @@ type styles struct {
 	Clean     string // Clean is the style string printed before the clean symbols.
 }
 
+// DefaultCfg is the default tmux configuration.
 var DefaultCfg = Config{
 	Symbols: symbols{
 		Branch:     "⎇ ",
