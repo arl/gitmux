@@ -74,7 +74,7 @@ var DefaultCfg = Config{
 		Stashed:   "#[fg=cyan,bold]",
 		Clean:     "#[fg=green,bold]",
 	},
-	Layout: []string{"branch", "..", "remote", " - ", "flags"},
+	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
 }
 
 // A Formater formats git status to a tmux style string.
