@@ -103,16 +103,20 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 }
 
 func (f *Formater) format() {
-	for _, order := range f.Layout {
-		switch order {
+	for _, item := range f.Layout {
+		switch item {
 		case "branch":
 			f.specialState()
 		case "remote":
 			f.remote()
+		case "remote-branch":
+			f.remoteBranch()
+		case "divergence":
+			f.divergence()
 		case "flags":
 			f.flags()
 		default:
-			f.b.WriteString(order)
+			f.b.WriteString(item)
 		}
 	}
 }
@@ -148,19 +152,11 @@ func (f *Formater) remote() {
 	}
 }
 
-func (f *Formater) clear() {
-	// clear global style
-	f.b.WriteString(clear)
-}
-
-func (f *Formater) currentRef() {
+func (f *Formater) remoteBranch() {
 	f.clear()
-	if f.st.IsDetached {
-		fmt.Fprintf(&f.b, "%s%s", f.Symbols.HashPrefix, f.st.HEAD)
-		return
+	if f.st.RemoteBranch != "" {
+		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, f.st.RemoteBranch)
 	}
-
-	fmt.Fprintf(&f.b, "%s", f.st.LocalBranch)
 }
 
 func (f *Formater) divergence() {
@@ -175,6 +171,21 @@ func (f *Formater) divergence() {
 	if f.st.AheadCount != 0 {
 		fmt.Fprintf(&f.b, "%s%s%d", pref, f.Symbols.Ahead, f.st.AheadCount)
 	}
+}
+
+func (f *Formater) clear() {
+	// clear global style
+	f.b.WriteString(clear)
+}
+
+func (f *Formater) currentRef() {
+	f.clear()
+	if f.st.IsDetached {
+		fmt.Fprintf(&f.b, "%s%s", f.Symbols.HashPrefix, f.st.HEAD)
+		return
+	}
+
+	fmt.Fprintf(&f.b, "%s", f.st.LocalBranch)
 }
 
 func (f *Formater) flags() {
