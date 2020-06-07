@@ -52,10 +52,10 @@ type styles struct {
 var DefaultCfg = Config{
 	Symbols: symbols{
 		Branch:     "⎇ ",
-		Staged:     "●",
+		Staged:     "● ",
 		Conflict:   "✖ ",
 		Modified:   "✚ ",
-		Untracked:  "…",
+		Untracked:  "… ",
 		Stashed:    "⚑ ",
 		Clean:      "✔",
 		Ahead:      "↑·",
