@@ -129,7 +129,7 @@ This is the list of the possible components of the `layout`:
 | Layout Component |                 Description                 |         Example        |
 |:----------------:|---------------------------------------------|:----------------------:|
 | `branch`         | Local branch name                           |        `master`        |
-| `remote`         | Remote branch name                          |     `origin/master`    |
+| `remote-branch`  | Remote branch name                          |     `origin/master`    |
 | `divergence`     | Divergence local/remote branch, if any      |        `↓·2↑·1`        |
 | `remote`         | Alias for `remote-branch divergence`        | `origin/master ↓·2↑·1` |
 | `flags`          | Symbols representing the working tree state |      `✚ 1 ⚑ 1 … 2`     |
