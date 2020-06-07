@@ -4,8 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/arl/gitstatus"
 	"github.com/stretchr/testify/require"
+
+	"github.com/arl/gitstatus"
 )
 
 func TestFormater_flags(t *testing.T) {

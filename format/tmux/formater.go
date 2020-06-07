@@ -49,6 +49,7 @@ type styles struct {
 	Clean     string // Clean is the style string printed before the clean symbols.
 }
 
+// DefaultCfg is the default tmux configuration.
 var DefaultCfg = Config{
 	Symbols: symbols{
 		Branch:     "⎇ ",
@@ -73,7 +74,7 @@ var DefaultCfg = Config{
 		Stashed:   "#[fg=cyan,bold]",
 		Clean:     "#[fg=green,bold]",
 	},
-	Layout: []string{"branch", "..", "remote", " - ", "flags"},
+	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
 }
 
 // A Formater formats git status to a tmux style string.
@@ -102,16 +103,20 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 }
 
 func (f *Formater) format() {
-	for _, order := range f.Layout {
-		switch order {
+	for _, item := range f.Layout {
+		switch item {
 		case "branch":
 			f.specialState()
 		case "remote":
 			f.remote()
+		case "remote-branch":
+			f.remoteBranch()
+		case "divergence":
+			f.divergence()
 		case "flags":
 			f.flags()
 		default:
-			f.b.WriteString(order)
+			f.b.WriteString(item)
 		}
 	}
 }
@@ -147,19 +152,11 @@ func (f *Formater) remote() {
 	}
 }
 
-func (f *Formater) clear() {
-	// clear global style
-	f.b.WriteString(clear)
-}
-
-func (f *Formater) currentRef() {
+func (f *Formater) remoteBranch() {
 	f.clear()
-	if f.st.IsDetached {
-		fmt.Fprintf(&f.b, "%s%s", f.Symbols.HashPrefix, f.st.HEAD)
-		return
+	if f.st.RemoteBranch != "" {
+		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, f.st.RemoteBranch)
 	}
-
-	fmt.Fprintf(&f.b, "%s", f.st.LocalBranch)
 }
 
 func (f *Formater) divergence() {
@@ -174,6 +171,21 @@ func (f *Formater) divergence() {
 	if f.st.AheadCount != 0 {
 		fmt.Fprintf(&f.b, "%s%s%d", pref, f.Symbols.Ahead, f.st.AheadCount)
 	}
+}
+
+func (f *Formater) clear() {
+	// clear global style
+	f.b.WriteString(clear)
+}
+
+func (f *Formater) currentRef() {
+	f.clear()
+	if f.st.IsDetached {
+		fmt.Fprintf(&f.b, "%s%s", f.Symbols.HashPrefix, f.st.HEAD)
+		return
+	}
+
+	fmt.Fprintf(&f.b, "%s", f.st.LocalBranch)
 }
 
 func (f *Formater) flags() {
