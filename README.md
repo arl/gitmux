@@ -23,7 +23,7 @@
  - **minimal**. Only show what you need when you need it
  - **discrete**. Disappear when current directory is not managed by Git
  - **shell-independent**. Work with sh, bash, zsh, fish, etc.
- - **highly configurable**. Colors and symbols can be customized
+ - **highly configurable**. Colors, symbols and layout can be customized
  - **automatic**. Information auto-updates with respect to the current working directory
 
 ## Prerequisites
@@ -53,31 +53,98 @@ Add this line to your  `.tmux.conf`:
 
 `gitmux` output can be customized via a configuration file in YAML format.
 
-First, save the default configuration to a new file
+The gitmux configuration file is in YAML format:
+
+```yaml
+tmux:
+  symbols:
+    branch: '⎇ '
+    hashprefix: ':'
+    ahead: ↑·
+    behind: ↓·
+    staged: '● '
+    conflict: '✖ '
+    modified: '✚ '
+    untracked: '… '
+    stashed: '⚑ '
+    clean: ✔
+  styles:
+    state: '#[fg=red,bold]'
+    branch: '#[fg=white,bold]'
+    remote: '#[fg=cyan]'
+    staged: '#[fg=green,bold]'
+    conflict: '#[fg=red,bold]'
+    modified: '#[fg=red,bold]'
+    untracked: '#[fg=magenta,bold]'
+    stashed: '#[fg=cyan,bold]'
+    clean: '#[fg=green,bold]'
+  layout: [branch, .., remote, ' - ', flags]
+```
+
+First, save the default configuration to a new file:
 
     gitmux -printcfg > .gitmux.conf
-
-Open `.gitmux.conf` and modify it, replacing symbols and colors to suit your needs.
-Ensure the file is valid by adding the `-dbg` flag
-
-    gitmux -dbg -cfg .gitmux.conf
 
 Modify the line in `.tmux.conf`, passing the path of the configuration file as argument to `gitmux`
 
     gitmux -cfg .gitmux.conf
 
+Open `.gitmux.conf` and modify it, replacing symbols, styles and layout to suit your needs.
+
+In `tmux` status bar, `gitmux` output immediately reflects the changes you make to the configuration.
+
 `gitmux` configuration is split into 3 sections:
- - symbols: they are just strings of unicode characters
- - styles: they are tmux format strings (`man tmux` for reference)
- - layout: is the layout of git components & separators
+ - `symbols`: they're just strings of unicode characters
+ - `styles`: tmux format strings
+ - `layout`: list of `gitmux` layout components, defines the component to show and in their order.
+
+
+### Symbols
+
+```yaml
+  symbols:
+    branch: '⎇ '      # shown before `branch`
+    hashprefix: ':'    # shown before a Git hash (in 'detached HEAD' state)
+    ahead: ↑·          # shown before 'ahead count' when local/remote branch diverges`
+    behind: ↓·         # shown before 'behind count' when local/remote branch diverges`
+    staged: '● '       # shown before the 'staged files' count
+    conflict: '✖ '     # shown before the 'conflicts' count
+    modified: '✚ '     # shown before the 'modified files' count
+    untracked: '… '    # shown before the 'untracked files' count
+    stashed: '⚑ '      # shown before the 'stash' count
+    clean: ✔           # shown when the working tree is clean
+```
+
+
+### Styles
+
+Styles are tmux format strings. For full reference, search for `message-command-style` 
+in `tmux` manual `man tmux`.
+
+
+### Layout components
+
+This is the list of the possible components of the `layout`:
+
+| Layout Component |                 Description                 |         Example        |
+|:----------------:|---------------------------------------------|:----------------------:|
+| `branch`         | Local branch name                           |        `master`        |
+| `remote`         | Remote branch name                          |     `origin/master`    |
+| `divergence`     | Divergence local/remote branch, if any      |        `↓·2↑·1`        |
+| `remote`         | Alias for `remote-branch divergence`        | `origin/master ↓·2↑·1` |
+| `flags`          | Symbols representing the working tree state |      `✚ 1 ⚑ 1 … 2`     |
+| any string `foo` | Any other string is directly shown          |          `foo`         |
+
+
 
 Example layouts:
 ```
 layout: [branch, '..', remote, ' - ', flags]
+layout: [branch, '..', remote-flags, divergence, ' - ', flags]
 layout: [branch]
-layout: [flags, ' && ', branch]
+layout: [flags, branch]
+layout: [flags, ~~~, branch]
 ```
-
 
 ## Troubleshooting
 
