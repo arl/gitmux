@@ -118,22 +118,22 @@ In `tmux` status bar, `gitmux` output immediately reflects the changes you make 
 
 ### Styles
 
-Styles are tmux format strings. For full reference, search for `message-command-style` 
-in `tmux` manual `man tmux`.
+Styles are tmux format strings used to specify text colors and attributes.
+See [`tmux` styles reference](https://man7.org/linux/man-pages/man1/tmux.1.html#STYLES).
 
 
 ### Layout components
 
 This is the list of the possible components of the `layout`:
 
-| Layout Component |                 Description                 |         Example        |
-|:----------------:|---------------------------------------------|:----------------------:|
-| `branch`         | Local branch name                           |        `master`        |
-| `remote-branch`  | Remote branch name                          |     `origin/master`    |
-| `divergence`     | Divergence local/remote branch, if any      |        `↓·2↑·1`        |
-| `remote`         | Alias for `remote-branch divergence`        | `origin/master ↓·2↑·1` |
-| `flags`          | Symbols representing the working tree state |      `✚ 1 ⚑ 1 … 2`     |
-| any string `foo` | Any other string is directly shown          |          `foo`         |
+| Layout component |                 Description                               |        Example         |
+|:----------------:|:----------------------------------------------------------|:----------------------:|
+| `branch`         | local branch name                                         |        `master`        |
+| `remote-branch`  | remote branch name                                        |     `origin/master`    |
+| `divergence`     | divergence local/remote branch, if any                    |        `↓·2↑·1`        |
+| `remote`         | alias for `remote-branch` followed by `divergence`        | `origin/master ↓·2↑·1` |
+| `flags`          | Symbols representing the working tree state               |      `✚ 1 ⚑ 1 … 2`     |
+| any string `foo` | Any other string is directly shown                        |          `foo`         |
 
 
 
