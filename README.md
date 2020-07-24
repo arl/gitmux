@@ -79,6 +79,8 @@ tmux:
     stashed: '#[fg=cyan,bold]'
     clean: '#[fg=green,bold]'
   layout: [branch, .., remote, ' - ', flags]
+  options:
+    branch_max_len: 0
 ```
 
 First, save the default configuration to a new file:
@@ -93,10 +95,11 @@ Open `.gitmux.conf` and modify it, replacing symbols, styles and layout to suit 
 
 In `tmux` status bar, `gitmux` output immediately reflects the changes you make to the configuration.
 
-`gitmux` configuration is split into 3 sections:
+`gitmux` configuration is split into 4 sections:
  - `symbols`: they're just strings of unicode characters
  - `styles`: tmux format strings
  - `layout`: list of `gitmux` layout components, defines the component to show and in their order.
+ - `options`: additional configuration options
 
 
 ### Symbols
@@ -145,6 +148,16 @@ layout: [branch]
 layout: [flags, branch]
 layout: [flags, ~~~, branch]
 ```
+
+
+### Additional options
+
+This is the list of additional configuration `options`:
+
+| Option           | Description                                                | Default        |
+|:-----------------|:-----------------------------------------------------------|:---------------|
+| `branch_max_len` | Maximum displayed length for local and remote branch names | `0` (no limit) |
+
 
 ## Troubleshooting
 
