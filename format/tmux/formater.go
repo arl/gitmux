@@ -109,22 +109,20 @@ func truncateBranchName(name string, maxlen int, isremote bool) string {
 		}
 	}
 
-	truncatedName := branchName
-
 	// To count length of characters and extract substring from UTF-8 strings.
-	branchRune := []rune(branchName)
+	branchNameRune := []rune(branchName)
 	truncateSymbolRune := []rune(truncateSymbol)
 
-	if maxlen > 0 && maxlen < len(branchRune) {
+	if maxlen > 0 && maxlen < len(branchNameRune) {
 		nameLen := maxlen - len(truncateSymbolRune)
 		if nameLen > 0 {
-			truncatedName = string(branchRune[:nameLen]) + truncateSymbol
+			branchName = string(branchNameRune[:nameLen]) + truncateSymbol
 		} else {
-			truncatedName = string(truncateSymbolRune[:maxlen])
+			branchName = string(truncateSymbolRune[:maxlen])
 		}
 	}
 
-	return remoteName + truncatedName
+	return remoteName + branchName
 }
 
 // Format writes st as json into w.
