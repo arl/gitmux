@@ -162,12 +162,72 @@ func TestFormater_divergence(t *testing.T) {
 	}
 }
 
+func TestFormater_truncateBranchName(t *testing.T) {
+	tests := []struct {
+		name       string
+		branchName string
+		maxLen     int
+		isRemote   bool
+		want       string
+	}{
+		{
+			name: "no limit",
+			branchName: "foo/bar-baz",
+			maxLen: 0,
+			isRemote: false,
+			want: "foo/bar-baz",
+		},
+		{
+			name: "no truncate",
+			branchName: "foo/bar-baz",
+			maxLen: 11,
+			isRemote: false,
+			want: "foo/bar-baz",
+		},
+		{
+			name: "truncate",
+			branchName: "foo/bar-baz",
+			maxLen: 10,
+			isRemote: false,
+			want: "foo/bar...",
+		},
+		{
+			name: "truncate remote",
+			branchName: "remote/foo/bar-baz",
+			maxLen: 10,
+			isRemote: true,
+			want: "remote/foo/bar...",
+		},
+		{
+			name: "truncate to 1",
+			branchName: "foo/bar-baz",
+			maxLen: 1,
+			isRemote: false,
+			want: ".",
+		},
+		{
+			name: "truncate utf-8 name",
+			branchName: "foo/测试这个名字",
+			maxLen: 9,
+			isRemote: false,
+			want: "foo/测试...",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			branchName := truncateBranchName(tc.branchName, tc.maxLen, tc.isRemote)
+			require.EqualValues(t, tc.want, branchName)
+		})
+	}
+}
+
 func TestFormater_Format(t *testing.T) {
 	tests := []struct {
 		name    string
 		styles  styles
 		symbols symbols
 		layout  []string
+		options options
 		st      *gitstatus.Status
 		want    string
 	}{
@@ -256,11 +316,32 @@ func TestFormater_Format(t *testing.T) {
 			},
 			want: "",
 		},
+		{
+			name: "branch and remote, branch_max_len not zero",
+			styles: styles{
+				Branch:   "StyleBranch",
+				Remote:   "StyleRemote",
+			},
+			symbols: symbols{
+				Branch:   "SymbolBranch",
+			},
+			layout: []string{"branch", " ", "remote"},
+			options: options{
+				BranchMaxLen: 9,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "branchName",
+					RemoteBranch: "remote/branchName",
+				},
+			},
+			want: clear + "StyleBranch" + "SymbolBranch" + clear + "branch..." + " " + clear + "StyleRemote" + "remote/branch..." + clear,
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout},
+				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout, Options: tc.options},
 			}
 
 			f.Format(os.Stdout, tc.st)

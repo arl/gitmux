@@ -10,6 +10,7 @@ import (
 )
 
 const clear string = "#[fg=default]"
+const truncateSymbol string = "..."
 
 // Config is the configuration of the Git status tmux formatter.
 type Config struct {
@@ -20,6 +21,8 @@ type Config struct {
 	Styles styles
 	// Layout sets the output format of the Git status.
 	Layout []string `yaml:",flow"`
+	// Options contains additional configuration options.
+	Options options
 }
 
 type symbols struct {
@@ -49,6 +52,11 @@ type styles struct {
 	Clean     string // Clean is the style string printed before the clean symbols.
 }
 
+type options struct {
+	// BranchMaxLen is the maximum displayed length for local and remote branch names.
+	BranchMaxLen int `yaml:"branch_max_len"`
+}
+
 // DefaultCfg is the default tmux configuration.
 var DefaultCfg = Config{
 	Symbols: symbols{
@@ -75,6 +83,9 @@ var DefaultCfg = Config{
 		Clean:     "#[fg=green,bold]",
 	},
 	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
+	Options: options{
+		BranchMaxLen: 0,
+	},
 }
 
 // A Formater formats git status to a tmux style string.
@@ -84,6 +95,36 @@ type Formater struct {
 	st *gitstatus.Status
 }
 
+// Truncates branch name if longer than maxlen. If isremote, the leading
+// "<remote>/" is ignored when counting length.
+func truncateBranchName(name string, maxlen int, isremote bool) string {
+	remoteName := ""
+	branchName := name
+
+	if isremote {
+		a := strings.SplitAfterN(name, "/", 2)
+		if len(a) == 2 {
+			remoteName = a[0]
+			branchName = a[1]
+		}
+	}
+
+	// To count length of characters and extract substring from UTF-8 strings.
+	branchNameRune := []rune(branchName)
+	truncateSymbolRune := []rune(truncateSymbol)
+
+	if maxlen > 0 && maxlen < len(branchNameRune) {
+		nameLen := maxlen - len(truncateSymbolRune)
+		if nameLen > 0 {
+			branchName = string(branchNameRune[:nameLen]) + truncateSymbol
+		} else {
+			branchName = string(truncateSymbolRune[:maxlen])
+		}
+	}
+
+	return remoteName + branchName
+}
+
 // Format writes st as json into w.
 func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 	f.st = st
@@ -91,7 +132,8 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 
 	// overall working tree state
 	if f.st.IsInitial {
-		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch, f.st.LocalBranch)
+		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch,
+			truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false))
 		f.flags()
 		_, err := f.b.WriteTo(w)
 		return err
@@ -147,7 +189,8 @@ func (f *Formater) specialState() {
 func (f *Formater) remote() {
 	f.clear()
 	if f.st.RemoteBranch != "" {
-		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, f.st.RemoteBranch)
+		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote,
+			truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true))
 		f.divergence()
 	}
 }
@@ -155,7 +198,8 @@ func (f *Formater) remote() {
 func (f *Formater) remoteBranch() {
 	f.clear()
 	if f.st.RemoteBranch != "" {
-		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, f.st.RemoteBranch)
+		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote,
+			truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true))
 	}
 }
 
@@ -185,7 +229,8 @@ func (f *Formater) currentRef() {
 		return
 	}
 
-	fmt.Fprintf(&f.b, "%s", f.st.LocalBranch)
+	fmt.Fprintf(&f.b, "%s",
+		truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false))
 }
 
 func (f *Formater) flags() {
