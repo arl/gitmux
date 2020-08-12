@@ -19,16 +19,15 @@
 ![demo](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
 
 
- - **easy**. Install it once and forget about it
- - **minimal**. Only show what you need when you need it
- - **discrete**. Disappear when current directory is not managed by Git
- - **shell-independent**. Work with sh, bash, zsh, fish, etc.
- - **highly configurable**. Colors, symbols and layout can be customized
- - **automatic**. Information auto-updates with respect to the current working directory
+ - **easy**. Install and forget about it
+ - **minimal**. It shows what you need when you need it
+ - **discrete**. Disappears if the current directory is not part of a Git tree
+ - **shell-independent**. Works with all shells bash, zsh, fish, whateversh
+ - **customizable**. Colors, symbols and layout can be customized
 
 ## Prerequisites
 
-Works with all [tmux](https://github.com/tmux/tmux) versions.
+Works with all decently recent [tmux](https://github.com/tmux/tmux) versions.
 
 ## Installing
 
