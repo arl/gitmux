@@ -35,7 +35,7 @@ func TestOutputNonRegression(t *testing.T) {
 
 	b, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("Command error: %s", err)
+		t.Fatalf("Command error: %s: %s\noutput: %s", cmdString(cmd), err, string(b))
 	}
 
 	defcfg := path.Join(tmpdir, "default.cfg")
@@ -85,22 +85,27 @@ func run(t *testing.T, name string, args ...string) {
 func cloneAndHack(t *testing.T, dir string) {
 	t.Helper()
 
-	var (
-		popdir func() error
-		err    error
-	)
-
-	if popdir, err = pushdir(dir); err != nil {
+	popd1, err := pushdir(dir)
+	if err != nil {
 		t.Fatal(err)
 	}
-	defer popdir()
+	defer func() {
+		if err := popd1(); err != nil {
+			t.Fatalf("popd1: %v", err)
+		}
+	}()
 
 	run(t, "git", "clone", "git://github.com/arl/gitmux.git")
 
-	if popdir, err = pushdir("gitmux"); err != nil {
+	popd2, err := pushdir("gitmux")
+	if err != nil {
 		t.Fatal(err)
 	}
-	defer popdir()
+	defer func() {
+		if err := popd2(); err != nil {
+			t.Fatalf("popd2: %v", err)
+		}
+	}()
 
 	if err := ioutil.WriteFile("dummy", []byte("dummy"), os.ModePerm); err != nil {
 		t.Fatalf("write dummy: %s", err)
