@@ -91,9 +91,11 @@ func check(err error, dbg bool) {
 	if err == nil {
 		return
 	}
+
 	if dbg {
 		fmt.Fprintln(os.Stderr, "error:", err)
 	}
+
 	os.Exit(1)
 }
 
@@ -103,6 +105,7 @@ func main() {
 	// handle directory change.
 	if dir != "." {
 		popDir, err := pushdir(dir)
+
 		check(err, dbg)
 		defer func() {
 			check(popDir(), dbg)
