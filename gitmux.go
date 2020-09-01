@@ -14,7 +14,7 @@ import (
 
 var version = "<<development version>>"
 
-var usage = `gitmux ` + version + `
+var _usage = `gitmux ` + version + `
 Usage: gitmux [options] [dir]
 
 gitmux prints the status of a Git working tree as a tmux format string.
@@ -30,7 +30,7 @@ Options:
 // Config configures output formatting.
 type Config struct{ Tmux tmux.Config }
 
-var defaultCfg = Config{Tmux: tmux.DefaultCfg}
+var _defaultCfg = Config{Tmux: tmux.DefaultCfg}
 
 func parseOptions() (dir string, dbg bool, cfg Config) {
 	dbgOpt := flag.Bool("dbg", false, "")
@@ -40,7 +40,7 @@ func parseOptions() (dir string, dbg bool, cfg Config) {
 	flag.Bool("q", true, "")   // unused, kept for retro-compatibility.
 	flag.String("fmt", "", "") // unused, kept for retro-compatibility.
 	flag.Usage = func() {
-		fmt.Println(usage)
+		fmt.Println(_usage)
 	}
 	flag.Parse()
 
@@ -56,12 +56,12 @@ func parseOptions() (dir string, dbg bool, cfg Config) {
 
 	if *printCfgOpt {
 		enc := yaml.NewEncoder(os.Stdout)
-		check(enc.Encode(&defaultCfg), *dbgOpt)
+		check(enc.Encode(&_defaultCfg), *dbgOpt)
 		enc.Close()
 		os.Exit(0)
 	}
 
-	cfg = defaultCfg
+	cfg = _defaultCfg
 
 	if *cfgOpt != "" {
 		f, err := os.Open(*cfgOpt)
@@ -91,9 +91,11 @@ func check(err error, dbg bool) {
 	if err == nil {
 		return
 	}
+
 	if dbg {
 		fmt.Fprintln(os.Stderr, "error:", err)
 	}
+
 	os.Exit(1)
 }
 
@@ -103,6 +105,7 @@ func main() {
 	// handle directory change.
 	if dir != "." {
 		popDir, err := pushdir(dir)
+
 		check(err, dbg)
 		defer func() {
 			check(popDir(), dbg)

@@ -101,11 +101,17 @@ func truncateBranchName(name string, maxlen int, isremote bool) string {
 	remoteName := ""
 	branchName := name
 
+	const (
+		idxRemote = 0
+		idxBranch = 1
+		numItems  = 2
+	)
+
 	if isremote {
-		a := strings.SplitAfterN(name, "/", 2)
-		if len(a) == 2 {
-			remoteName = a[0]
-			branchName = a[1]
+		a := strings.SplitAfterN(name, "/", numItems)
+		if len(a) == numItems {
+			remoteName = a[idxRemote]
+			branchName = a[idxBranch]
 		}
 	}
 
@@ -136,8 +142,10 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 			truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false))
 		f.flags()
 		_, err := f.b.WriteTo(w)
+
 		return err
 	}
+
 	f.format()
 	_, err := f.b.WriteTo(w)
 
@@ -165,6 +173,7 @@ func (f *Formater) format() {
 
 func (f *Formater) specialState() {
 	f.clear()
+
 	switch f.st.State {
 	case gitstatus.Rebasing:
 		fmt.Fprintf(&f.b, "%s[rebase] ", f.Styles.State)
@@ -183,11 +192,13 @@ func (f *Formater) specialState() {
 	case gitstatus.Default:
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch, f.Symbols.Branch)
 	}
+
 	f.currentRef()
 }
 
 func (f *Formater) remote() {
 	f.clear()
+
 	if f.st.RemoteBranch != "" {
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote,
 			truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true))
@@ -197,6 +208,7 @@ func (f *Formater) remote() {
 
 func (f *Formater) remoteBranch() {
 	f.clear()
+
 	if f.st.RemoteBranch != "" {
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote,
 			truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true))
@@ -207,8 +219,10 @@ func (f *Formater) divergence() {
 	f.clear()
 
 	pref := " "
+
 	if f.st.BehindCount != 0 {
 		fmt.Fprintf(&f.b, " %s%d", f.Symbols.Behind, f.st.BehindCount)
+
 		pref = ""
 	}
 
@@ -224,8 +238,10 @@ func (f *Formater) clear() {
 
 func (f *Formater) currentRef() {
 	f.clear()
+
 	if f.st.IsDetached {
 		fmt.Fprintf(&f.b, "%s%s", f.Symbols.HashPrefix, f.st.HEAD)
+
 		return
 	}
 
@@ -238,6 +254,7 @@ func (f *Formater) flags() {
 
 	if f.st.IsClean {
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Clean, f.Symbols.Clean)
+
 		return
 	}
 
