@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/arl/gitstatus"
 	"gopkg.in/yaml.v2"
@@ -24,6 +25,7 @@ Options:
   -cfg cfgfile    use cfgfile when printing git status.
   -printcfg       prints default configuration file.
   -dbg            outputs Git status as JSON and print errors.
+  -timeout DUR    exits if still running after given duration (ex: 2s, 500ms).
   -V              prints gitmux version and exits.
 `
 
@@ -32,11 +34,35 @@ type Config struct{ Tmux tmux.Config }
 
 var _defaultCfg = Config{Tmux: tmux.DefaultCfg}
 
+// duration is time.Duration usable as command line flag.
+type duration time.Duration
+
+func (d duration) String() string {
+	if d == 0 {
+		return "none"
+	}
+
+	return time.Duration(d).String()
+}
+
+func (d *duration) Set(s string) error {
+	dur, err := time.ParseDuration(s)
+	if err != nil {
+		return err
+	}
+
+	*d = duration(dur)
+	return nil
+}
+
 func parseOptions() (dir string, dbg bool, cfg Config) {
 	dbgOpt := flag.Bool("dbg", false, "")
 	cfgOpt := flag.String("cfg", "", "")
 	printCfgOpt := flag.Bool("printcfg", false, "")
 	versionOpt := flag.Bool("V", false, "")
+	timeout := duration(0)
+	flag.Var(&timeout, "timeout", "")
+
 	flag.Bool("q", true, "")   // unused, kept for retro-compatibility.
 	flag.String("fmt", "", "") // unused, kept for retro-compatibility.
 	flag.Usage = func() {
@@ -69,6 +95,11 @@ func parseOptions() (dir string, dbg bool, cfg Config) {
 
 		dec := yaml.NewDecoder(f)
 		check(dec.Decode(&cfg), *dbgOpt)
+	}
+
+	if timeout != 0 {
+		// Exit after the given amount of time
+		time.AfterFunc(time.Duration(timeout), func() { os.Exit(1) })
 	}
 
 	return dir, *dbgOpt, cfg
