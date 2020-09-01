@@ -32,9 +32,13 @@ func TestOutputNonRegression(t *testing.T) {
 	cloneAndHack(t, tmpdir)
 
 	cmd := exec.Command("go", "run", ".", "-printcfg")
-	b, err := cmd.CombinedOutput()
-	defcfg := path.Join(tmpdir, "default.cfg")
 
+	b, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Command error: %s", err)
+	}
+
+	defcfg := path.Join(tmpdir, "default.cfg")
 	if err := ioutil.WriteFile(defcfg, b, os.ModePerm); err != nil {
 		t.Fatalf("Can't write %q: %s", defcfg, err)
 	}

@@ -344,7 +344,10 @@ func TestFormater_Format(t *testing.T) {
 				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout, Options: tc.options},
 			}
 
-			f.Format(os.Stdout, tc.st)
+			if err := f.Format(os.Stdout, tc.st); err != nil {
+				t.Fatalf("Format error: %s", err)
+			}
+
 			f.format()
 			require.EqualValues(t, tc.want, f.b.String())
 		})
