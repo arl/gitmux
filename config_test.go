@@ -73,10 +73,10 @@ func cmdString(cmd *exec.Cmd) string {
 	return strings.Join(append([]string{cmd.Path}, cmd.Args...), " ")
 }
 
-func run(t *testing.T, name string, args ...string) {
+func git(t *testing.T, args ...string) {
 	t.Helper()
 
-	cmd := exec.Command(name, args...)
+	cmd := exec.Command("git", args...)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("Command %q failed:\n%s\nerr: %s", cmdString(cmd), out, err)
 	}
@@ -96,7 +96,7 @@ func cloneAndHack(t *testing.T, dir string) {
 		}
 	}()
 
-	run(t, "git", "clone", "git://github.com/arl/gitmux.git")
+	git(t, "clone", "git://github.com/arl/gitmux.git")
 
 	popd2, err := pushdir("gitmux")
 	if err != nil {
@@ -113,15 +113,15 @@ func cloneAndHack(t *testing.T, dir string) {
 		t.Fatalf("write dummy: %s", err)
 	}
 
-	run(t, "git", "add", "dummy")
-	run(t, "git", "commit", "-m", "add dummy file")
+	git(t, "add", "dummy")
+	git(t, "commit", "-m", "add dummy file")
 
 	if err := ioutil.WriteFile("dummy2", []byte("dummy2"), os.ModePerm); err != nil {
 		t.Fatalf("write dummy2: %s", err)
 	}
 
-	run(t, "git", "add", "dummy2")
-	run(t, "git", "stash")
+	git(t, "add", "dummy2")
+	git(t, "stash")
 
 	if err := ioutil.WriteFile("file1", nil, os.ModePerm); err != nil {
 		t.Fatalf("write file1: %s", err)
@@ -135,8 +135,8 @@ func cloneAndHack(t *testing.T, dir string) {
 		t.Fatalf("write file3: %s", err)
 	}
 
-	run(t, "git", "add", "file1")
-	run(t, "git", "add", "file2")
+	git(t, "add", "file1")
+	git(t, "add", "file2")
 
 	if err := ioutil.WriteFile("file2", []byte("foo"), os.ModePerm); err != nil {
 		t.Fatalf("write file2: %s", err)
