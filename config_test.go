@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-var updateGolden = flag.Bool("update", false, "update golden files")
+var _updateGolden = flag.Bool("update", false, "update golden files")
 
 // This test ensures that new features do not change gitmux output when used
 // with a default configuration.
@@ -49,7 +49,7 @@ func TestOutputNonRegression(t *testing.T) {
 
 	goldenFile := path.Join("testdata", "default.output.golden")
 
-	if *updateGolden {
+	if *_updateGolden {
 		if err := ioutil.WriteFile(goldenFile, got, os.ModePerm); err != nil {
 			t.Fatalf("Can't update golden file %q: %s", goldenFile, err)
 		}
