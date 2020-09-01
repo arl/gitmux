@@ -9,7 +9,7 @@ import (
 	"github.com/arl/gitstatus"
 )
 
-func TestFormater_flags(t *testing.T) {
+func TestFlags(t *testing.T) {
 	tests := []struct {
 		name    string
 		styles  styles
@@ -74,6 +74,7 @@ func TestFormater_flags(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			f := &Formater{
 				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout},
@@ -85,7 +86,7 @@ func TestFormater_flags(t *testing.T) {
 	}
 }
 
-func TestFormater_divergence(t *testing.T) {
+func TestDivergence(t *testing.T) {
 	tests := []struct {
 		name    string
 		styles  styles
@@ -151,6 +152,7 @@ func TestFormater_divergence(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			f := &Formater{
 				Config: Config{Styles: tc.styles, Symbols: tc.symbols},
@@ -162,7 +164,7 @@ func TestFormater_divergence(t *testing.T) {
 	}
 }
 
-func TestFormater_truncateBranchName(t *testing.T) {
+func TestTruncateBranchName(t *testing.T) {
 	tests := []struct {
 		name       string
 		branchName string
@@ -214,6 +216,7 @@ func TestFormater_truncateBranchName(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			branchName := truncateBranchName(tc.branchName, tc.maxLen, tc.isRemote)
 			require.EqualValues(t, tc.want, branchName)
@@ -221,7 +224,7 @@ func TestFormater_truncateBranchName(t *testing.T) {
 	}
 }
 
-func TestFormater_Format(t *testing.T) {
+func TestFormat(t *testing.T) {
 	tests := []struct {
 		name    string
 		styles  styles
@@ -252,7 +255,11 @@ func TestFormater_Format(t *testing.T) {
 					NumModified:  2,
 				},
 			},
-			want: clear + "StyleBranchSymbolBranch" + clear + "Local" + ".." + clear + "StyleRemoteRemote" + clear + " - " + clear + "StyleModSymbolMod2",
+			want: clear + "StyleBranchSymbolBranch" +
+				clear + "Local" + ".." +
+				clear + "StyleRemoteRemote" +
+				clear + " - " +
+				clear + "StyleModSymbolMod2",
 		},
 		{
 			name: "branch, different delimiter, flags",
@@ -275,7 +282,9 @@ func TestFormater_Format(t *testing.T) {
 					AheadCount:   1,
 				},
 			},
-			want: clear + "StyleBranchSymbolBranch" + clear + "Local" + " ~~ " + clear + "StyleModSymbolMod2",
+			want: clear + "StyleBranchSymbolBranch" +
+				clear + "Local" + " ~~ " +
+				clear + "StyleModSymbolMod2",
 		},
 		{
 			name: "remote only",
@@ -295,7 +304,8 @@ func TestFormater_Format(t *testing.T) {
 					AheadCount:   1,
 				},
 			},
-			want: clear + "StyleRemoteRemote" + clear + " SymbolAhead1",
+			want: clear + "StyleRemoteRemote" +
+				clear + " SymbolAhead1",
 		},
 		{
 			name: "empty",
@@ -335,10 +345,14 @@ func TestFormater_Format(t *testing.T) {
 					RemoteBranch: "remote/branchName",
 				},
 			},
-			want: clear + "StyleBranch" + "SymbolBranch" + clear + "branch..." + " " + clear + "StyleRemote" + "remote/branch..." + clear,
+			want: clear + "StyleBranch" + "SymbolBranch" +
+				clear + "branch..." + " " +
+				clear + "StyleRemote" + "remote/branch..." +
+				clear,
 		},
 	}
 	for _, tc := range tests {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			f := &Formater{
 				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout, Options: tc.options},

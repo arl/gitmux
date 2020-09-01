@@ -89,6 +89,7 @@ func cloneAndHack(t *testing.T, dir string) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer func() {
 		if err := popd1(); err != nil {
 			t.Fatalf("popd1: %v", err)
@@ -101,6 +102,7 @@ func cloneAndHack(t *testing.T, dir string) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer func() {
 		if err := popd2(); err != nil {
 			t.Fatalf("popd2: %v", err)
