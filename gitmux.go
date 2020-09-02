@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -55,7 +56,7 @@ func (d *duration) Set(s string) error {
 	return nil
 }
 
-func parseOptions() (dir string, dbg bool, cfg Config) {
+func parseOptions() (ctx context.Context, dir string, dbg bool, cfg Config) {
 	dbgOpt := flag.Bool("dbg", false, "")
 	cfgOpt := flag.String("cfg", "", "")
 	printCfgOpt := flag.Bool("printcfg", false, "")
@@ -97,12 +98,12 @@ func parseOptions() (dir string, dbg bool, cfg Config) {
 		check(dec.Decode(&cfg), *dbgOpt)
 	}
 
+	ctx = context.Background()
 	if timeout != 0 {
-		// Exit after the given amount of time
-		time.AfterFunc(time.Duration(timeout), func() { os.Exit(1) })
+		ctx, _ = context.WithTimeout(ctx, time.Duration(timeout))
 	}
 
-	return dir, *dbgOpt, cfg
+	return ctx, dir, *dbgOpt, cfg
 }
 
 func pushdir(dir string) (popdir func() error, err error) {
@@ -131,7 +132,7 @@ func check(err error, dbg bool) {
 }
 
 func main() {
-	dir, dbg, cfg := parseOptions()
+	ctx, dir, dbg, cfg := parseOptions()
 
 	// handle directory change.
 	if dir != "." {
@@ -144,7 +145,7 @@ func main() {
 	}
 
 	// retrieve git status.
-	st, err := gitstatus.New()
+	st, err := gitstatus.NewWithContext(ctx)
 	check(err, dbg)
 
 	// select defauit formater
