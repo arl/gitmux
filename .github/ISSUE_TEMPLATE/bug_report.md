@@ -21,10 +21,13 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Environment:**
- - gitmux version: `$ gitmux -V`
- - tmux version: `$ tmux -V`
+ - gitmux version: `gitmux -V`
+ - tmux version: `tmux -V`
  - OS
  - shell (bash/fish/...)
+ - your gitmux config `gitmux.cfg` if you're not using the default one.
+ - in case the problem only happens in a specific directory, please paste the
+ output of `gitmux -dbg` in that directory.
 
 **Additional context**
 Add any other context about the problem here.
