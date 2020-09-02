@@ -256,7 +256,7 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: clear + "StyleBranchSymbolBranch" +
-				clear + "Local" + ".." +
+				clear + "StyleBranch" + "Local" + ".." +
 				clear + "StyleRemoteRemote" +
 				clear + " - " +
 				clear + "StyleModSymbolMod2",
@@ -283,7 +283,7 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: clear + "StyleBranchSymbolBranch" +
-				clear + "Local" + " ~~ " +
+				clear + "StyleBranch" + "Local" + " ~~ " +
 				clear + "StyleModSymbolMod2",
 		},
 		{
@@ -346,9 +346,26 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: clear + "StyleBranch" + "SymbolBranch" +
-				clear + "branch..." + " " +
+				clear + "StyleBranch" + "branch..." + " " +
 				clear + "StyleRemote" + "remote/branch..." +
 				clear,
+		},
+		{
+			name: "issue-32",
+			styles: styles{
+				Branch: "StyleBranch",
+			},
+			symbols: symbols{
+				Branch: "SymbolBranch",
+			},
+			layout: []string{"branch"},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch: "branchName",
+				},
+			},
+			want: clear + "StyleBranch" + "SymbolBranch" +
+				clear + "StyleBranch" + "branchName",
 		},
 	}
 	for _, tc := range tests {
