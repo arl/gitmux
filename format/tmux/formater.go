@@ -166,6 +166,7 @@ func (f *Formater) format() {
 		case "flags":
 			f.flags()
 		default:
+			f.clear()
 			f.b.WriteString(item)
 		}
 	}
@@ -197,36 +198,41 @@ func (f *Formater) specialState() {
 }
 
 func (f *Formater) remote() {
+	if f.st.RemoteBranch == "" {
+		return
+	}
+
 	f.clear()
 
-	if f.st.RemoteBranch != "" {
-		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote,
-			truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true))
-		f.divergence()
-	}
+	fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote,
+		truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true))
+	f.divergence()
 }
 
 func (f *Formater) remoteBranch() {
-	f.clear()
-
 	if f.st.RemoteBranch != "" {
+		f.clear()
+
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote,
 			truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true))
 	}
 }
 
 func (f *Formater) divergence() {
-	f.clear()
-
 	pref := " "
 
 	if f.st.BehindCount != 0 {
+		f.clear()
 		fmt.Fprintf(&f.b, " %s%d", f.Symbols.Behind, f.st.BehindCount)
 
 		pref = ""
 	}
 
 	if f.st.AheadCount != 0 {
+		if f.st.BehindCount == 0 {
+			f.clear()
+		}
+
 		fmt.Fprintf(&f.b, "%s%s%d", pref, f.Symbols.Ahead, f.st.AheadCount)
 	}
 }
@@ -250,9 +256,8 @@ func (f *Formater) currentRef() {
 }
 
 func (f *Formater) flags() {
-	f.clear()
-
 	if f.st.IsClean {
+		f.clear()
 		fmt.Fprintf(&f.b, "%s%s", f.Styles.Clean, f.Symbols.Clean)
 
 		return
@@ -285,5 +290,8 @@ func (f *Formater) flags() {
 			fmt.Sprintf("%s%s%d", f.Styles.Untracked, f.Symbols.Untracked, f.st.NumUntracked))
 	}
 
-	f.b.WriteString(strings.Join(flags, " "))
+	if len(flags) > 0 {
+		f.clear()
+		f.b.WriteString(strings.Join(flags, " "))
+	}
 }
