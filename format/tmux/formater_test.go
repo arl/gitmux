@@ -106,7 +106,7 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 0,
 				},
 			},
-			want: clear,
+			want: "",
 		},
 		{
 			name: "ahead only",
@@ -256,7 +256,8 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: clear + "StyleBranchSymbolBranch" +
-				clear + "StyleBranch" + "Local" + ".." +
+				clear + "StyleBranch" + "Local" +
+				clear + ".." +
 				clear + "StyleRemoteRemote" +
 				clear + " - " +
 				clear + "StyleModSymbolMod2",
@@ -283,7 +284,8 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: clear + "StyleBranchSymbolBranch" +
-				clear + "StyleBranch" + "Local" + " ~~ " +
+				clear + "StyleBranch" + "Local" +
+				clear + " ~~ " +
 				clear + "StyleModSymbolMod2",
 		},
 		{
@@ -346,9 +348,9 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: clear + "StyleBranch" + "SymbolBranch" +
-				clear + "StyleBranch" + "branch..." + " " +
-				clear + "StyleRemote" + "remote/branch..." +
-				clear,
+				clear + "StyleBranch" + "branch..." +
+				clear + " " +
+				clear + "StyleRemote" + "remote/branch...",
 		},
 		{
 			name: "issue-32",
