@@ -256,7 +256,7 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: clear + "StyleBranchSymbolBranch" +
-				clear + "Local" + ".." +
+				clear + "StyleBranch" + "Local" + ".." +
 				clear + "StyleRemoteRemote" +
 				clear + " - " +
 				clear + "StyleModSymbolMod2",
@@ -283,7 +283,7 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: clear + "StyleBranchSymbolBranch" +
-				clear + "Local" + " ~~ " +
+				clear + "StyleBranch" + "Local" + " ~~ " +
 				clear + "StyleModSymbolMod2",
 		},
 		{
@@ -346,7 +346,7 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: clear + "StyleBranch" + "SymbolBranch" +
-				clear + "branch..." + " " +
+				clear + "StyleBranch" + "branch..." + " " +
 				clear + "StyleRemote" + "remote/branch..." +
 				clear,
 		},
