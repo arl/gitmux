@@ -240,12 +240,12 @@ func (f *Formater) currentRef() {
 	f.clear()
 
 	if f.st.IsDetached {
-		fmt.Fprintf(&f.b, "%s%s", f.Symbols.HashPrefix, f.st.HEAD)
+		fmt.Fprintf(&f.b, "%s%s%s", f.Styles.Branch, f.Symbols.HashPrefix, f.st.HEAD)
 
 		return
 	}
 
-	fmt.Fprintf(&f.b, "%s",
+	fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch,
 		truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false))
 }
 
