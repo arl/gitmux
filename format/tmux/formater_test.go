@@ -350,6 +350,23 @@ func TestFormat(t *testing.T) {
 				clear + "StyleRemote" + "remote/branch..." +
 				clear,
 		},
+		{
+			name: "issue-32",
+			styles: styles{
+				Branch: "StyleBranch",
+			},
+			symbols: symbols{
+				Branch: "SymbolBranch",
+			},
+			layout: []string{"branch"},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch: "branchName",
+				},
+			},
+			want: clear + "StyleBranch" + "SymbolBranch" +
+				clear + "StyleBranch" + "branchName",
+		},
 	}
 	for _, tc := range tests {
 		tc := tc
