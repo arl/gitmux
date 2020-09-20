@@ -21,6 +21,7 @@ func TestFlags(t *testing.T) {
 		{
 			name: "clean flag",
 			styles: styles{
+				Clear: "StyleClear",
 				Clean: "StyleClean",
 			},
 			symbols: symbols{
@@ -30,11 +31,12 @@ func TestFlags(t *testing.T) {
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: clear + "StyleCleanSymbolClean",
+			want: "StyleClear" + "StyleCleanSymbolClean",
 		},
 		{
 			name: "mixed flags",
 			styles: styles{
+				Clear:    "StyleClear",
 				Modified: "StyleMod",
 				Stashed:  "StyleStash",
 				Staged:   "StyleStaged",
@@ -52,11 +54,12 @@ func TestFlags(t *testing.T) {
 					NumStaged:   3,
 				},
 			},
-			want: clear + "StyleStagedSymbolStaged3 StyleModSymbolMod2 StyleStashSymbolStash1",
+			want: "StyleClear" + "StyleStagedSymbolStaged3 StyleModSymbolMod2 StyleStashSymbolStash1",
 		},
 		{
 			name: "mixed flags 2",
 			styles: styles{
+				Clear:     "StyleClear",
 				Conflict:  "StyleConflict",
 				Untracked: "StyleUntracked",
 			},
@@ -70,7 +73,7 @@ func TestFlags(t *testing.T) {
 					NumUntracked: 17,
 				},
 			},
-			want: clear + "StyleConflictSymbolConflict42 StyleUntrackedSymbolUntracked17",
+			want: "StyleClear" + "StyleConflictSymbolConflict42 StyleUntrackedSymbolUntracked17",
 		},
 	}
 	for _, tc := range tests {
@@ -96,6 +99,9 @@ func TestDivergence(t *testing.T) {
 	}{
 		{
 			name: "no divergence",
+			styles: styles{
+				Clear: "StyleClear",
+			},
 			symbols: symbols{
 				Ahead:  "↓·",
 				Behind: "↑·",
@@ -110,6 +116,9 @@ func TestDivergence(t *testing.T) {
 		},
 		{
 			name: "ahead only",
+			styles: styles{
+				Clear: "StyleClear",
+			},
 			symbols: symbols{
 				Ahead:  "↓·",
 				Behind: "↑·",
@@ -120,10 +129,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 0,
 				},
 			},
-			want: clear + " ↓·4",
+			want: "StyleClear" + " ↓·4",
 		},
 		{
 			name: "behind only",
+			styles: styles{
+				Clear: "StyleClear",
+			},
 			symbols: symbols{
 				Ahead:  "↓·",
 				Behind: "↑·",
@@ -134,10 +146,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 12,
 				},
 			},
-			want: clear + " ↑·12",
+			want: "StyleClear" + " ↑·12",
 		},
 		{
 			name: "diverged both ways",
+			styles: styles{
+				Clear: "StyleClear",
+			},
 			symbols: symbols{
 				Ahead:  "↓·",
 				Behind: "↑·",
@@ -148,7 +163,7 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 128,
 				},
 			},
-			want: clear + " ↑·128↓·41",
+			want: "StyleClear" + " ↑·128↓·41",
 		},
 	}
 	for _, tc := range tests {
@@ -237,6 +252,7 @@ func TestFormat(t *testing.T) {
 		{
 			name: "default format",
 			styles: styles{
+				Clear:    "StyleClear",
 				Clean:    "StyleClean",
 				Branch:   "StyleBranch",
 				Modified: "StyleMod",
@@ -255,16 +271,17 @@ func TestFormat(t *testing.T) {
 					NumModified:  2,
 				},
 			},
-			want: clear + "StyleBranchSymbolBranch" +
-				clear + "StyleBranch" + "Local" +
-				clear + ".." +
-				clear + "StyleRemoteRemote" +
-				clear + " - " +
-				clear + "StyleModSymbolMod2",
+			want: "StyleClear" + "StyleBranchSymbolBranch" +
+				"StyleClear" + "StyleBranch" + "Local" +
+				"StyleClear" + ".." +
+				"StyleClear" + "StyleRemoteRemote" +
+				"StyleClear" + " - " +
+				"StyleClear" + "StyleModSymbolMod2",
 		},
 		{
 			name: "branch, different delimiter, flags",
 			styles: styles{
+				Clear:    "StyleClear",
 				Branch:   "StyleBranch",
 				Remote:   "StyleRemote",
 				Modified: "StyleMod",
@@ -283,14 +300,15 @@ func TestFormat(t *testing.T) {
 					AheadCount:   1,
 				},
 			},
-			want: clear + "StyleBranchSymbolBranch" +
-				clear + "StyleBranch" + "Local" +
-				clear + " ~~ " +
-				clear + "StyleModSymbolMod2",
+			want: "StyleClear" + "StyleBranchSymbolBranch" +
+				"StyleClear" + "StyleBranch" + "Local" +
+				"StyleClear" + " ~~ " +
+				"StyleClear" + "StyleModSymbolMod2",
 		},
 		{
 			name: "remote only",
 			styles: styles{
+				Clear:  "StyleClear",
 				Branch: "StyleBranch",
 				Remote: "StyleRemote",
 			},
@@ -306,12 +324,13 @@ func TestFormat(t *testing.T) {
 					AheadCount:   1,
 				},
 			},
-			want: clear + "StyleRemoteRemote" +
-				clear + " SymbolAhead1",
+			want: "StyleClear" + "StyleRemoteRemote" +
+				"StyleClear" + " SymbolAhead1",
 		},
 		{
 			name: "empty",
 			styles: styles{
+				Clear:    "StyleClear",
 				Branch:   "StyleBranch",
 				Modified: "StyleMod",
 			},
@@ -331,6 +350,7 @@ func TestFormat(t *testing.T) {
 		{
 			name: "branch and remote, branch_max_len not zero",
 			styles: styles{
+				Clear:  "StyleClear",
 				Branch: "StyleBranch",
 				Remote: "StyleRemote",
 			},
@@ -347,14 +367,15 @@ func TestFormat(t *testing.T) {
 					RemoteBranch: "remote/branchName",
 				},
 			},
-			want: clear + "StyleBranch" + "SymbolBranch" +
-				clear + "StyleBranch" + "branch..." +
-				clear + " " +
-				clear + "StyleRemote" + "remote/branch...",
+			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
+				"StyleClear" + "StyleBranch" + "branch..." +
+				"StyleClear" + " " +
+				"StyleClear" + "StyleRemote" + "remote/branch...",
 		},
 		{
 			name: "issue-32",
 			styles: styles{
+				Clear:  "StyleClear",
 				Branch: "StyleBranch",
 			},
 			symbols: symbols{
@@ -366,8 +387,8 @@ func TestFormat(t *testing.T) {
 					LocalBranch: "branchName",
 				},
 			},
-			want: clear + "StyleBranch" + "SymbolBranch" +
-				clear + "StyleBranch" + "branchName",
+			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
+				"StyleClear" + "StyleBranch" + "branchName",
 		},
 	}
 	for _, tc := range tests {
