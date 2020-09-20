@@ -9,7 +9,6 @@ import (
 	"github.com/arl/gitstatus"
 )
 
-const clear string = "#[fg=default]"
 const truncateSymbol string = "..."
 
 // Config is the configuration of the Git status tmux formatter.
@@ -41,6 +40,7 @@ type symbols struct {
 }
 
 type styles struct {
+	Clear     string // Clear is the style string that clears all styles.
 	State     string // State is the style string printed before eventual special state.
 	Branch    string // Branch is the style string printed before the local branch.
 	Remote    string // Remote is the style string printed before the upstream branch.
@@ -72,6 +72,7 @@ var DefaultCfg = Config{
 		HashPrefix: ":",
 	},
 	Styles: styles{
+		Clear:     "#[fg=default]",
 		State:     "#[fg=red,bold]",
 		Branch:    "#[fg=white,bold]",
 		Remote:    "#[fg=cyan]",
@@ -239,7 +240,7 @@ func (f *Formater) divergence() {
 
 func (f *Formater) clear() {
 	// clear global style
-	f.b.WriteString(clear)
+	f.b.WriteString(f.Styles.Clear)
 }
 
 func (f *Formater) currentRef() {
