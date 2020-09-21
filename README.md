@@ -68,6 +68,7 @@ tmux:
     stashed: '⚑ '
     clean: ✔
   styles:
+    clear: '#[fg=default]'
     state: '#[fg=red,bold]'
     branch: '#[fg=white,bold]'
     remote: '#[fg=cyan]'
