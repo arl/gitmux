@@ -43,10 +43,17 @@ Run `go get` to build and install `gitmux`:
 
 ## Getting started
 
-Add this line to your  `.tmux.conf`:
+If your `tmux` version supports `pane_current_pane` (tmux v2.1+),
+just add this line to your `.tmux.conf`:
 
     set -g status-right '#(gitmux "#{pane_current_path}")'
 
+If your `tmux` doesn't support `pane_current_path` then you can use 
+a [bash-specific solution](https://github.com/arl/gitmux/issues/19#issuecomment-594735939)
+to achieve relatively similar behaviour: `gitmux` will refresh after every shell command 
+you run or when you switch windows, however it won't refresh automatically, nor when switching panes.  
+
+Note that `tmux v2.1` was released in 2015 so you're probably better off updating to a more recent version anyway 🙂.
 
 ## Customizing
 
