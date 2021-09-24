@@ -77,13 +77,13 @@ var DefaultCfg = Config{
 		State:      "#[fg=red,bold]",
 		Branch:     "#[fg=white,bold]",
 		Remote:     "#[fg=cyan]",
+		Divergence: "#[fg=default]",
 		Staged:     "#[fg=green,bold]",
 		Conflict:   "#[fg=red,bold]",
 		Modified:   "#[fg=red,bold]",
 		Untracked:  "#[fg=magenta,bold]",
 		Stashed:    "#[fg=cyan,bold]",
 		Clean:      "#[fg=green,bold]",
-		Divergence: "#[fg=default]",
 	},
 	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
 	Options: options{
@@ -227,12 +227,11 @@ func (f *Formater) divergence() {
 	}
 
 	f.clear()
+	f.b.WriteByte(' ')
 	fmt.Fprintf(&f.b, "%s", f.Styles.Divergence)
 
 	if f.st.BehindCount != 0 {
-		fmt.Fprintf(&f.b, " %s%d", f.Symbols.Behind, f.st.BehindCount)
-	} else {
-		f.b.WriteByte(' ')
+		fmt.Fprintf(&f.b, "%s%d", f.Symbols.Behind, f.st.BehindCount)
 	}
 
 	if f.st.AheadCount != 0 {
