@@ -20,10 +20,10 @@
 
 
  - **easy**. Install and forget about it
- - **minimal**. It shows what you need when you need it
- - **discrete**. Disappears if the current directory is not part of a Git tree
- - **shell-independent**. Works with all shells bash, zsh, fish, whateversh
- - **customizable**. Colors, symbols and layout can be customized
+ - **minimal**. Just shows what you need, when you need it
+ - **discrete**. Get out of your way if current directory is not in a Git tree
+ - **shell-agnostic**. Does not rely on shell-features so works with all of them
+ - **customizable**. Colors, symbols and layout are configurable
 
 ## Prerequisites
 
@@ -59,7 +59,7 @@ Note that `tmux v2.1` was released in 2015 so you're probably better off updatin
 
 `gitmux` output can be customized via a configuration file in YAML format.
 
-The gitmux configuration file is in YAML format:
+The gitmux configuration file is in YAML format.
 
 ```yaml
 tmux:
@@ -85,7 +85,8 @@ tmux:
     untracked: '#[fg=magenta,bold]'
     stashed: '#[fg=cyan,bold]'
     clean: '#[fg=green,bold]'
-  layout: [branch, .., remote, ' - ', flags]
+    divergence: "#[fg=yellow]"    
+  layout: [branch, .., remote, " - ", flags]
   options:
     branch_max_len: 0
 ```
@@ -111,18 +112,20 @@ In `tmux` status bar, `gitmux` output immediately reflects the changes you make 
 
 ### Symbols
 
+The `symbols` section describes the symbols `gitmux` prints for the various components of the status string.
+
 ```yaml
   symbols:
-    branch: '⎇ '      # shown before `branch`
-    hashprefix: ':'    # shown before a Git hash (in 'detached HEAD' state)
-    ahead: ↑·          # shown before 'ahead count' when local/remote branch diverges`
-    behind: ↓·         # shown before 'behind count' when local/remote branch diverges`
-    staged: '● '       # shown before the 'staged files' count
-    conflict: '✖ '     # shown before the 'conflicts' count
-    modified: '✚ '     # shown before the 'modified files' count
-    untracked: '… '    # shown before the 'untracked files' count
-    stashed: '⚑ '      # shown before the 'stash' count
-    clean: ✔           # shown when the working tree is clean
+    branch: '⎇ '      # Shown before a branch
+    hashprefix: ':'    # Shown before a Git hash (in 'detached HEAD' state)
+    ahead: ↑·          # Shown before the 'ahead count' when local and remote branch diverge
+    behind: ↓·         # Shown before the 'behind count' when local/remote branch diverge
+    staged: '● '       # Shown before the 'staged' files count
+    conflict: '✖ '     # Shown before the 'conflicts' count
+    modified: '✚ '     # Shown before the 'modified' files count
+    untracked: '… '    # Shown before the 'untracked' files count
+    stashed: '⚑ '      # Shown before the 'stash' count
+    clean: ✔           # Shown when the working tree is clean (empty staging area)
 ```
 
 
@@ -131,8 +134,46 @@ In `tmux` status bar, `gitmux` output immediately reflects the changes you make 
 Styles are tmux format strings used to specify text colors and attributes.
 See [`tmux` styles reference](https://man7.org/linux/man-pages/man1/tmux.1.html#STYLES).
 
+```yaml
+  styles:
+    clear: '#[fg=default]'          # Style clearing previous styles (printed before each component)
+    state: '#[fg=red,bold]'         # Style of the special states strings like [rebase], [merge], etc.
+    branch: '#[fg=white,bold]'      # Style of the local branch name
+    remote: '#[fg=cyan]'            # Style of the remote branch name
+    divergence: "#[fg=yellow]"      # Style of the 'divergence' string
+    staged: '#[fg=green,bold]'      # Style of the 'staged' files count
+    conflict: '#[fg=red,bold]'      # Style of the 'conflicts' count
+    modified: '#[fg=red,bold]'      # Style of the 'modified' files count
+    untracked: '#[fg=magenta,bold]' # Style of the 'modified' files count
+    stashed: '#[fg=cyan,bold]'      # Style of the 'stash' entries count
+    clean: '#[fg=green,bold]'       # Style of the 'clean' symbol
+```
 
 ### Layout components
+
+The layout is a list of the components `gitmux` shows, and the order in
+which they appear on `tmux` status bar.
+
+For example, the default `gitmux` layout shows is:
+
+```yaml
+layout: [branch, .., remote-branch, divergence, " - ", flags]
+```
+
+It shows, in that order:
+ - the local branch name,
+ - 2 dots characters `..`,
+ - the remote branch name
+ - the local/remote divergence
+ - a `-` character
+ - and finally the flags representing the working tree state
+
+Note that elements only appear when they make sense, for example if local and
+remote branch are aligned, the divergence string won't show up. Same thing for
+the remote branch, etc.
+
+But you can anyway choose to never show some components if you wish, or to present
+them in a different order.
 
 This is the list of the possible components of the `layout`:
 
@@ -146,14 +187,21 @@ This is the list of the possible components of the `layout`:
 | any string `foo` | Any other string is directly shown                 |        `foo`         |
 
 
+Some example layouts:
 
-Example layouts:
+ - default layout:
+
+```yaml
+layout: [branch, .., remote-branch, divergence, " - ", flags]
 ```
-layout: [branch, '..', remote, ' - ', flags]
-layout: [branch, '..', remote-flags, divergence, ' - ', flags]
-layout: [branch]
-layout: [flags, branch]
-layout: [flags, ~~~, branch]
+
+ - some more minimal layouts:
+
+```yaml
+layout: [branch, divergence, " - ", flags]
+```
+```yaml
+layout: [flags, " ", branch]
 ```
 
 
@@ -173,7 +221,8 @@ Please report anything by [filing an issue](https://github.com/arl/gitmux/issues
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are welcome.  
+For major changes, please open an issue first to open a discussion.
 
 
 ## License: [MIT](./LICENSE)
