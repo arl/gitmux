@@ -1,6 +1,6 @@
 module github.com/arl/gitmux
 
-go 1.10
+go 1.15
 
 require (
 	github.com/arl/gitstatus v0.4.3
