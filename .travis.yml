@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - "1.15.x"
+  - "1.17.x"
 
 cache:
   directories:
@@ -9,8 +9,8 @@ cache:
 
 # calls goreleaser
 deploy:
-- provider: script
-  skip_cleanup: true
-  script: curl -sL https://git.io/goreleaser | bash
-  on:
-    tags: true
+  - provider: script
+    skip_cleanup: true
+    script: curl -sL https://git.io/goreleaser | bash
+    on:
+      tags: true
