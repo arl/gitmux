@@ -43,7 +43,7 @@ Run `go get` to build and install `gitmux`:
 
 ## Getting started
 
-If your `tmux` version supports `pane_current_pane` (tmux v2.1+),
+If your `tmux` version supports `pane_current_path` (tmux v2.1+),
 just add this line to your `.tmux.conf`:
 
     set -g status-right '#(gitmux "#{pane_current_path}")'
