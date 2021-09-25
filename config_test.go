@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"flag"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -17,16 +16,7 @@ var _updateGolden = flag.Bool("update", false, "update golden files")
 // This test ensures that new features do not change gitmux output when used
 // with a default configuration.
 func TestOutputNonRegression(t *testing.T) {
-	if testing.Short() {
-		t.Skipf("skipping in -short mode")
-	}
-
-	tmpdir, err := ioutil.TempDir("", t.Name())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer os.RemoveAll(tmpdir)
+	tmpdir := t.TempDir()
 
 	t.Logf("test working directory: %q", tmpdir)
 	cloneAndHack(t, tmpdir)

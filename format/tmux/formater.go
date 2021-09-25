@@ -40,16 +40,17 @@ type symbols struct {
 }
 
 type styles struct {
-	Clear     string // Clear is the style string that clears all styles.
-	State     string // State is the style string printed before eventual special state.
-	Branch    string // Branch is the style string printed before the local branch.
-	Remote    string // Remote is the style string printed before the upstream branch.
-	Staged    string // Staged is the style string printed before the staged files count.
-	Conflict  string // Conflict is the style string printed before the conflict count.
-	Modified  string // Modified is the style string printed before the modified files count.
-	Untracked string // Untracked is the style string printed before the untracked files count.
-	Stashed   string // Stashed is the style string printed before the stash entries count.
-	Clean     string // Clean is the style string printed before the clean symbols.
+	Clear      string // Clear is the style string that clears all styles.
+	State      string // State is the style string printed before eventual special state.
+	Branch     string // Branch is the style string printed before the local branch.
+	Remote     string // Remote is the style string printed before the upstream branch.
+	Staged     string // Staged is the style string printed before the staged files count.
+	Conflict   string // Conflict is the style string printed before the conflict count.
+	Modified   string // Modified is the style string printed before the modified files count.
+	Untracked  string // Untracked is the style string printed before the untracked files count.
+	Stashed    string // Stashed is the style string printed before the stash entries count.
+	Clean      string // Clean is the style string printed before the clean symbols.
+	Divergence string // Divergence is the style string printed before divergence count/symbols.
 }
 
 type options struct {
@@ -72,16 +73,17 @@ var DefaultCfg = Config{
 		HashPrefix: ":",
 	},
 	Styles: styles{
-		Clear:     "#[fg=default]",
-		State:     "#[fg=red,bold]",
-		Branch:    "#[fg=white,bold]",
-		Remote:    "#[fg=cyan]",
-		Staged:    "#[fg=green,bold]",
-		Conflict:  "#[fg=red,bold]",
-		Modified:  "#[fg=red,bold]",
-		Untracked: "#[fg=magenta,bold]",
-		Stashed:   "#[fg=cyan,bold]",
-		Clean:     "#[fg=green,bold]",
+		Clear:      "#[fg=default]",
+		State:      "#[fg=red,bold]",
+		Branch:     "#[fg=white,bold]",
+		Remote:     "#[fg=cyan]",
+		Divergence: "#[fg=default]",
+		Staged:     "#[fg=green,bold]",
+		Conflict:   "#[fg=red,bold]",
+		Modified:   "#[fg=red,bold]",
+		Untracked:  "#[fg=magenta,bold]",
+		Stashed:    "#[fg=cyan,bold]",
+		Clean:      "#[fg=green,bold]",
 	},
 	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
 	Options: options{
@@ -220,21 +222,20 @@ func (f *Formater) remoteBranch() {
 }
 
 func (f *Formater) divergence() {
-	pref := " "
+	if f.st.BehindCount == 0 && f.st.AheadCount == 0 {
+		return
+	}
+
+	f.clear()
+	f.b.WriteByte(' ')
+	fmt.Fprintf(&f.b, "%s", f.Styles.Divergence)
 
 	if f.st.BehindCount != 0 {
-		f.clear()
-		fmt.Fprintf(&f.b, " %s%d", f.Symbols.Behind, f.st.BehindCount)
-
-		pref = ""
+		fmt.Fprintf(&f.b, "%s%d", f.Symbols.Behind, f.st.BehindCount)
 	}
 
 	if f.st.AheadCount != 0 {
-		if f.st.BehindCount == 0 {
-			f.clear()
-		}
-
-		fmt.Fprintf(&f.b, "%s%s%d", pref, f.Symbols.Ahead, f.st.AheadCount)
+		fmt.Fprintf(&f.b, "%s%d", f.Symbols.Ahead, f.st.AheadCount)
 	}
 }
 
