@@ -1,5 +1,5 @@
 on: [push, pull_request]
-name: Tests-linux
+name: Tests
 jobs:
   test:
     strategy:
