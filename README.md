@@ -5,8 +5,8 @@
 <hr>
 
 <p align="center">
-<a href="https://travis-ci.com/arl/gitmux">
-  <img alt="travis-ci" src="https://travis-ci.com/arl/gitmux.svg?branch=master" />
+<a href="https://github.com/arl/gitmux/actions">
+  <img alt="tests" src="https://github.com/arl/gitmux/actions/workflows/tests.yml/badge.svg" />
 </a>
 <a href="https://goreportcard.com/report/github.com/arl/gitmux">
   <img alt="goreport" src="https://goreportcard.com/badge/github.com/arl/gitmux" />
@@ -136,14 +136,14 @@ See [`tmux` styles reference](https://man7.org/linux/man-pages/man1/tmux.1.html#
 
 This is the list of the possible components of the `layout`:
 
-| Layout component |                 Description                               |        Example         |
-|:----------------:|:----------------------------------------------------------|:----------------------:|
-| `branch`         | local branch name                                         |        `master`        |
-| `remote-branch`  | remote branch name                                        |     `origin/master`    |
-| `divergence`     | divergence local/remote branch, if any                    |        `↓·2↑·1`        |
-| `remote`         | alias for `remote-branch` followed by `divergence`        | `origin/master ↓·2↑·1` |
-| `flags`          | Symbols representing the working tree state               |      `✚ 1 ⚑ 1 … 2`     |
-| any string `foo` | Any other string is directly shown                        |          `foo`         |
+| Layout component | Description                                        |       Example        |
+| :--------------: | :------------------------------------------------- | :------------------: |
+|     `branch`     | local branch name                                  |        `main`        |
+| `remote-branch`  | remote branch name                                 |    `origin/main`     |
+|   `divergence`   | divergence local/remote branch, if any             |       `↓·2↑·1`       |
+|     `remote`     | alias for `remote-branch` followed by `divergence` | `origin/main ↓·2↑·1` |
+|     `flags`      | Symbols representing the working tree state        |    `✚ 1 ⚑ 1 … 2`     |
+| any string `foo` | Any other string is directly shown                 |        `foo`         |
 
 
 
@@ -162,7 +162,7 @@ layout: [flags, ~~~, branch]
 This is the list of additional configuration `options`:
 
 | Option           | Description                                                | Default        |
-|:-----------------|:-----------------------------------------------------------|:---------------|
+| :--------------- | :--------------------------------------------------------- | :------------- |
 | `branch_max_len` | Maximum displayed length for local and remote branch names | `0` (no limit) |
 
 
