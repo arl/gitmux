@@ -113,6 +113,8 @@ func cloneAndHack(t *testing.T, dir string) {
 		t.Fatalf("write dummy: %s", err)
 	}
 
+	git(t, "config", "user.email", t.Name()+"@test.ci")
+	git(t, "config", "user.name", t.Name())
 	git(t, "add", "dummy")
 	git(t, "commit", "-m", "add dummy file")
 
