@@ -185,6 +185,7 @@ func TestTruncateBranchName(t *testing.T) {
 		branchName string
 		maxLen     int
 		isRemote   bool
+		dir        direction
 		want       string
 	}{
 		{
@@ -192,6 +193,7 @@ func TestTruncateBranchName(t *testing.T) {
 			branchName: "foo/bar-baz",
 			maxLen:     0,
 			isRemote:   false,
+			dir:        dirRight,
 			want:       "foo/bar-baz",
 		},
 		{
@@ -199,6 +201,7 @@ func TestTruncateBranchName(t *testing.T) {
 			branchName: "foo/bar-baz",
 			maxLen:     11,
 			isRemote:   false,
+			dir:        dirRight,
 			want:       "foo/bar-baz",
 		},
 		{
@@ -206,6 +209,7 @@ func TestTruncateBranchName(t *testing.T) {
 			branchName: "foo/bar-baz",
 			maxLen:     10,
 			isRemote:   false,
+			dir:        dirRight,
 			want:       "foo/bar...",
 		},
 		{
@@ -213,6 +217,7 @@ func TestTruncateBranchName(t *testing.T) {
 			branchName: "remote/foo/bar-baz",
 			maxLen:     10,
 			isRemote:   true,
+			dir:        dirRight,
 			want:       "remote/foo/bar...",
 		},
 		{
@@ -220,6 +225,7 @@ func TestTruncateBranchName(t *testing.T) {
 			branchName: "foo/bar-baz",
 			maxLen:     1,
 			isRemote:   false,
+			dir:        dirRight,
 			want:       ".",
 		},
 		{
@@ -227,13 +233,14 @@ func TestTruncateBranchName(t *testing.T) {
 			branchName: "foo/测试这个名字",
 			maxLen:     9,
 			isRemote:   false,
+			dir:        dirRight,
 			want:       "foo/测试...",
 		},
 	}
 	for _, tc := range tests {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			branchName := truncateBranchName(tc.branchName, tc.maxLen, tc.isRemote)
+			branchName := truncateBranchName(tc.branchName, tc.maxLen, tc.isRemote, tc.dir)
 			require.EqualValues(t, tc.want, branchName)
 		})
 	}
@@ -359,7 +366,34 @@ func TestFormat(t *testing.T) {
 			},
 			layout: []string{"branch", " ", "remote"},
 			options: options{
-				BranchMaxLen: 9,
+				BranchMaxLen:        9,
+				BranchTrimDirection: dirRight,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "branchName",
+					RemoteBranch: "remote/branchName",
+				},
+			},
+			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
+				"StyleClear" + "StyleBranch" + "branch..." +
+				"StyleClear" + " " +
+				"StyleClear" + "StyleRemote" + "remote/branch...",
+		},
+		{
+			name: "branch and remote, branch_max_len not zero and branch_trim_direction left",
+			styles: styles{
+				Clear:  "StyleClear",
+				Branch: "StyleBranch",
+				Remote: "StyleRemote",
+			},
+			symbols: symbols{
+				Branch: "SymbolBranch",
+			},
+			layout: []string{"branch", " ", "remote"},
+			options: options{
+				BranchMaxLen:        9,
+				BranchTrimDirection: dirLeft,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{

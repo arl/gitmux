@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/arl/gitstatus"
+	"gopkg.in/yaml.v3"
 )
 
 const truncateSymbol string = "..."
@@ -53,9 +54,39 @@ type styles struct {
 	Divergence string // Divergence is the style string printed before divergence count/symbols.
 }
 
+const (
+	dirLeft  direction = "left"
+	dirRight direction = "right"
+)
+
+type direction string
+
+func (d *direction) UnmarshalYAML(value *yaml.Node) error {
+	s := ""
+	if err := value.Decode(&s); err != nil {
+		return fmt.Errorf("error decoding 'direction': %v", s)
+	}
+	switch direction(s) {
+	case dirLeft:
+		*d = dirLeft
+	case dirRight:
+		*d = dirRight
+	default:
+		return fmt.Errorf("'direction': unexpected value %v", s)
+	}
+
+	// if i, ok := o.value.(int); ok {
+	// 	if result, ok := unmarshalerResult[i]; ok {
+	// 		return result
+	// 	}
+	// }
+	return nil
+}
+
 type options struct {
 	// BranchMaxLen is the maximum displayed length for local and remote branch names.
-	BranchMaxLen int `yaml:"branch_max_len"`
+	BranchMaxLen        int       `yaml:"branch_max_len"`
+	BranchTrimDirection direction `yaml:"branch_trim_direction"`
 }
 
 // DefaultCfg is the default tmux configuration.
@@ -87,7 +118,8 @@ var DefaultCfg = Config{
 	},
 	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
 	Options: options{
-		BranchMaxLen: 0,
+		BranchMaxLen:        0,
+		BranchTrimDirection: dirRight,
 	},
 }
 
@@ -100,7 +132,7 @@ type Formater struct {
 
 // Truncates branch name if longer than maxlen. If isremote, the leading
 // "<remote>/" is ignored when counting length.
-func truncateBranchName(name string, maxlen int, isremote bool) string {
+func truncateBranchName(name string, maxlen int, isremote bool, trimDir direction) string {
 	remoteName := ""
 	branchName := name
 
@@ -124,10 +156,14 @@ func truncateBranchName(name string, maxlen int, isremote bool) string {
 
 	if maxlen > 0 && maxlen < len(branchNameRune) {
 		nameLen := maxlen - len(truncateSymbolRune)
-		if nameLen > 0 {
-			branchName = string(branchNameRune[:nameLen]) + truncateSymbol
+		if trimDir == dirRight {
+			if nameLen > 0 {
+				branchName = string(branchNameRune[:nameLen]) + truncateSymbol
+			} else {
+				branchName = string(truncateSymbolRune[:maxlen])
+			}
 		} else {
-			branchName = string(truncateSymbolRune[:maxlen])
+			panic("trimDir: " + trimDir)
 		}
 	}
 
@@ -141,8 +177,8 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 
 	// overall working tree state
 	if f.st.IsInitial {
-		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch,
-			truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false))
+		branch := truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false, f.Options.BranchTrimDirection)
+		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch, branch)
 		f.flags()
 		_, err := f.b.WriteTo(w)
 
@@ -207,8 +243,9 @@ func (f *Formater) remote() {
 
 	f.clear()
 
-	fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote,
-		truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true))
+	branch := truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true, f.Options.BranchTrimDirection)
+	fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, branch)
+
 	f.divergence()
 }
 
@@ -216,8 +253,9 @@ func (f *Formater) remoteBranch() {
 	if f.st.RemoteBranch != "" {
 		f.clear()
 
-		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote,
-			truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true))
+		branch := truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true, f.Options.BranchTrimDirection)
+		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, branch)
+
 	}
 }
 
@@ -253,8 +291,8 @@ func (f *Formater) currentRef() {
 		return
 	}
 
-	fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch,
-		truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false))
+	branch := truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false, f.Options.BranchTrimDirection)
+	fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch, branch)
 }
 
 func (f *Formater) flags() {
