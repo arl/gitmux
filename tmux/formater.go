@@ -197,7 +197,8 @@ func (f *Formater) format() {
 		case "branch":
 			f.specialState()
 		case "remote":
-			f.remote()
+			f.remoteBranch()
+			f.divergence()
 		case "remote-branch":
 			f.remoteBranch()
 		case "divergence":
@@ -236,7 +237,7 @@ func (f *Formater) specialState() {
 	f.currentRef()
 }
 
-func (f *Formater) remote() {
+func (f *Formater) remoteBranch() {
 	if f.st.RemoteBranch == "" {
 		return
 	}
@@ -245,18 +246,6 @@ func (f *Formater) remote() {
 
 	branch := truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true, f.Options.BranchTrimDirection)
 	fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, branch)
-
-	f.divergence()
-}
-
-func (f *Formater) remoteBranch() {
-	if f.st.RemoteBranch != "" {
-		f.clear()
-
-		branch := truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true, f.Options.BranchTrimDirection)
-		fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, branch)
-
-	}
 }
 
 func (f *Formater) divergence() {
