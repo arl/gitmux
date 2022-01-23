@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/arl/gitstatus"
 	"gopkg.in/yaml.v3"
 )
-
-const truncateSymbol string = "..."
 
 // Config is the configuration of the Git status tmux formatter.
 type Config struct {
@@ -74,17 +73,10 @@ func (d *direction) UnmarshalYAML(value *yaml.Node) error {
 	default:
 		return fmt.Errorf("'direction': unexpected value %v", s)
 	}
-
-	// if i, ok := o.value.(int); ok {
-	// 	if result, ok := unmarshalerResult[i]; ok {
-	// 		return result
-	// 	}
-	// }
 	return nil
 }
 
 type options struct {
-	// BranchMaxLen is the maximum displayed length for local and remote branch names.
 	BranchMaxLen        int       `yaml:"branch_max_len"`
 	BranchTrimDirection direction `yaml:"branch_trim_direction"`
 }
@@ -130,44 +122,37 @@ type Formater struct {
 	st *gitstatus.Status
 }
 
-// Truncates branch name if longer than maxlen. If isremote, the leading
-// "<remote>/" is ignored when counting length.
-func truncateBranchName(name string, maxlen int, isremote bool, trimDir direction) string {
-	remoteName := ""
-	branchName := name
-
-	const (
-		idxRemote = 0
-		idxBranch = 1
-		numItems  = 2
-	)
-
-	if isremote {
-		a := strings.SplitAfterN(name, "/", numItems)
-		if len(a) == numItems {
-			remoteName = a[idxRemote]
-			branchName = a[idxBranch]
-		}
+// truncate returns s, truncated so that it is no more than max characters long.
+// Depending on the provided direction, truncation is performed right or left.
+// If max is zero, negative or greater than the number of rnues in s, truncate
+// just returns s. However, if truncation is applied, then the last 3 chars (or
+// 3 first, depending on provided direction) are replaced with "...".
+//
+// NOTE: If max is lower than 3, in other words if we can't even have ellispis,
+// then truncate just truncates the maximum number of characters, without
+// bothering with ellipsis.
+func truncate(s string, max int, dir direction) string {
+	slen := utf8.RuneCountInString(s)
+	if max <= 0 || slen <= max {
+		return s
 	}
 
-	// To count length of characters and extract substring from UTF-8 strings.
-	branchNameRune := []rune(branchName)
-	truncateSymbolRune := []rune(truncateSymbol)
+	runes := []rune(s)
+	ell := []rune("...")
 
-	if maxlen > 0 && maxlen < len(branchNameRune) {
-		nameLen := maxlen - len(truncateSymbolRune)
-		if trimDir == dirRight {
-			if nameLen > 0 {
-				branchName = string(branchNameRune[:nameLen]) + truncateSymbol
-			} else {
-				branchName = string(truncateSymbolRune[:maxlen])
-			}
-		} else {
-			panic("trimDir: " + trimDir)
-		}
+	if max < 3 {
+		ell = nil // Just truncate s since even ellipsis don't fit.
 	}
 
-	return remoteName + branchName
+	switch dir {
+	case dirRight:
+		runes = runes[:max-len(ell)]
+		runes = append(runes, ell...)
+	case dirLeft:
+		runes = runes[len(runes)+len(ell)-max:]
+		runes = append(ell, runes...)
+	}
+	return string(runes)
 }
 
 // Format writes st as json into w.
@@ -177,7 +162,7 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 
 	// overall working tree state
 	if f.st.IsInitial {
-		branch := truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false, f.Options.BranchTrimDirection)
+		branch := truncate(f.st.LocalBranch, f.Options.BranchMaxLen, f.Options.BranchTrimDirection)
 		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch, branch)
 		f.flags()
 		_, err := f.b.WriteTo(w)
@@ -244,7 +229,7 @@ func (f *Formater) remoteBranch() {
 
 	f.clear()
 
-	branch := truncateBranchName(f.st.RemoteBranch, f.Options.BranchMaxLen, true, f.Options.BranchTrimDirection)
+	branch := truncate(f.st.RemoteBranch, f.Options.BranchMaxLen, f.Options.BranchTrimDirection)
 	fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, branch)
 }
 
@@ -276,11 +261,10 @@ func (f *Formater) currentRef() {
 
 	if f.st.IsDetached {
 		fmt.Fprintf(&f.b, "%s%s%s", f.Styles.Branch, f.Symbols.HashPrefix, f.st.HEAD)
-
 		return
 	}
 
-	branch := truncateBranchName(f.st.LocalBranch, f.Options.BranchMaxLen, false, f.Options.BranchTrimDirection)
+	branch := truncate(f.st.LocalBranch, f.Options.BranchMaxLen, f.Options.BranchTrimDirection)
 	fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch, branch)
 }
 

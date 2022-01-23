@@ -179,69 +179,130 @@ func TestDivergence(t *testing.T) {
 	}
 }
 
-func TestTruncateBranchName(t *testing.T) {
+func TestTruncate(t *testing.T) {
 	tests := []struct {
-		name       string
-		branchName string
-		maxLen     int
-		isRemote   bool
-		dir        direction
-		want       string
+		s    string
+		max  int
+		dir  direction
+		want string
 	}{
+		/* trim right */
 		{
-			name:       "no limit",
-			branchName: "foo/bar-baz",
-			maxLen:     0,
-			isRemote:   false,
-			dir:        dirRight,
-			want:       "foo/bar-baz",
+			s:    "br",
+			max:  1,
+			dir:  dirRight,
+			want: "b",
 		},
 		{
-			name:       "no truncate",
-			branchName: "foo/bar-baz",
-			maxLen:     11,
-			isRemote:   false,
-			dir:        dirRight,
-			want:       "foo/bar-baz",
+			s:    "br",
+			max:  3,
+			dir:  dirRight,
+			want: "br",
 		},
 		{
-			name:       "truncate",
-			branchName: "foo/bar-baz",
-			maxLen:     10,
-			isRemote:   false,
-			dir:        dirRight,
-			want:       "foo/bar...",
+			s:    "super-long-branch",
+			max:  3,
+			dir:  dirRight,
+			want: "...",
 		},
 		{
-			name:       "truncate remote",
-			branchName: "remote/foo/bar-baz",
-			maxLen:     10,
-			isRemote:   true,
-			dir:        dirRight,
-			want:       "remote/foo/bar...",
+			s:    "super-long-branch",
+			max:  15,
+			dir:  dirRight,
+			want: "super-long-b...",
 		},
 		{
-			name:       "truncate to 1",
-			branchName: "foo/bar-baz",
-			maxLen:     1,
-			isRemote:   false,
-			dir:        dirRight,
-			want:       ".",
+			s:    "super-long-branch",
+			max:  17,
+			dir:  dirRight,
+			want: "super-long-branch",
 		},
 		{
-			name:       "truncate utf-8 name",
-			branchName: "foo/测试这个名字",
-			maxLen:     9,
-			isRemote:   false,
-			dir:        dirRight,
-			want:       "foo/测试...",
+			s:    "长長的-树樹枝",
+			max:  6,
+			dir:  dirRight,
+			want: "长長的...",
+		},
+		{
+			s:    "super-long-branch",
+			max:  32,
+			dir:  dirRight,
+			want: "super-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  0,
+			dir:  dirRight,
+			want: "super-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  -1,
+			dir:  dirRight,
+			want: "super-long-branch",
+		},
+
+		/* trim left */
+		{
+			s:    "br",
+			max:  1,
+			dir:  dirLeft,
+			want: "r",
+		},
+		{
+			s:    "br",
+			max:  3,
+			dir:  dirLeft,
+			want: "br",
+		},
+		{
+			s:    "super-long-branch",
+			max:  3,
+			dir:  dirLeft,
+			want: "...",
+		},
+		{
+			s:    "super-long-branch",
+			max:  15,
+			dir:  dirLeft,
+			want: "...-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  17,
+			dir:  dirLeft,
+			want: "super-long-branch",
+		},
+		{
+			s:    "长長的-树樹枝",
+			max:  6,
+			dir:  dirLeft,
+			want: "...树樹枝",
+		},
+		{
+			s:    "super-long-branch",
+			max:  32,
+			dir:  dirLeft,
+			want: "super-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  0,
+			dir:  dirLeft,
+			want: "super-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  -1,
+			dir:  dirLeft,
+			want: "super-long-branch",
 		},
 	}
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			branchName := truncateBranchName(tc.branchName, tc.maxLen, tc.isRemote, tc.dir)
-			require.EqualValues(t, tc.want, branchName)
+	for _, tt := range tests {
+		t.Run("", func(t *testing.T) {
+			if got := truncate(tt.s, tt.max, tt.dir); got != tt.want {
+				t.Errorf("truncate(%q, %d, %s) = %q, want %q", tt.s, tt.max, tt.dir, got, tt.want)
+			}
 		})
 	}
 }
@@ -378,10 +439,10 @@ func TestFormat(t *testing.T) {
 			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
 				"StyleClear" + "StyleBranch" + "branch..." +
 				"StyleClear" + " " +
-				"StyleClear" + "StyleRemote" + "remote/branch...",
+				"StyleClear" + "StyleRemote" + "remote...",
 		},
 		{
-			name: "branch and remote, branch_max_len not zero and branch_trim_direction left",
+			name: "branch and remote, branch_max_len not zero and trim left",
 			styles: styles{
 				Clear:  "StyleClear",
 				Branch: "StyleBranch",
@@ -397,14 +458,14 @@ func TestFormat(t *testing.T) {
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
-					LocalBranch:  "branchName",
-					RemoteBranch: "remote/branchName",
+					LocalBranch:  "nameBranch",
+					RemoteBranch: "remote/nameBranch",
 				},
 			},
 			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "branch..." +
+				"StyleClear" + "StyleBranch" + "...Branch" +
 				"StyleClear" + " " +
-				"StyleClear" + "StyleRemote" + "remote/branch...",
+				"StyleClear" + "StyleRemote" + "...Branch",
 		},
 		{
 			name: "issue-32",
