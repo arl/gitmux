@@ -4,8 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/arl/gitstatus"
 )
 
@@ -76,15 +74,17 @@ func TestFlags(t *testing.T) {
 			want: "StyleClear" + "StyleConflictSymbolConflict42 StyleUntrackedSymbolUntracked17",
 		},
 	}
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout},
-				st:     tc.st,
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Layout: tt.layout},
+				st:     tt.st,
 			}
 			f.flags()
-			require.EqualValues(t, tc.want, f.b.String())
+
+			if got := f.b.String(); got != tt.want {
+				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
+			}
 		})
 	}
 }
@@ -166,15 +166,17 @@ func TestDivergence(t *testing.T) {
 			want: "StyleClear" + " ↑·128↓·41",
 		},
 	}
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols},
-				st:     tc.st,
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols},
+				st:     tt.st,
 			}
 			f.divergence()
-			require.EqualValues(t, tc.want, f.b.String())
+
+			if got := f.b.String(); got != tt.want {
+				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
+			}
 		})
 	}
 }
@@ -486,19 +488,20 @@ func TestFormat(t *testing.T) {
 				"StyleClear" + "StyleBranch" + "branchName",
 		},
 	}
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout, Options: tc.options},
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Layout: tt.layout, Options: tt.options},
 			}
 
-			if err := f.Format(os.Stdout, tc.st); err != nil {
+			if err := f.Format(os.Stdout, tt.st); err != nil {
 				t.Fatalf("Format error: %s", err)
 			}
 
 			f.format()
-			require.EqualValues(t, tc.want, f.b.String())
+			if got := f.b.String(); got != tt.want {
+				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
+			}
 		})
 	}
 }
