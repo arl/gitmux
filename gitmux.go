@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/arl/gitstatus"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/arl/gitmux/json"
 	"github.com/arl/gitmux/tmux"

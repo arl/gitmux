@@ -1,10 +1,8 @@
 package tmux
 
 import (
-	"os"
+	"io"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 
 	"github.com/arl/gitstatus"
 )
@@ -76,15 +74,17 @@ func TestFlags(t *testing.T) {
 			want: "StyleClear" + "StyleConflictSymbolConflict42 StyleUntrackedSymbolUntracked17",
 		},
 	}
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout},
-				st:     tc.st,
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Layout: tt.layout},
+				st:     tt.st,
 			}
 			f.flags()
-			require.EqualValues(t, tc.want, f.b.String())
+
+			if got := f.b.String(); got != tt.want {
+				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
+			}
 		})
 	}
 }
@@ -166,75 +166,145 @@ func TestDivergence(t *testing.T) {
 			want: "StyleClear" + " ↑·128↓·41",
 		},
 	}
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols},
-				st:     tc.st,
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols},
+				st:     tt.st,
 			}
 			f.divergence()
-			require.EqualValues(t, tc.want, f.b.String())
+
+			if got := f.b.String(); got != tt.want {
+				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
+			}
 		})
 	}
 }
 
-func TestTruncateBranchName(t *testing.T) {
+func TestTruncate(t *testing.T) {
 	tests := []struct {
-		name       string
-		branchName string
-		maxLen     int
-		isRemote   bool
-		want       string
+		s    string
+		max  int
+		dir  direction
+		want string
 	}{
+		/* trim right */
 		{
-			name:       "no limit",
-			branchName: "foo/bar-baz",
-			maxLen:     0,
-			isRemote:   false,
-			want:       "foo/bar-baz",
+			s:    "br",
+			max:  1,
+			dir:  dirRight,
+			want: "b",
 		},
 		{
-			name:       "no truncate",
-			branchName: "foo/bar-baz",
-			maxLen:     11,
-			isRemote:   false,
-			want:       "foo/bar-baz",
+			s:    "br",
+			max:  3,
+			dir:  dirRight,
+			want: "br",
 		},
 		{
-			name:       "truncate",
-			branchName: "foo/bar-baz",
-			maxLen:     10,
-			isRemote:   false,
-			want:       "foo/bar...",
+			s:    "super-long-branch",
+			max:  3,
+			dir:  dirRight,
+			want: "...",
 		},
 		{
-			name:       "truncate remote",
-			branchName: "remote/foo/bar-baz",
-			maxLen:     10,
-			isRemote:   true,
-			want:       "remote/foo/bar...",
+			s:    "super-long-branch",
+			max:  15,
+			dir:  dirRight,
+			want: "super-long-b...",
 		},
 		{
-			name:       "truncate to 1",
-			branchName: "foo/bar-baz",
-			maxLen:     1,
-			isRemote:   false,
-			want:       ".",
+			s:    "super-long-branch",
+			max:  17,
+			dir:  dirRight,
+			want: "super-long-branch",
 		},
 		{
-			name:       "truncate utf-8 name",
-			branchName: "foo/测试这个名字",
-			maxLen:     9,
-			isRemote:   false,
-			want:       "foo/测试...",
+			s:    "长長的-树樹枝",
+			max:  6,
+			dir:  dirRight,
+			want: "长長的...",
+		},
+		{
+			s:    "super-long-branch",
+			max:  32,
+			dir:  dirRight,
+			want: "super-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  0,
+			dir:  dirRight,
+			want: "super-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  -1,
+			dir:  dirRight,
+			want: "super-long-branch",
+		},
+
+		/* trim left */
+		{
+			s:    "br",
+			max:  1,
+			dir:  dirLeft,
+			want: "r",
+		},
+		{
+			s:    "br",
+			max:  3,
+			dir:  dirLeft,
+			want: "br",
+		},
+		{
+			s:    "super-long-branch",
+			max:  3,
+			dir:  dirLeft,
+			want: "...",
+		},
+		{
+			s:    "super-long-branch",
+			max:  15,
+			dir:  dirLeft,
+			want: "...-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  17,
+			dir:  dirLeft,
+			want: "super-long-branch",
+		},
+		{
+			s:    "长長的-树樹枝",
+			max:  6,
+			dir:  dirLeft,
+			want: "...树樹枝",
+		},
+		{
+			s:    "super-long-branch",
+			max:  32,
+			dir:  dirLeft,
+			want: "super-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  0,
+			dir:  dirLeft,
+			want: "super-long-branch",
+		},
+		{
+			s:    "super-long-branch",
+			max:  -1,
+			dir:  dirLeft,
+			want: "super-long-branch",
 		},
 	}
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			branchName := truncateBranchName(tc.branchName, tc.maxLen, tc.isRemote)
-			require.EqualValues(t, tc.want, branchName)
+	for _, tt := range tests {
+		t.Run("", func(t *testing.T) {
+			if got := truncate(tt.s, tt.max, tt.dir); got != tt.want {
+				t.Errorf("truncate(%q, %d, %s) = %q, want %q", tt.s, tt.max, tt.dir, got, tt.want)
+			}
 		})
 	}
 }
@@ -360,6 +430,7 @@ func TestFormat(t *testing.T) {
 			layout: []string{"branch", " ", "remote"},
 			options: options{
 				BranchMaxLen: 9,
+				BranchTrim:   dirRight,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -370,7 +441,33 @@ func TestFormat(t *testing.T) {
 			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
 				"StyleClear" + "StyleBranch" + "branch..." +
 				"StyleClear" + " " +
-				"StyleClear" + "StyleRemote" + "remote/branch...",
+				"StyleClear" + "StyleRemote" + "remote...",
+		},
+		{
+			name: "branch and remote, branch_max_len not zero and trim left",
+			styles: styles{
+				Clear:  "StyleClear",
+				Branch: "StyleBranch",
+				Remote: "StyleRemote",
+			},
+			symbols: symbols{
+				Branch: "SymbolBranch",
+			},
+			layout: []string{"branch", " ", "remote"},
+			options: options{
+				BranchMaxLen: 9,
+				BranchTrim:   dirLeft,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "nameBranch",
+					RemoteBranch: "remote/nameBranch",
+				},
+			},
+			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
+				"StyleClear" + "StyleBranch" + "...Branch" +
+				"StyleClear" + " " +
+				"StyleClear" + "StyleRemote" + "...Branch",
 		},
 		{
 			name: "issue-32",
@@ -391,19 +488,20 @@ func TestFormat(t *testing.T) {
 				"StyleClear" + "StyleBranch" + "branchName",
 		},
 	}
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tc.styles, Symbols: tc.symbols, Layout: tc.layout, Options: tc.options},
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Layout: tt.layout, Options: tt.options},
 			}
 
-			if err := f.Format(os.Stdout, tc.st); err != nil {
+			if err := f.Format(io.Discard, tt.st); err != nil {
 				t.Fatalf("Format error: %s", err)
 			}
 
 			f.format()
-			require.EqualValues(t, tc.want, f.b.String())
+			if got := f.b.String(); got != tt.want {
+				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
+			}
 		})
 	}
 }
