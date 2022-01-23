@@ -1,7 +1,7 @@
 package tmux
 
 import (
-	"os"
+	"io"
 	"testing"
 
 	"github.com/arl/gitstatus"
@@ -494,7 +494,7 @@ func TestFormat(t *testing.T) {
 				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Layout: tt.layout, Options: tt.options},
 			}
 
-			if err := f.Format(os.Stdout, tt.st); err != nil {
+			if err := f.Format(io.Discard, tt.st); err != nil {
 				t.Fatalf("Format error: %s", err)
 			}
 
