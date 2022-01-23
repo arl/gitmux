@@ -59,36 +59,37 @@ Note that `tmux v2.1` was released in 2015 so you're probably better off updatin
 
 `gitmux` output can be customized via a configuration file in YAML format.
 
-The gitmux configuration file is in YAML format.
+This is the default gitmux configuration file, in YAML format:
 
 ```yaml
 tmux:
-  symbols:
-    branch: '⎇ '
-    hashprefix: ':'
-    ahead: ↑·
-    behind: ↓·
-    staged: '● '
-    conflict: '✖ '
-    modified: '✚ '
-    untracked: '… '
-    stashed: '⚑ '
-    clean: ✔
-  styles:
-    clear: '#[fg=default]'
-    state: '#[fg=red,bold]'
-    branch: '#[fg=white,bold]'
-    remote: '#[fg=cyan]'
-    staged: '#[fg=green,bold]'
-    conflict: '#[fg=red,bold]'
-    modified: '#[fg=red,bold]'
-    untracked: '#[fg=magenta,bold]'
-    stashed: '#[fg=cyan,bold]'
-    clean: '#[fg=green,bold]'
-    divergence: "#[fg=yellow]"    
-  layout: [branch, .., remote, " - ", flags]
-  options:
-    branch_max_len: 0
+    symbols:
+        branch: '⎇ '
+        hashprefix: ':'
+        ahead: ↑·
+        behind: ↓·
+        staged: '● '
+        conflict: '✖ '
+        modified: '✚ '
+        untracked: '… '
+        stashed: '⚑ '
+        clean: ✔
+    styles:
+        clear: '#[fg=default]'
+        state: '#[fg=red,bold]'
+        branch: '#[fg=white,bold]'
+        remote: '#[fg=cyan]'
+        staged: '#[fg=green,bold]'
+        conflict: '#[fg=red,bold]'
+        modified: '#[fg=red,bold]'
+        untracked: '#[fg=magenta,bold]'
+        stashed: '#[fg=cyan,bold]'
+        clean: '#[fg=green,bold]'
+        divergence: '#[fg=default]'
+    layout: [branch, .., remote-branch, divergence, ' - ', flags]
+    options:
+        branch_max_len: 0
+        branch_trim: right
 ```
 
 First, save the default configuration to a new file:
@@ -209,9 +210,10 @@ layout: [flags, " ", branch]
 
 This is the list of additional configuration `options`:
 
-| Option           | Description                                                | Default        |
-| :--------------- | :--------------------------------------------------------- | :------------- |
-| `branch_max_len` | Maximum displayed length for local and remote branch names | `0` (no limit) |
+| Option           | Description                                                | Default            |
+| :--------------- | :--------------------------------------------------------- | :----------------- |
+| `branch_max_len` | Maximum displayed length for local and remote branch names | `0` (no limit)     |
+| `branch_trim`    | Trim left or right end of the branch (`right` or `left`)   | `right` (trailing) |
 
 
 ## Troubleshooting
