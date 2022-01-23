@@ -77,8 +77,8 @@ func (d *direction) UnmarshalYAML(value *yaml.Node) error {
 }
 
 type options struct {
-	BranchMaxLen        int       `yaml:"branch_max_len"`
-	BranchTrimDirection direction `yaml:"branch_trim_direction"`
+	BranchMaxLen int       `yaml:"branch_max_len"`
+	BranchTrim   direction `yaml:"branch_trim"`
 }
 
 // DefaultCfg is the default tmux configuration.
@@ -110,8 +110,8 @@ var DefaultCfg = Config{
 	},
 	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
 	Options: options{
-		BranchMaxLen:        0,
-		BranchTrimDirection: dirRight,
+		BranchMaxLen: 0,
+		BranchTrim:   dirRight,
 	},
 }
 
@@ -162,7 +162,7 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 
 	// overall working tree state
 	if f.st.IsInitial {
-		branch := truncate(f.st.LocalBranch, f.Options.BranchMaxLen, f.Options.BranchTrimDirection)
+		branch := truncate(f.st.LocalBranch, f.Options.BranchMaxLen, f.Options.BranchTrim)
 		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch, branch)
 		f.flags()
 		_, err := f.b.WriteTo(w)
@@ -229,7 +229,7 @@ func (f *Formater) remoteBranch() {
 
 	f.clear()
 
-	branch := truncate(f.st.RemoteBranch, f.Options.BranchMaxLen, f.Options.BranchTrimDirection)
+	branch := truncate(f.st.RemoteBranch, f.Options.BranchMaxLen, f.Options.BranchTrim)
 	fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, branch)
 }
 
@@ -264,7 +264,7 @@ func (f *Formater) currentRef() {
 		return
 	}
 
-	branch := truncate(f.st.LocalBranch, f.Options.BranchMaxLen, f.Options.BranchTrimDirection)
+	branch := truncate(f.st.LocalBranch, f.Options.BranchMaxLen, f.Options.BranchTrim)
 	fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch, branch)
 }
 

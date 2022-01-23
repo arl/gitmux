@@ -427,8 +427,8 @@ func TestFormat(t *testing.T) {
 			},
 			layout: []string{"branch", " ", "remote"},
 			options: options{
-				BranchMaxLen:        9,
-				BranchTrimDirection: dirRight,
+				BranchMaxLen: 9,
+				BranchTrim:   dirRight,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -453,8 +453,8 @@ func TestFormat(t *testing.T) {
 			},
 			layout: []string{"branch", " ", "remote"},
 			options: options{
-				BranchMaxLen:        9,
-				BranchTrimDirection: dirLeft,
+				BranchMaxLen: 9,
+				BranchTrim:   dirLeft,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
