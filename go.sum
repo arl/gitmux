@@ -1,5 +1,5 @@
-github.com/arl/gitstatus v0.4.3 h1:ad4Fk4uXRy7WRvK6UMKD1ijvElFN/ugvqzDWJo00pJs=
-github.com/arl/gitstatus v0.4.3/go.mod h1:pEiL+vLLz99X0m5G4MySAt4o0fQw2yUbFeq2s7sMUzY=
+github.com/arl/gitstatus v0.4.4 h1:de5hty3GKMgiilxPzoE5w8Y+PSK6d8Cb7MReH61+zKQ=
+github.com/arl/gitstatus v0.4.4/go.mod h1:pEiL+vLLz99X0m5G4MySAt4o0fQw2yUbFeq2s7sMUzY=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
