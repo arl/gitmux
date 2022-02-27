@@ -43,8 +43,6 @@ func parseOptions() (ctx context.Context, dir string, dbg bool, cfg Config) {
 		timeout     = flag.Duration("timeout", 0, "")
 	)
 
-	flag.Bool("q", true, "")   // unused, kept for retro-compatibility.
-	flag.String("fmt", "", "") // unused, kept for retro-compatibility.
 	flag.Usage = func() {
 		fmt.Println(_usage)
 	}
