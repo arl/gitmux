@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/arl/gitstatus"
 	"gopkg.in/yaml.v3"
@@ -35,34 +34,14 @@ type Config struct{ Tmux tmux.Config }
 
 var _defaultCfg = Config{Tmux: tmux.DefaultCfg}
 
-// duration is time.Duration usable as command line flag.
-type duration time.Duration
-
-func (d duration) String() string {
-	if d == 0 {
-		return "none"
-	}
-
-	return time.Duration(d).String()
-}
-
-func (d *duration) Set(s string) error {
-	dur, err := time.ParseDuration(s)
-	if err != nil {
-		return err
-	}
-
-	*d = duration(dur)
-	return nil
-}
-
 func parseOptions() (ctx context.Context, dir string, dbg bool, cfg Config) {
-	dbgOpt := flag.Bool("dbg", false, "")
-	cfgOpt := flag.String("cfg", "", "")
-	printCfgOpt := flag.Bool("printcfg", false, "")
-	versionOpt := flag.Bool("V", false, "")
-	timeout := duration(0)
-	flag.Var(&timeout, "timeout", "")
+	var (
+		dbgOpt      = flag.Bool("dbg", false, "")
+		cfgOpt      = flag.String("cfg", "", "")
+		printCfgOpt = flag.Bool("printcfg", false, "")
+		versionOpt  = flag.Bool("V", false, "")
+		timeout     = flag.Duration("timeout", 0, "")
+	)
 
 	flag.Bool("q", true, "")   // unused, kept for retro-compatibility.
 	flag.String("fmt", "", "") // unused, kept for retro-compatibility.
@@ -99,8 +78,8 @@ func parseOptions() (ctx context.Context, dir string, dbg bool, cfg Config) {
 	}
 
 	ctx = context.Background()
-	if timeout != 0 {
-		ctx, _ = context.WithTimeout(ctx, time.Duration(timeout))
+	if *timeout != 0 {
+		ctx, _ = context.WithTimeout(ctx, *timeout)
 	}
 
 	return ctx, dir, *dbgOpt, cfg
