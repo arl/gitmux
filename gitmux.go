@@ -34,7 +34,7 @@ type Config struct{ Tmux tmux.Config }
 
 var _defaultCfg = Config{Tmux: tmux.DefaultCfg}
 
-func parseOptions() (ctx context.Context, dir string, dbg bool, cfg Config) {
+func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, cfg Config) {
 	var (
 		dbgOpt      = flag.Bool("dbg", false, "")
 		cfgOpt      = flag.String("cfg", "", "")
@@ -75,12 +75,13 @@ func parseOptions() (ctx context.Context, dir string, dbg bool, cfg Config) {
 		check(dec.Decode(&cfg), *dbgOpt)
 	}
 
-	ctx = context.Background()
 	if *timeout != 0 {
-		ctx, _ = context.WithTimeout(ctx, *timeout)
+		ctx, cancel = context.WithTimeout(context.Background(), *timeout)
+	} else {
+		ctx, cancel = context.WithCancel(context.Background())
 	}
 
-	return ctx, dir, *dbgOpt, cfg
+	return ctx, cancel, dir, *dbgOpt, cfg
 }
 
 func pushdir(dir string) (popdir func() error, err error) {
@@ -109,7 +110,8 @@ func check(err error, dbg bool) {
 }
 
 func main() {
-	ctx, dir, dbg, cfg := parseOptions()
+	ctx, cancel, dir, dbg, cfg := parseOptions()
+	defer cancel()
 
 	// handle directory change.
 	if dir != "." {
