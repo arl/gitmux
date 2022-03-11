@@ -40,7 +40,7 @@ func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, c
 		cfgOpt      = flag.String("cfg", "", "")
 		printCfgOpt = flag.Bool("printcfg", false, "")
 		versionOpt  = flag.Bool("V", false, "")
-		timeout     = flag.Duration("timeout", 0, "")
+		timeoutOpt  = flag.Duration("timeout", 0, "")
 	)
 
 	flag.Usage = func() {
@@ -75,8 +75,8 @@ func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, c
 		check(dec.Decode(&cfg), *dbgOpt)
 	}
 
-	if *timeout != 0 {
-		ctx, cancel = context.WithTimeout(context.Background(), *timeout)
+	if *timeoutOpt != 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), *timeoutOpt)
 	} else {
 		ctx, cancel = context.WithCancel(context.Background())
 	}
