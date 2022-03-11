@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/arl/gitstatus"
@@ -113,7 +114,7 @@ func main() {
 	ctx, cancel, dir, dbg, cfg := parseOptions()
 	defer cancel()
 
-	// handle directory change.
+	// Handle directory change.
 	if dir != "." {
 		popDir, err := pushdir(dir)
 
@@ -123,16 +124,20 @@ func main() {
 		}()
 	}
 
-	// retrieve git status.
+	// Retrieve git status.
 	st, err := gitstatus.NewWithContext(ctx)
 	check(err, dbg)
 
-	// select defauit formater
-	var formater formater = &tmux.Formater{Config: cfg.Tmux}
-	if dbg {
-		formater = &json.Formater{}
+	// Interface that writes a particular representation of a gitstatus.Status
+	type formater interface {
+		Format(io.Writer, *gitstatus.Status) error
 	}
 
-	// format and print
-	check(formater.Format(os.Stdout, st), dbg)
+	// Set defauit formater.
+	var fmter formater = &tmux.Formater{Config: cfg.Tmux}
+	if dbg {
+		fmter = &json.Formater{}
+	}
+
+	check(fmter.Format(os.Stdout, st), dbg)
 }
