@@ -4,8 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"os"
-	"time"
 
 	"github.com/arl/gitstatus"
 	"gopkg.in/yaml.v3"
@@ -35,37 +35,15 @@ type Config struct{ Tmux tmux.Config }
 
 var _defaultCfg = Config{Tmux: tmux.DefaultCfg}
 
-// duration is time.Duration usable as command line flag.
-type duration time.Duration
+func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, cfg Config) {
+	var (
+		dbgOpt      = flag.Bool("dbg", false, "")
+		cfgOpt      = flag.String("cfg", "", "")
+		printCfgOpt = flag.Bool("printcfg", false, "")
+		versionOpt  = flag.Bool("V", false, "")
+		timeoutOpt  = flag.Duration("timeout", 0, "")
+	)
 
-func (d duration) String() string {
-	if d == 0 {
-		return "none"
-	}
-
-	return time.Duration(d).String()
-}
-
-func (d *duration) Set(s string) error {
-	dur, err := time.ParseDuration(s)
-	if err != nil {
-		return err
-	}
-
-	*d = duration(dur)
-	return nil
-}
-
-func parseOptions() (ctx context.Context, dir string, dbg bool, cfg Config) {
-	dbgOpt := flag.Bool("dbg", false, "")
-	cfgOpt := flag.String("cfg", "", "")
-	printCfgOpt := flag.Bool("printcfg", false, "")
-	versionOpt := flag.Bool("V", false, "")
-	timeout := duration(0)
-	flag.Var(&timeout, "timeout", "")
-
-	flag.Bool("q", true, "")   // unused, kept for retro-compatibility.
-	flag.String("fmt", "", "") // unused, kept for retro-compatibility.
 	flag.Usage = func() {
 		fmt.Println(_usage)
 	}
@@ -98,12 +76,13 @@ func parseOptions() (ctx context.Context, dir string, dbg bool, cfg Config) {
 		check(dec.Decode(&cfg), *dbgOpt)
 	}
 
-	ctx = context.Background()
-	if timeout != 0 {
-		ctx, _ = context.WithTimeout(ctx, time.Duration(timeout))
+	if *timeoutOpt != 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), *timeoutOpt)
+	} else {
+		ctx, cancel = context.WithCancel(context.Background())
 	}
 
-	return ctx, dir, *dbgOpt, cfg
+	return ctx, cancel, dir, *dbgOpt, cfg
 }
 
 func pushdir(dir string) (popdir func() error, err error) {
@@ -132,9 +111,10 @@ func check(err error, dbg bool) {
 }
 
 func main() {
-	ctx, dir, dbg, cfg := parseOptions()
+	ctx, cancel, dir, dbg, cfg := parseOptions()
+	defer cancel()
 
-	// handle directory change.
+	// Handle directory change.
 	if dir != "." {
 		popDir, err := pushdir(dir)
 
@@ -144,16 +124,20 @@ func main() {
 		}()
 	}
 
-	// retrieve git status.
+	// Retrieve git status.
 	st, err := gitstatus.NewWithContext(ctx)
 	check(err, dbg)
 
-	// select defauit formater
-	var formater formater = &tmux.Formater{Config: cfg.Tmux}
-	if dbg {
-		formater = &json.Formater{}
+	// Interface that writes a particular representation of a gitstatus.Status
+	type formater interface {
+		Format(io.Writer, *gitstatus.Status) error
 	}
 
-	// format and print
-	check(formater.Format(os.Stdout, st), dbg)
+	// Set defauit formater.
+	var fmter formater = &tmux.Formater{Config: cfg.Tmux}
+	if dbg {
+		fmter = &json.Formater{}
+	}
+
+	check(fmter.Format(os.Stdout, st), dbg)
 }

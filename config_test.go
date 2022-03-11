@@ -4,7 +4,6 @@
 package main
 
 import (
-	_ "embed"
 	"flag"
 	"os"
 	"testing"
