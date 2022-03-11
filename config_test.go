@@ -1,136 +1,35 @@
+//go:build !windows
+// +build !windows
+
 package main
 
 import (
-	"bytes"
+	_ "embed"
 	"flag"
-	"io/ioutil"
 	"os"
-	"os/exec"
-	"path"
-	"strings"
 	"testing"
+
+	"github.com/rogpeppe/go-internal/gotooltest"
+	"github.com/rogpeppe/go-internal/testscript"
 )
 
-var _updateGolden = flag.Bool("update", false, "update golden files")
+var updateGolden = flag.Bool("update", false, "update golden files")
 
-// This test ensures that new features do not change gitmux output when used
-// with a default configuration.
-func TestOutputNonRegression(t *testing.T) {
-	tmpdir := t.TempDir()
-
-	t.Logf("test working directory: %q", tmpdir)
-	cloneAndHack(t, tmpdir)
-
-	cmd := exec.Command("go", "run", ".", "-printcfg")
-
-	b, err := cmd.CombinedOutput()
+func TestScripts(t *testing.T) {
+	wd, err := os.Getwd()
 	if err != nil {
-		t.Fatalf("Command error: %s: %s\noutput: %s", cmdString(cmd), err, string(b))
+		t.Fatalf("GetWd error: %v", err)
 	}
-
-	defcfg := path.Join(tmpdir, "default.cfg")
-	if err := ioutil.WriteFile(defcfg, b, os.ModePerm); err != nil {
-		t.Fatalf("Can't write %q: %s", defcfg, err)
+	params := testscript.Params{
+		Dir: "testdata",
+		Setup: func(env *testscript.Env) error {
+			env.Setenv("GITMUX_DIR", wd)
+			return nil
+		},
+		UpdateScripts: *updateGolden,
 	}
-
-	repodir := path.Join(tmpdir, "gitmux")
-	cmd = exec.Command("go", "run", ".", "-cfg", defcfg, repodir)
-
-	got, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("Command %q failed:\n%s\nerr: %s", cmdString(cmd), b, err)
+	if err := gotooltest.Setup(&params); err != nil {
+		t.Errorf("gotooltest.Setup error: %v", err)
 	}
-
-	goldenFile := path.Join("testdata", "default.output.golden")
-
-	if *_updateGolden {
-		if err := ioutil.WriteFile(goldenFile, got, os.ModePerm); err != nil {
-			t.Fatalf("Can't update golden file %q: %s", goldenFile, err)
-		}
-	}
-
-	want, err := ioutil.ReadFile(goldenFile)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if !bytes.Equal(want, got) {
-		t.Fatalf("got:\n%s\nwant:\n%s", want, got)
-	}
-}
-
-func cmdString(cmd *exec.Cmd) string {
-	return strings.Join(append([]string{cmd.Path}, cmd.Args...), " ")
-}
-
-func git(t *testing.T, args ...string) {
-	t.Helper()
-
-	cmd := exec.Command("git", args...)
-	if out, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("Command %q failed:\n%s\nerr: %s", cmdString(cmd), out, err)
-	}
-}
-
-func cloneAndHack(t *testing.T, dir string) {
-	t.Helper()
-
-	popd1, err := pushdir(dir)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer func() {
-		if err := popd1(); err != nil {
-			t.Fatalf("popd1: %v", err)
-		}
-	}()
-
-	git(t, "clone", "git://github.com/arl/gitmux.git")
-
-	popd2, err := pushdir("gitmux")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer func() {
-		if err := popd2(); err != nil {
-			t.Fatalf("popd2: %v", err)
-		}
-	}()
-
-	if err := ioutil.WriteFile("dummy", []byte("dummy"), os.ModePerm); err != nil {
-		t.Fatalf("write dummy: %s", err)
-	}
-
-	git(t, "config", "user.email", t.Name()+"@test.ci")
-	git(t, "config", "user.name", t.Name())
-	git(t, "add", "dummy")
-	git(t, "commit", "-m", "add dummy file")
-
-	if err := ioutil.WriteFile("dummy2", []byte("dummy2"), os.ModePerm); err != nil {
-		t.Fatalf("write dummy2: %s", err)
-	}
-
-	git(t, "add", "dummy2")
-	git(t, "stash")
-
-	if err := ioutil.WriteFile("file1", nil, os.ModePerm); err != nil {
-		t.Fatalf("write file1: %s", err)
-	}
-
-	if err := ioutil.WriteFile("file2", nil, os.ModePerm); err != nil {
-		t.Fatalf("write file2: %s", err)
-	}
-
-	if err := ioutil.WriteFile("file3", nil, os.ModePerm); err != nil {
-		t.Fatalf("write file3: %s", err)
-	}
-
-	git(t, "add", "file1")
-	git(t, "add", "file2")
-
-	if err := ioutil.WriteFile("file2", []byte("foo"), os.ModePerm); err != nil {
-		t.Fatalf("write file2: %s", err)
-	}
+	testscript.Run(t, params)
 }

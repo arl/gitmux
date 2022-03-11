@@ -1,0 +1,54 @@
+# Create a Git directory out of $WORK
+exec git init
+exec git checkout -b main
+exec git config user.email tester@email.com
+exec git config user.name Testeur DeTest
+
+# Do Git stuff to get to some specific Git status
+exec git add some_file
+exec git commit -m 'Add some file'
+exec git add some_other_file
+exec git stash
+exec git add another_file
+rm some_file
+
+# Build gitmux binary and copy it to $WORK
+cd $GITMUX_DIR
+go build -o $WORK/gitmux .
+
+# Back to $WORK
+cd $WORK
+exec ./gitmux
+exec ./gitmux --printcfg
+cp stdout gitmux.yaml
+
+# Run gitmux and compare output to the golden file
+# NOTE: we have to add a /n to the end of gitmux output
+# since for some reason our golden file always gets appended a /n
+exec ./gitmux --cfg gitmux.yaml
+stdin stdout
+exec sed 's/$/\n/'
+cp stdout output
+cmp output output.golden
+
+-- .gitignore --
+.gitignore
+gopath
+gitmux
+gitmux.exe
+.tmp
+output.golden
+
+-- some_file --
+some content
+
+-- some_other_file --
+with some other
+content...
+
+-- another_file --
+with some different content
+
+-- empty_file --
+-- output.golden --
+#[fg=default]#[fg=default]#[fg=white,bold]⎇ #[fg=default]#[fg=white,bold]main#[fg=default]..#[fg=default] - #[fg=default]#[fg=green,bold]● 1 #[fg=red,bold]✚ 1 #[fg=cyan,bold]⚑ 1 #[fg=magenta,bold]… 2
