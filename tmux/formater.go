@@ -269,14 +269,18 @@ func (f *Formater) currentRef() {
 }
 
 func (f *Formater) flags() {
+	var flags []string
 	if f.st.IsClean {
-		f.clear()
-		fmt.Fprintf(&f.b, "%s%s", f.Styles.Clean, f.Symbols.Clean)
+		if f.st.NumStashed != 0 {
+			flags = append(flags,
+				fmt.Sprintf("%s%s%d", f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
+		}
 
+		flags = append(flags, fmt.Sprintf("%s%s", f.Styles.Clean, f.Symbols.Clean))
+		f.clear()
+		f.b.WriteString(strings.Join(flags, " "))
 		return
 	}
-
-	var flags []string
 
 	if f.st.NumStaged != 0 {
 		flags = append(flags,

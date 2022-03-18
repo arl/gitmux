@@ -32,6 +32,24 @@ func TestFlags(t *testing.T) {
 			want: "StyleClear" + "StyleCleanSymbolClean",
 		},
 		{
+			name: "stash + clean flag",
+			styles: styles{
+				Clear:   "StyleClear",
+				Clean:   "StyleClean",
+				Stashed: "StyleStash",
+			},
+			symbols: symbols{
+				Clean:   "SymbolClean",
+				Stashed: "SymbolStash",
+			},
+			layout: []string{"branch", "..", "remote", " - ", "flags"},
+			st: &gitstatus.Status{
+				IsClean:    true,
+				NumStashed: 1,
+			},
+			want: "StyleClearStyleStashSymbolStash1 StyleCleanSymbolClean",
+		},
+		{
 			name: "mixed flags",
 			styles: styles{
 				Clear:    "StyleClear",
