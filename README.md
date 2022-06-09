@@ -36,10 +36,12 @@ Works with all decently recent [tmux](https://github.com/tmux/tmux) versions.
 
 ### From source
 
-[Download and install a Go compiler](https://golang.org/dl/) (Go 1.15 or later).
-Run `go get` to build and install `gitmux`:
+[Download and install a Go compiler](https://golang.org/dl/) (Go 1.16 or later).
+Run `go install` to build and install `gitmux`:
 
-    go get -u github.com/arl/gitmux
+```bash
+go install github.com/arl/gitmux@latest
+```
 
 ## Getting started
 
