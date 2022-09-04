@@ -57,7 +57,11 @@ you run or when you switch windows, however it won't refresh automatically, nor 
 
 Note that `tmux v2.1` was released in 2015 so you're probably better off updating to a more recent version anyway 🙂.
 
-If gitmux takes a long time to appear it's because the `status-interval` variable has to be updated with the correct value, [check the tmux doc for that](https://www.man7.org/linux/man-pages/man1/tmux.1.html#OPTIONS).
+In case gitmux takes too long to refresh, try to decrease the value of the `status-interval` option. A reasonable value is 2 seconds, which you can set in `.tmux.conf` with:
+
+    set -g status-interval 2
+
+Check out [tmux man page](https://www.man7.org/linux/man-pages/man1/tmux.1.html#OPTIONS) for more details.
 
 ## Customizing
 
