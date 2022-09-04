@@ -57,6 +57,12 @@ you run or when you switch windows, however it won't refresh automatically, nor 
 
 Note that `tmux v2.1` was released in 2015 so you're probably better off updating to a more recent version anyway 🙂.
 
+In case gitmux takes too long to refresh, try to decrease the value of the `status-interval` option. A reasonable value is 2 seconds, which you can set in `.tmux.conf` with:
+
+    set -g status-interval 2
+
+Check out [tmux man page](https://www.man7.org/linux/man-pages/man1/tmux.1.html#OPTIONS) for more details.
+
 ## Customizing
 
 `gitmux` output can be customized via a configuration file in YAML format.
@@ -98,9 +104,9 @@ First, save the default configuration to a new file:
 
     gitmux -printcfg > .gitmux.conf
 
-Modify the line in `.tmux.conf`, passing the path of the configuration file as argument to `gitmux`
+Modify the line in `.tmux.conf`, passing the path of the configuration file as argument to `gitmux` via the `-cfg` flag
 
-    gitmux -cfg .gitmux.conf
+    set -g status-right '#(gitmux -cfg .gitmux.conf "#{pane_current_path}")'
 
 Open `.gitmux.conf` and modify it, replacing symbols, styles and layout to suit your needs.
 
@@ -221,7 +227,6 @@ This is the list of additional configuration `options`:
 ## Troubleshooting
 
 Please report anything by [filing an issue](https://github.com/arl/gitmux/issues/new).
-
 
 ## Contributing
 
