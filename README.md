@@ -32,7 +32,12 @@ Works with all decently recent [tmux](https://github.com/tmux/tmux) versions.
 ## Installing
 
 ### Binary release
+
 [Download the latest](https://github.com/arl/gitmux/releases/latest) binary for your platform/architecture and uncompress it.
+
+### AUR
+
+Arch Linux users can download the [gitmux](https://aur.archlinux.org/packages/gitmux), [gitmux-bin](https://aur.archlinux.org/packages/gitmux-bin) or [gitmux-git](https://aur.archlinux.org/packages/gitmux-git) AUR package.
 
 ### From source
 
