@@ -18,7 +18,8 @@ archives:
   - replacements:
       darwin: macOS
     files:
-      - none*
+      - LICENSE
+      - README.md
 checksum:
   name_template: "checksums.txt"
 snapshot:
