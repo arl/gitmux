@@ -10,16 +10,17 @@ builds:
     goarch:
       - amd64
       - arm64
-      - 386
+      - "386"
     ignore:
       - goos: darwin
-        goarch: 386
+        goarch: "386"
 archives:
-  - replacements:
-      darwin: macOS
+  - name_template: >-
+      {{ .ProjectName }}_{{- .Tag }}_{{- if eq .Os "darwin" }}macOS{{- else }}{{ .Os }}{{ end }}_{{ .Arch }}
     files:
       - LICENSE
       - README.md
+    rlcp: true
 checksum:
   name_template: "checksums.txt"
 snapshot:
