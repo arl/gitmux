@@ -31,3 +31,20 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+brews:
+  - name: gitmux
+    homepage: "https://github.com/arl/gitmux"
+    description: "Git in your tmux status bar."
+    license: "MIT"
+    url_template: "https://github.com/arl/gitmux/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    folder: Formula
+    skip_upload: true
+    tap:
+      owner: arl
+      name: homebrew-arl
+      branch: main
+    commit_author:
+      name: goreleaser-bot
+      email: bot@goreleaser.com
