@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   goreleaser:
+    name: Publish release to github/brew
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,6 +26,20 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --rm-dist
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  check_brew:
+    name: Check brew tap has been updated
+    runs-on: macos-latest
+    needs: goreleaser
+    steps:
+      - name: brew tap/install
+        run: |
+          brew tap arl/arl
+          brew install gitmux
+          gitmux -V
+      - name: check gitmux version
+        run: |
+          [ v$(gitmux -V) == "$GITHUB_REF_NAME" ]

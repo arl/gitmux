@@ -5,8 +5,12 @@
 <hr>
 
 <p align="center">
-<a href="https://github.com/arl/gitmux/actions">
-  <img alt="tests" src="https://github.com/arl/gitmux/actions/workflows/tests.yml/badge.svg" />
+
+<a href="https://github.com/arl/gitmux/actions/workflows/ci.yml">
+  <img alt="tests" src="https://github.com/arl/gitmux/actions/workflows/ci.yml/badge.svg" />
+</a>
+<a href="https://github.com/arl/gitmux/actions/workflows/cd.yml">
+  <img alt="tests" src="https://github.com/arl/gitmux/actions/workflows/cd.yml/badge.svg" />
 </a>
 <a href="https://goreportcard.com/report/github.com/arl/gitmux">
   <img alt="goreport" src="https://goreportcard.com/badge/github.com/arl/gitmux" />
@@ -25,6 +29,7 @@
  - **shell-agnostic**. Does not rely on shell-features so works with all of them
  - **customizable**. Colors, symbols and layout are configurable
 
+
 ## Prerequisites
 
 Works with all decently recent [tmux](https://github.com/tmux/tmux) versions.
@@ -34,6 +39,16 @@ Works with all decently recent [tmux](https://github.com/tmux/tmux) versions.
 ### Binary release
 
 [Download the latest](https://github.com/arl/gitmux/releases/latest) binary for your platform/architecture and uncompress it.
+
+
+### Homebrew (tap)
+
+Install the latest version with:
+
+```sh
+brew tap arl/arl
+brew install gitmux
+```
 
 ### AUR
 
