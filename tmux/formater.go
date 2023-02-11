@@ -40,17 +40,20 @@ type symbols struct {
 }
 
 type styles struct {
-	Clear      string // Clear is the style string that clears all styles.
-	State      string // State is the style string printed before eventual special state.
-	Branch     string // Branch is the style string printed before the local branch.
-	Remote     string // Remote is the style string printed before the upstream branch.
-	Staged     string // Staged is the style string printed before the staged files count.
-	Conflict   string // Conflict is the style string printed before the conflict count.
-	Modified   string // Modified is the style string printed before the modified files count.
-	Untracked  string // Untracked is the style string printed before the untracked files count.
-	Stashed    string // Stashed is the style string printed before the stash entries count.
-	Clean      string // Clean is the style string printed before the clean symbols.
+	Clear string // Clear is the style string that clears all styles.
+
+	State  string // State is the style string printed before eventual special state.
+	Branch string // Branch is the style string printed before the local branch.
+	Remote string // Remote is the style string printed before the upstream branch.
+
 	Divergence string // Divergence is the style string printed before divergence count/symbols.
+
+	Staged    string // Staged is the style string printed before the staged files count.
+	Conflict  string // Conflict is the style string printed before the conflict count.
+	Modified  string // Modified is the style string printed before the modified files count.
+	Untracked string // Untracked is the style string printed before the untracked files count.
+	Stashed   string // Stashed is the style string printed before the stash entries count.
+	Clean     string // Clean is the style string printed before the clean symbols.
 }
 
 const (
