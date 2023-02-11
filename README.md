@@ -40,6 +40,16 @@ Works with all decently recent [tmux](https://github.com/tmux/tmux) versions.
 
 [Download the latest](https://github.com/arl/gitmux/releases/latest) binary for your platform/architecture and uncompress it.
 
+
+### Homebrew (tap)
+
+Install the latest version with:
+
+```sh
+brew tap arl/arl
+brew install gitmux
+```
+
 ### AUR
 
 Arch Linux users can download the [gitmux](https://aur.archlinux.org/packages/gitmux), [gitmux-bin](https://aur.archlinux.org/packages/gitmux-bin) or [gitmux-git](https://aur.archlinux.org/packages/gitmux-git) AUR package.
