@@ -41,7 +41,7 @@ Works with all decently recent [tmux](https://github.com/tmux/tmux) versions.
 [Download the latest](https://github.com/arl/gitmux/releases/latest) binary for your platform/architecture and uncompress it.
 
 
-### Homebrew (tap)
+### Homebrew (tap) macOS and linux, amd64 and arm64
 
 Install the latest version with:
 
