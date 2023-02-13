@@ -45,10 +45,8 @@ Works with all decently recent [tmux](https://github.com/tmux/tmux) versions.
 
 Install the latest version with:
 
-```sh
-brew tap arl/arl
-brew install gitmux
-```
+    brew tap arl/arl
+    brew install gitmux
 
 ### AUR
 
@@ -59,9 +57,7 @@ Arch Linux users can download the [gitmux](https://aur.archlinux.org/packages/gi
 [Download and install a Go compiler](https://golang.org/dl/) (Go 1.16 or later).
 Run `go install` to build and install `gitmux`:
 
-```bash
-go install github.com/arl/gitmux@latest
-```
+    go install github.com/arl/gitmux@latest
 
 ## Getting started
 
