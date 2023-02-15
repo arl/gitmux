@@ -328,3 +328,20 @@ func (f *Formater) flags() {
 		f.b.WriteString(strings.Join(flags, " "))
 	}
 }
+
+func (f *Formater) stats() {
+	stats := make([]string, 0, 2)
+
+	if f.st.Insertions != 0 {
+		stats = append(stats, fmt.Sprintf("%s%s%d", f.Styles.Insertions, f.Symbols.Insertions, f.st.Insertions))
+	}
+
+	if f.st.Deletions != 0 {
+		stats = append(stats, fmt.Sprintf("%s%s%d", f.Styles.Deletions, f.Symbols.Deletions, f.st.Deletions))
+	}
+
+	if len(stats) != 0 {
+		f.clear()
+		f.b.WriteString(strings.Join(stats, " "))
+	}
+}
