@@ -37,6 +37,9 @@ type symbols struct {
 	Untracked string // Untracked is the string shown before the count of untracked files.
 	Stashed   string // Stashed is the string shown before the count of stash entries.
 	Clean     string // Clean is the string shown when the working tree is clean.
+
+	Insertions string // Insertions is the string shown before the count of inserted lines.
+	Deletions  string // Deletions is the string shown before the count of deleted lines.
 }
 
 type styles struct {
@@ -54,6 +57,9 @@ type styles struct {
 	Untracked string // Untracked is the style string printed before the untracked files count.
 	Stashed   string // Stashed is the style string printed before the stash entries count.
 	Clean     string // Clean is the style string printed before the clean symbols.
+
+	Insertions string // Insertions is the style string printed before the count of inserted lines.
+	Deletions  string // Deletions is the style string printed before the count of deleted lines.
 }
 
 const (
@@ -97,6 +103,9 @@ var DefaultCfg = Config{
 		Ahead:      "↑·",
 		Behind:     "↓·",
 		HashPrefix: ":",
+
+		Insertions: "Σ",
+		Deletions:  "Δ",
 	},
 	Styles: styles{
 		Clear:      "#[fg=default]",
@@ -110,6 +119,8 @@ var DefaultCfg = Config{
 		Untracked:  "#[fg=magenta,bold]",
 		Stashed:    "#[fg=cyan,bold]",
 		Clean:      "#[fg=green,bold]",
+		Insertions: "#[fg=green]",
+		Deletions:  "#[fg=red]",
 	},
 	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
 	Options: options{
@@ -193,6 +204,8 @@ func (f *Formater) format() {
 			f.divergence()
 		case "flags":
 			f.flags()
+		case "stats":
+			f.stats()
 		default:
 			f.clear()
 			f.b.WriteString(item)
