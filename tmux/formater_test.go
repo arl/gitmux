@@ -523,3 +523,60 @@ func TestFormat(t *testing.T) {
 		})
 	}
 }
+
+func Test_stats(t *testing.T) {
+	tests := []struct {
+		name                  string
+		layout                []string
+		insertions, deletions int
+		want                  string
+	}{
+		{
+			name: "nothing",
+			want: "",
+		},
+		{
+			name:       "insertions",
+			insertions: 12,
+			want:       "StyleClear" + "StyleInsertionsSymbolInsertions12",
+		},
+		{
+			name:      "deletions",
+			deletions: 12,
+			want:      "StyleClear" + "StyleDeletionsSymbolDeletions12",
+		},
+		{
+			name:       "insertions and deletions",
+			insertions: 1,
+			deletions:  2,
+			want:       "StyleClear" + "StyleInsertionsSymbolInsertions1" + " " + "StyleDeletionsSymbolDeletions2",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := &Formater{
+				Config: Config{
+					Styles: styles{
+						Clear:      "StyleClear",
+						Deletions:  "StyleDeletions",
+						Insertions: "StyleInsertions",
+					},
+					Symbols: symbols{
+						Deletions:  "SymbolDeletions",
+						Insertions: "SymbolInsertions",
+					},
+					Layout: []string{"stats"},
+				},
+				st: &gitstatus.Status{
+					Insertions: tt.insertions,
+					Deletions:  tt.deletions,
+				},
+			}
+			f.stats()
+
+			if got := f.b.String(); got != tt.want {
+				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
+			}
+		})
+	}
+}

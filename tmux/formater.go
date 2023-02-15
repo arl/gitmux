@@ -37,20 +37,29 @@ type symbols struct {
 	Untracked string // Untracked is the string shown before the count of untracked files.
 	Stashed   string // Stashed is the string shown before the count of stash entries.
 	Clean     string // Clean is the string shown when the working tree is clean.
+
+	Insertions string // Insertions is the string shown before the count of inserted lines.
+	Deletions  string // Deletions is the string shown before the count of deleted lines.
 }
 
 type styles struct {
-	Clear      string // Clear is the style string that clears all styles.
-	State      string // State is the style string printed before eventual special state.
-	Branch     string // Branch is the style string printed before the local branch.
-	Remote     string // Remote is the style string printed before the upstream branch.
-	Staged     string // Staged is the style string printed before the staged files count.
-	Conflict   string // Conflict is the style string printed before the conflict count.
-	Modified   string // Modified is the style string printed before the modified files count.
-	Untracked  string // Untracked is the style string printed before the untracked files count.
-	Stashed    string // Stashed is the style string printed before the stash entries count.
-	Clean      string // Clean is the style string printed before the clean symbols.
+	Clear string // Clear is the style string that clears all styles.
+
+	State  string // State is the style string printed before eventual special state.
+	Branch string // Branch is the style string printed before the local branch.
+	Remote string // Remote is the style string printed before the upstream branch.
+
 	Divergence string // Divergence is the style string printed before divergence count/symbols.
+
+	Staged    string // Staged is the style string printed before the staged files count.
+	Conflict  string // Conflict is the style string printed before the conflict count.
+	Modified  string // Modified is the style string printed before the modified files count.
+	Untracked string // Untracked is the style string printed before the untracked files count.
+	Stashed   string // Stashed is the style string printed before the stash entries count.
+	Clean     string // Clean is the style string printed before the clean symbols.
+
+	Insertions string // Insertions is the style string printed before the count of inserted lines.
+	Deletions  string // Deletions is the style string printed before the count of deleted lines.
 }
 
 const (
@@ -94,6 +103,9 @@ var DefaultCfg = Config{
 		Ahead:      "↑·",
 		Behind:     "↓·",
 		HashPrefix: ":",
+
+		Insertions: "Σ",
+		Deletions:  "Δ",
 	},
 	Styles: styles{
 		Clear:      "#[fg=default]",
@@ -107,6 +119,8 @@ var DefaultCfg = Config{
 		Untracked:  "#[fg=magenta,bold]",
 		Stashed:    "#[fg=cyan,bold]",
 		Clean:      "#[fg=green,bold]",
+		Insertions: "#[fg=green]",
+		Deletions:  "#[fg=red]",
 	},
 	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
 	Options: options{
@@ -190,6 +204,8 @@ func (f *Formater) format() {
 			f.divergence()
 		case "flags":
 			f.flags()
+		case "stats":
+			f.stats()
 		default:
 			f.clear()
 			f.b.WriteString(item)
@@ -310,5 +326,22 @@ func (f *Formater) flags() {
 	if len(flags) > 0 {
 		f.clear()
 		f.b.WriteString(strings.Join(flags, " "))
+	}
+}
+
+func (f *Formater) stats() {
+	stats := make([]string, 0, 2)
+
+	if f.st.Insertions != 0 {
+		stats = append(stats, fmt.Sprintf("%s%s%d", f.Styles.Insertions, f.Symbols.Insertions, f.st.Insertions))
+	}
+
+	if f.st.Deletions != 0 {
+		stats = append(stats, fmt.Sprintf("%s%s%d", f.Styles.Deletions, f.Symbols.Deletions, f.st.Deletions))
+	}
+
+	if len(stats) != 0 {
+		f.clear()
+		f.b.WriteString(strings.Join(stats, " "))
 	}
 }

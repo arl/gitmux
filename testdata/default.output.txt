@@ -33,7 +33,7 @@ cmp output output.golden
 
 -- .gitignore --
 .gitignore
-gopath
+.gopath
 gitmux
 gitmux.exe
 .tmp

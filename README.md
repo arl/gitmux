@@ -29,10 +29,30 @@
  - **shell-agnostic**. Does not rely on shell-features so works with all of them
  - **customizable**. Colors, symbols and layout are configurable
 
+---
+
+- [Prerequisites](#prerequisites)
+- [Installing](#installing)
+  - [Binary release](#binary-release)
+  - [Homebrew (tap) macOS and linux, amd64 and arm64](#homebrew-tap-macos-and-linux-amd64-and-arm64)
+  - [AUR](#aur)
+  - [From source](#from-source)
+- [Getting started](#getting-started)
+- [Customizing](#customizing)
+  - [Symbols](#symbols)
+  - [Styles](#styles)
+  - [Layout components](#layout-components)
+  - [Additional options](#additional-options)
+- [Troubleshooting](#troubleshooting)
+  - [Gitmux takes too long to refresh?](#gitmux-takes-too-long-to-refresh)
+- [Contributing](#contributing)
+- [License: MIT](#license-mit)
+
+
 
 ## Prerequisites
 
-Works with all decently recent [tmux](https://github.com/tmux/tmux) versions.
+Works with all reasonably recent [tmux](https://github.com/tmux/tmux) versions (2.1+)
 
 ## Installing
 
@@ -92,18 +112,22 @@ tmux:
         untracked: '… '
         stashed: '⚑ '
         clean: ✔
+        insertions: Σ
+        deletions: Δ
     styles:
         clear: '#[fg=default]'
         state: '#[fg=red,bold]'
         branch: '#[fg=white,bold]'
         remote: '#[fg=cyan]'
+        divergence: '#[fg=default]'
         staged: '#[fg=green,bold]'
         conflict: '#[fg=red,bold]'
         modified: '#[fg=red,bold]'
         untracked: '#[fg=magenta,bold]'
         stashed: '#[fg=cyan,bold]'
         clean: '#[fg=green,bold]'
-        divergence: '#[fg=default]'
+        insertions: '#[fg=green]'
+        deletions: '#[fg=red]'
     layout: [branch, .., remote-branch, divergence, ' - ', flags]
     options:
         branch_max_len: 0
@@ -112,11 +136,11 @@ tmux:
 
 First, save the default configuration to a new file:
 
-    gitmux -printcfg > .gitmux.conf
+    gitmux -printcfg > $HOME/.gitmux.conf
 
-Modify the line in `.tmux.conf`, passing the path of the configuration file as argument to `gitmux` via the `-cfg` flag
+Modify the line you've added to `.tmux.conf`, passing the path of the configuration file as argument to `gitmux` via the `-cfg` flag
 
-    set -g status-right '#(gitmux -cfg .gitmux.conf "#{pane_current_path}")'
+    set -g status-right '#(gitmux -cfg $HOME/.gitmux.conf "#{pane_current_path}")'
 
 Open `.gitmux.conf` and modify it, replacing symbols, styles and layout to suit your needs.
 
@@ -135,16 +159,18 @@ The `symbols` section describes the symbols `gitmux` prints for the various comp
 
 ```yaml
   symbols:
-    branch: '⎇ '      # Shown before a branch
-    hashprefix: ':'    # Shown before a Git hash (in 'detached HEAD' state)
-    ahead: ↑·          # Shown before the 'ahead count' when local and remote branch diverge
-    behind: ↓·         # Shown before the 'behind count' when local/remote branch diverge
-    staged: '● '       # Shown before the 'staged' files count
-    conflict: '✖ '     # Shown before the 'conflicts' count
-    modified: '✚ '     # Shown before the 'modified' files count
-    untracked: '… '    # Shown before the 'untracked' files count
-    stashed: '⚑ '      # Shown before the 'stash' count
-    clean: ✔           # Shown when the working tree is clean (empty staging area)
+    branch: '⎇ '     # Shown before a branch
+    hashprefix: ':'   # Shown before a Git hash (in 'detached HEAD' state)
+    ahead: ↑·         # Shown before the 'ahead count' when local and remote branch diverge
+    behind: ↓·        # Shown before the 'behind count' when local/remote branch diverge
+    staged: '● '      # Shown before the 'staged' files count
+    conflict: '✖ '    # Shown before the 'conflicts' count
+    modified: '✚ '    # Shown before the 'modified' files count
+    untracked: '… '   # Shown before the 'untracked' files count
+    stashed: '⚑ '     # Shown before the 'stash' count
+    insertions: Σ     # Shown before the count of insertied lines (stats sections).
+    deletions: Δ      # Shown before the count of deletions lines (stats sections). 
+    clean: ✔          # Shown when the working tree is clean (empty staging area)
 ```
 
 
@@ -165,6 +191,8 @@ See [`tmux` styles reference](https://man7.org/linux/man-pages/man1/tmux.1.html#
     modified: '#[fg=red,bold]'      # Style of the 'modified' files count
     untracked: '#[fg=magenta,bold]' # Style of the 'modified' files count
     stashed: '#[fg=cyan,bold]'      # Style of the 'stash' entries count
+    insertions: '#[fg=green]'       # Style of the 'inserted lines' count
+    deletions: '#[fg=red]'          # Style of the 'deleted lines' count
     clean: '#[fg=green,bold]'       # Style of the 'clean' symbol
 ```
 
@@ -203,7 +231,9 @@ This is the list of the possible components of the `layout`:
 |   `divergence`   | divergence local/remote branch, if any             |       `↓·2↑·1`       |
 |     `remote`     | alias for `remote-branch` followed by `divergence` | `origin/main ↓·2↑·1` |
 |     `flags`      | Symbols representing the working tree state        |    `✚ 1 ⚑ 1 … 2`     |
+|     `stats`      | Insertions/deletions (lines). Disabled by deafult  |      `Σ56 Δ21`       |
 | any string `foo` | Any other string is directly shown                 |        `foo`         |
+
 
 
 Some example layouts:
@@ -214,13 +244,16 @@ Some example layouts:
 layout: [branch, .., remote-branch, divergence, " - ", flags]
 ```
 
- - some more minimal layouts:
+ - some examples layouts:
 
 ```yaml
 layout: [branch, divergence, " - ", flags]
 ```
 ```yaml
 layout: [flags, " ", branch]
+```
+```yaml
+layout: [branch, "|", flags, "|", stats]
 ```
 
 

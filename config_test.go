@@ -26,6 +26,7 @@ func TestScripts(t *testing.T) {
 			return nil
 		},
 		UpdateScripts: *updateGolden,
+		TestWork:      true,
 	}
 	if err := gotooltest.Setup(&params); err != nil {
 		t.Errorf("gotooltest.Setup error: %v", err)
