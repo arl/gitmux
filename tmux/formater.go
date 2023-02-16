@@ -88,6 +88,7 @@ func (d *direction) UnmarshalYAML(value *yaml.Node) error {
 type options struct {
 	BranchMaxLen int       `yaml:"branch_max_len"`
 	BranchTrim   direction `yaml:"branch_trim"`
+	Ellipsis     string    `yaml:"ellipsis"`
 }
 
 // DefaultCfg is the default tmux configuration.
@@ -103,7 +104,6 @@ var DefaultCfg = Config{
 		Ahead:      "↑·",
 		Behind:     "↓·",
 		HashPrefix: ":",
-
 		Insertions: "Σ",
 		Deletions:  "Δ",
 	},
@@ -126,6 +126,7 @@ var DefaultCfg = Config{
 	Options: options{
 		BranchMaxLen: 0,
 		BranchTrim:   dirRight,
+		Ellipsis:     "…",
 	},
 }
 
@@ -136,25 +137,27 @@ type Formater struct {
 	st *gitstatus.Status
 }
 
-// truncate returns s, truncated so that it is no more than max characters long.
+// truncate returns s, truncated so that it is no more than max runes long.
 // Depending on the provided direction, truncation is performed right or left.
-// If max is zero, negative or greater than the number of rnues in s, truncate
-// just returns s. However, if truncation is applied, then the last 3 chars (or
-// 3 first, depending on provided direction) are replaced with "...".
+// If s is returned truncated, the truncated part is replaced with the
+// 'ellipsis' string.
 //
-// NOTE: If max is lower than 3, in other words if we can't even have ellispis,
-// then truncate just truncates the maximum number of characters, without
-// bothering with ellipsis.
-func truncate(s string, max int, dir direction) string {
+// If max is zero, negative or greater than the number of runes in s, truncate
+// just returns s.
+//
+// NOTE: If max is lower than len(ellipsis), in other words it we're not even
+// allowed to just return the ellipsis string, then we just return the maximum
+// number of runes we can, without inserting ellpisis.
+func truncate(s, ellipsis string, max int, dir direction) string {
 	slen := utf8.RuneCountInString(s)
 	if max <= 0 || slen <= max {
 		return s
 	}
 
 	runes := []rune(s)
-	ell := []rune("...")
+	ell := []rune(ellipsis)
 
-	if max < 3 {
+	if max < len(ellipsis) {
 		ell = nil // Just truncate s since even ellipsis don't fit.
 	}
 
@@ -176,7 +179,7 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 
 	// overall working tree state
 	if f.st.IsInitial {
-		branch := truncate(f.st.LocalBranch, f.Options.BranchMaxLen, f.Options.BranchTrim)
+		branch := truncate(f.st.LocalBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
 		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch, branch)
 		f.flags()
 		_, err := f.b.WriteTo(w)
@@ -245,7 +248,7 @@ func (f *Formater) remoteBranch() {
 
 	f.clear()
 
-	branch := truncate(f.st.RemoteBranch, f.Options.BranchMaxLen, f.Options.BranchTrim)
+	branch := truncate(f.st.RemoteBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
 	fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, branch)
 }
 
@@ -280,7 +283,7 @@ func (f *Formater) currentRef() {
 		return
 	}
 
-	branch := truncate(f.st.LocalBranch, f.Options.BranchMaxLen, f.Options.BranchTrim)
+	branch := truncate(f.st.LocalBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
 	fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch, branch)
 }
 
