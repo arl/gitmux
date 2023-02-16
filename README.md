@@ -34,7 +34,7 @@
 - [Prerequisites](#prerequisites)
 - [Installing](#installing)
   - [Binary release](#binary-release)
-  - [Homebrew (tap) macOS and linux, amd64 and arm64](#homebrew-tap-macos-and-linux-amd64-and-arm64)
+  - [Homebrew tap (macOS and linux) (amd64 and arm64)](#homebrew-tap-macos-and-linux-amd64-and-arm64)
   - [AUR](#aur)
   - [From source](#from-source)
 - [Getting started](#getting-started)
