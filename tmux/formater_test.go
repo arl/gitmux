@@ -199,128 +199,168 @@ func TestDivergence(t *testing.T) {
 	}
 }
 
-func TestTruncate(t *testing.T) {
+func Test_truncate(t *testing.T) {
 	tests := []struct {
-		s    string
-		max  int
-		dir  direction
-		want string
+		s        string
+		max      int
+		ellipsis string
+		dir      direction
+		want     string
 	}{
 		/* trim right */
 		{
-			s:    "br",
-			max:  1,
-			dir:  dirRight,
-			want: "b",
+			s:        "br",
+			ellipsis: "...",
+			max:      1,
+			dir:      dirRight,
+			want:     "b",
 		},
 		{
-			s:    "br",
-			max:  3,
-			dir:  dirRight,
-			want: "br",
+			s:        "br",
+			ellipsis: "...",
+			max:      3,
+			dir:      dirRight,
+			want:     "br",
 		},
 		{
-			s:    "super-long-branch",
-			max:  3,
-			dir:  dirRight,
-			want: "...",
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      3,
+			dir:      dirRight,
+			want:     "...",
 		},
 		{
-			s:    "super-long-branch",
-			max:  15,
-			dir:  dirRight,
-			want: "super-long-b...",
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      15,
+			dir:      dirRight,
+			want:     "super-long-b...",
 		},
 		{
-			s:    "super-long-branch",
-			max:  17,
-			dir:  dirRight,
-			want: "super-long-branch",
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      17,
+			dir:      dirRight,
+			want:     "super-long-branch",
 		},
 		{
-			s:    "长長的-树樹枝",
-			max:  6,
-			dir:  dirRight,
-			want: "长長的...",
+			s:        "super-long-branch",
+			ellipsis: "…",
+			max:      17,
+			dir:      dirRight,
+			want:     "super-long-branch",
 		},
 		{
-			s:    "super-long-branch",
-			max:  32,
-			dir:  dirRight,
-			want: "super-long-branch",
+			s:        "super-long-branch",
+			ellipsis: "…",
+			max:      15,
+			dir:      dirRight,
+			want:     "super-long-bra…",
 		},
 		{
-			s:    "super-long-branch",
-			max:  0,
-			dir:  dirRight,
-			want: "super-long-branch",
+			s:        "长長的-树樹枝",
+			ellipsis: "...",
+			max:      6,
+			dir:      dirRight,
+			want:     "长長的...",
 		},
 		{
-			s:    "super-long-branch",
-			max:  -1,
-			dir:  dirRight,
-			want: "super-long-branch",
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      32,
+			dir:      dirRight,
+			want:     "super-long-branch",
+		},
+		{
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      0,
+			dir:      dirRight,
+			want:     "super-long-branch",
+		},
+		{
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      -1,
+			dir:      dirRight,
+			want:     "super-long-branch",
 		},
 
 		/* trim left */
 		{
-			s:    "br",
-			max:  1,
-			dir:  dirLeft,
-			want: "r",
+			s:        "br",
+			ellipsis: "...",
+			max:      1,
+			dir:      dirLeft,
+			want:     "r",
 		},
 		{
-			s:    "br",
-			max:  3,
-			dir:  dirLeft,
-			want: "br",
+			s:        "br",
+			ellipsis: "",
+			max:      1,
+			dir:      dirLeft,
+			want:     "r",
 		},
 		{
-			s:    "super-long-branch",
-			max:  3,
-			dir:  dirLeft,
-			want: "...",
+			s:        "br",
+			ellipsis: "...",
+			max:      3,
+			dir:      dirLeft,
+			want:     "br",
 		},
 		{
-			s:    "super-long-branch",
-			max:  15,
-			dir:  dirLeft,
-			want: "...-long-branch",
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      3,
+			dir:      dirLeft,
+			want:     "...",
 		},
 		{
-			s:    "super-long-branch",
-			max:  17,
-			dir:  dirLeft,
-			want: "super-long-branch",
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      15,
+			dir:      dirLeft,
+			want:     "...-long-branch",
 		},
 		{
-			s:    "长長的-树樹枝",
-			max:  6,
-			dir:  dirLeft,
-			want: "...树樹枝",
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      17,
+			dir:      dirLeft,
+			want:     "super-long-branch",
 		},
 		{
-			s:    "super-long-branch",
-			max:  32,
-			dir:  dirLeft,
-			want: "super-long-branch",
+			s:        "长長的-树樹枝",
+			ellipsis: "...",
+			max:      6,
+			dir:      dirLeft,
+			want:     "...树樹枝",
 		},
 		{
-			s:    "super-long-branch",
-			max:  0,
-			dir:  dirLeft,
-			want: "super-long-branch",
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      32,
+			dir:      dirLeft,
+			want:     "super-long-branch",
 		},
 		{
-			s:    "super-long-branch",
-			max:  -1,
-			dir:  dirLeft,
-			want: "super-long-branch",
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      0,
+			dir:      dirLeft,
+			want:     "super-long-branch",
+		},
+		{
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      -1,
+			dir:      dirLeft,
+			want:     "super-long-branch",
 		},
 	}
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
-			if got := truncate(tt.s, tt.max, tt.dir); got != tt.want {
+			if got := truncate(tt.s, tt.ellipsis, tt.max, tt.dir); got != tt.want {
 				t.Errorf("truncate(%q, %d, %s) = %q, want %q", tt.s, tt.max, tt.dir, got, tt.want)
 			}
 		})
