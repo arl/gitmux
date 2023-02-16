@@ -485,10 +485,11 @@ func TestFormat(t *testing.T) {
 			symbols: symbols{
 				Branch: "SymbolBranch",
 			},
-			layout: []string{"branch", " ", "remote"},
+			layout: []string{"branch", "/", "remote"},
 			options: options{
 				BranchMaxLen: 9,
 				BranchTrim:   dirRight,
+				Ellipsis:     `…`,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -497,9 +498,9 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "branch..." +
-				"StyleClear" + " " +
-				"StyleClear" + "StyleRemote" + "remote...",
+				"StyleClear" + "StyleBranch" + "branchNa…" +
+				"StyleClear" + "/" +
+				"StyleClear" + "StyleRemote" + "remote/b…",
 		},
 		{
 			name: "branch and remote, branch_max_len not zero and trim left",
@@ -515,6 +516,7 @@ func TestFormat(t *testing.T) {
 			options: options{
 				BranchMaxLen: 9,
 				BranchTrim:   dirLeft,
+				Ellipsis:     "...",
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -554,6 +556,7 @@ func TestFormat(t *testing.T) {
 
 			if err := f.Format(io.Discard, tt.st); err != nil {
 				t.Fatalf("Format error: %s", err)
+				return
 			}
 
 			f.format()
