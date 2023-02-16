@@ -34,7 +34,7 @@
 - [Prerequisites](#prerequisites)
 - [Installing](#installing)
   - [Binary release](#binary-release)
-  - [Homebrew (tap) macOS and linux, amd64 and arm64](#homebrew-tap-macos-and-linux-amd64-and-arm64)
+  - [Homebrew tap (macOS and linux) (amd64 and arm64)](#homebrew-tap-macos-and-linux-amd64-and-arm64)
   - [AUR](#aur)
   - [From source](#from-source)
 - [Getting started](#getting-started)
@@ -132,6 +132,7 @@ tmux:
     options:
         branch_max_len: 0
         branch_trim: right
+        ellipsis: …
 ```
 
 First, save the default configuration to a new file:
@@ -261,10 +262,11 @@ layout: [branch, "|", flags, "|", stats]
 
 This is the list of additional configuration `options`:
 
-| Option           | Description                                                | Default            |
-| :--------------- | :--------------------------------------------------------- | :----------------- |
-| `branch_max_len` | Maximum displayed length for local and remote branch names | `0` (no limit)     |
+| Option           | Description                                                |      Default       |
+| :--------------- | :--------------------------------------------------------- | :----------------: |
+| `branch_max_len` | Maximum displayed length for local and remote branch names |   `0` (no limit)   |
 | `branch_trim`    | Trim left or right end of the branch (`right` or `left`)   | `right` (trailing) |
+| `ellipsis`       | Character to show branch name has been truncated           |        `…`         |
 
 
 ## Troubleshooting
