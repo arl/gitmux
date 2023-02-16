@@ -122,7 +122,7 @@ var DefaultCfg = Config{
 		Insertions: "#[fg=green]",
 		Deletions:  "#[fg=red]",
 	},
-	Layout: []string{"branch", "..", "remote-branch", "divergence", " - ", "flags"},
+	Layout: []string{"branch", " ", "remote-branch", "divergence", " - ", "flags"},
 	Options: options{
 		BranchMaxLen: 0,
 		BranchTrim:   dirRight,
