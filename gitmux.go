@@ -30,11 +30,6 @@ Options:
   -V              prints gitmux version and exits.
 `
 
-// Config configures output formatting.
-type Config struct{ Tmux tmux.Config }
-
-var _defaultCfg = Config{Tmux: tmux.DefaultCfg}
-
 func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, cfg Config) {
 	var (
 		dbgOpt      = flag.Bool("dbg", false, "")
@@ -60,13 +55,11 @@ func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, c
 	}
 
 	if *printCfgOpt {
-		enc := yaml.NewEncoder(os.Stdout)
-		check(enc.Encode(&_defaultCfg), *dbgOpt)
-		enc.Close()
+		os.Stdout.Write(cfgBytes)
 		os.Exit(0)
 	}
 
-	cfg = _defaultCfg
+	cfg = defaultCfg
 
 	if *cfgOpt != "" {
 		f, err := os.Open(*cfgOpt)

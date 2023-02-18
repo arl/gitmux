@@ -1,0 +1,81 @@
+tmux:
+    # The symbols section defines the symbols printed before specific elements
+    # of Git status displayed in tmux status string.
+    symbols:
+        # current branch name.
+        branch: "⎇ "
+        # Git SHA1 hash (in 'detached' state).
+        hashprefix: ":"
+        # 'ahead count' when local and remote branch diverged.
+        ahead: ↑·
+        # 'behind count' when local and remote branch diverged.
+        behind: ↓·
+        # count of files in the staging area.
+        staged: "● "
+        # count of files in conflicts.
+        conflict: "✖ "
+        # count of modified files.
+        modified: "✚ "
+        # count of untracked files.
+        untracked: "… "
+        # count of stash entries.
+        stashed: "⚑ "
+        # count of inserted lines (stats section).
+        insertions: Σ
+        # count of deleted lines (stats section).
+        deletions: Δ
+        # Shown when the working tree is clean.
+        clean: ✔
+
+    # Styles are tmux format strings used to specify text colors and attributes
+    # of Git status elements. See the STYLES section of tmux man page.
+    # https://man7.org/linux/man-pages/man1/tmux.1.html#STYLES.
+    styles:
+        # Clear previous style.
+        clear: "#[fg=default]"
+        # Special tree state strings such as [rebase], [merge], etc.
+        state: "#[fg=red,bold]"
+        # Local branch name
+        branch: "#[fg=white,bold]"
+        # Remote branch name
+        remote: "#[fg=cyan]"
+        # 'divergence' counts
+        divergence: "#[fg=yellow]"
+        # 'staged' count
+        staged: "#[fg=green,bold]"
+        # 'conflicts' count
+        conflict: "#[fg=red,bold]"
+        # 'modified' count
+        modified: "#[fg=red,bold]"
+        # 'untracked' count
+        untracked: "#[fg=magenta,bold]"
+        # 'stash' count
+        stashed: "#[fg=cyan,bold]"
+        # 'insertions' count
+        insertions: "#[fg=green]"
+        # 'deletions' count
+        deletions: "#[fg=red]"
+        # 'clean' symbol
+        clean: "#[fg=green,bold]"
+
+    # The layout section defines what components gitmux shows and the order in
+    # which they appear on tmux status bar.
+    #
+    # Allowed components:
+    #  - branch:            local branch name. Examples: `⎇ main`, `⎇ :345e7a0` or `[rebase]`
+    #  - remote-branch:     remote branch name, for example: `origin/main`.
+    #  - divergence:        divergence between local and remote branch, if any. Example: `↓·2↑·1`
+    #  - remote:            alias for `remote-branch` followed by `divergence`, for example: `origin/main ↓·2↑·1`
+    #  - flags:             symbols representing the working tree state, for example `✚ 1 ⚑ 1 … 2`
+    #  - stats:             insertions/deletions (lines), for example`Σ56 Δ21`
+    #  - some string `foo`: any other character of string is directly shown, for example `foo` or `|`
+    layout: [branch, " ", remote-branch, divergence, " - ", flags]
+
+    # Additional configuration options.
+    options:
+        # Maximum displayed length for local and remote branch names.
+        branch_max_len: 0
+        # Trim left or right end of the branch (`right` or `left`).
+        branch_trim: right
+        # Character indicating whether and where a branch was truncated.
+        ellipsis: …

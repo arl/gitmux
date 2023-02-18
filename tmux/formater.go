@@ -91,45 +91,6 @@ type options struct {
 	Ellipsis     string    `yaml:"ellipsis"`
 }
 
-// DefaultCfg is the default tmux configuration.
-var DefaultCfg = Config{
-	Symbols: symbols{
-		Branch:     "⎇ ",
-		Staged:     "● ",
-		Conflict:   "✖ ",
-		Modified:   "✚ ",
-		Untracked:  "… ",
-		Stashed:    "⚑ ",
-		Clean:      "✔",
-		Ahead:      "↑·",
-		Behind:     "↓·",
-		HashPrefix: ":",
-		Insertions: "Σ",
-		Deletions:  "Δ",
-	},
-	Styles: styles{
-		Clear:      "#[fg=default]",
-		State:      "#[fg=red,bold]",
-		Branch:     "#[fg=white,bold]",
-		Remote:     "#[fg=cyan]",
-		Divergence: "#[fg=default]",
-		Staged:     "#[fg=green,bold]",
-		Conflict:   "#[fg=red,bold]",
-		Modified:   "#[fg=red,bold]",
-		Untracked:  "#[fg=magenta,bold]",
-		Stashed:    "#[fg=cyan,bold]",
-		Clean:      "#[fg=green,bold]",
-		Insertions: "#[fg=green]",
-		Deletions:  "#[fg=red]",
-	},
-	Layout: []string{"branch", " ", "remote-branch", "divergence", " - ", "flags"},
-	Options: options{
-		BranchMaxLen: 0,
-		BranchTrim:   dirRight,
-		Ellipsis:     "…",
-	},
-}
-
 // A Formater formats git status to a tmux style string.
 type Formater struct {
 	Config
