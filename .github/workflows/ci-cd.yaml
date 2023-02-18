@@ -1,5 +1,5 @@
 on: [push, pull_request]
-name: Continuous Integration
+name: Test, Build and Publish
 jobs:
   tests:
     strategy:
@@ -11,11 +11,11 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: "1.20.x"
-      - name: Tests
+      - name: Run tests
         run: go test -race ./...
 
   goreleaser:
-    name: Publish releases to github and brew tap
+    name: Build and Publish
     needs: tests
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -38,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
   check_brew:
-    name: Check brew tap has been updated
+    name: Check Brew Tap
     needs: goreleaser
     runs-on: macos-latest
     steps:
