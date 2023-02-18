@@ -33,7 +33,7 @@ Options:
 // Config configures output formatting.
 type Config struct{ Tmux tmux.Config }
 
-var _defaultCfg = Config{Tmux: tmux.DefaultCfg}
+var defaultCfg = Config{Tmux: tmux.DefaultCfg}
 
 func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, cfg Config) {
 	var (
@@ -61,12 +61,12 @@ func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, c
 
 	if *printCfgOpt {
 		enc := yaml.NewEncoder(os.Stdout)
-		check(enc.Encode(&_defaultCfg), *dbgOpt)
+		check(enc.Encode(&defaultCfg), *dbgOpt)
 		enc.Close()
 		os.Exit(0)
 	}
 
-	cfg = _defaultCfg
+	cfg = defaultCfg
 
 	if *cfgOpt != "" {
 		f, err := os.Open(*cfgOpt)
