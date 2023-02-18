@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"flag"
 	"fmt"
 	"io"
@@ -33,7 +34,17 @@ Options:
 // Config configures output formatting.
 type Config struct{ Tmux tmux.Config }
 
-var defaultCfg = Config{Tmux: tmux.DefaultCfg}
+// default config (decoded in init)
+var defaultCfg Config
+
+//go:embed .gitmux.yml
+var cfgBytes []byte
+
+func init() {
+	if err := yaml.Unmarshal(cfgBytes, &defaultCfg); err != nil {
+		panic(fmt.Sprintf("default config is invalid: %v", err))
+	}
+}
 
 func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, cfg Config) {
 	var (
@@ -60,9 +71,7 @@ func parseOptions() (ctx context.Context, cancel func(), dir string, dbg bool, c
 	}
 
 	if *printCfgOpt {
-		enc := yaml.NewEncoder(os.Stdout)
-		check(enc.Encode(&defaultCfg), *dbgOpt)
-		enc.Close()
+		os.Stdout.Write(cfgBytes)
 		os.Exit(0)
 	}
 
