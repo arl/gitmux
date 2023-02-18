@@ -1,17 +1,24 @@
-name: Continuous Deployment
-
-on:
-  push:
-    tags:
-      - "*"
-
-permissions:
-  contents: write
-
+on: [push, pull_request]
+name: Continuous Integration
 jobs:
+  tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "1.20.x"
+      - name: Tests
+        run: go test -race ./...
+
   goreleaser:
-    name: Publish release to github/brew
+    name: Publish releases to github and brew tap
+    needs: tests
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -32,14 +39,14 @@ jobs:
 
   check_brew:
     name: Check brew tap has been updated
-    runs-on: macos-latest
     needs: goreleaser
+    runs-on: macos-latest
     steps:
-      - name: brew tap/install
+      - name: Install gitmux with brew
         run: |
           brew tap arl/arl
           brew install gitmux
           gitmux -V
-      - name: check gitmux version
+      - name: Check installed gitmux version
         run: |
           [ v$(gitmux -V) == "$GITHUB_REF_NAME" ]
