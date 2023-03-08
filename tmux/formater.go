@@ -212,6 +212,7 @@ func (f *Formater) remoteBranch() {
 
 	branch := truncate(f.st.RemoteBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
 	fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, branch)
+	f.b.WriteString(" ")
 }
 
 func (f *Formater) divergence() {
@@ -220,7 +221,6 @@ func (f *Formater) divergence() {
 	}
 
 	f.clear()
-	f.b.WriteByte(' ')
 	fmt.Fprintf(&f.b, "%s", f.Styles.Divergence)
 
 	if f.st.BehindCount != 0 {
@@ -229,6 +229,10 @@ func (f *Formater) divergence() {
 
 	if f.st.AheadCount != 0 {
 		fmt.Fprintf(&f.b, "%s%d", f.Symbols.Ahead, f.st.AheadCount)
+	}
+
+	if f.st.BehindCount != 0 || f.st.AheadCount != 0 {
+		f.b.WriteString(" ")
 	}
 }
 
@@ -242,11 +246,13 @@ func (f *Formater) currentRef() {
 
 	if f.st.IsDetached {
 		fmt.Fprintf(&f.b, "%s%s%s", f.Styles.Branch, f.Symbols.HashPrefix, f.st.HEAD)
+		f.b.WriteString(" ")
 		return
 	}
 
 	branch := truncate(f.st.LocalBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
 	fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch, branch)
+	f.b.WriteString(" ")
 }
 
 func (f *Formater) flags() {
