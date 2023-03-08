@@ -128,7 +128,7 @@ tmux:
         clean: '#[fg=green,bold]'
         insertions: '#[fg=green]'
         deletions: '#[fg=red]'
-    layout: [branch, .., remote-branch, divergence, ' - ', flags]
+    layout: [branch, .., remote-branch, divergence, '- ', flags]
     options:
         branch_max_len: 0
         branch_trim: right
