@@ -300,6 +300,7 @@ func (f *Formater) flags() {
 	if len(flags) > 0 {
 		f.clear()
 		f.b.WriteString(strings.Join(flags, " "))
+		f.b.WriteString(" ")
 	}
 }
 
