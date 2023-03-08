@@ -89,6 +89,7 @@ type options struct {
 	BranchMaxLen int       `yaml:"branch_max_len"`
 	BranchTrim   direction `yaml:"branch_trim"`
 	Ellipsis     string    `yaml:"ellipsis"`
+	HideClean    bool      `yaml:"hide_clean"`
 }
 
 // A Formater formats git status to a tmux style string.
@@ -256,7 +257,10 @@ func (f *Formater) flags() {
 				fmt.Sprintf("%s%s%d", f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
 		}
 
-		flags = append(flags, fmt.Sprintf("%s%s", f.Styles.Clean, f.Symbols.Clean))
+		if f.Options.HideClean != true {
+			flags = append(flags, fmt.Sprintf("%s%s", f.Styles.Clean, f.Symbols.Clean))
+		}
+
 		f.clear()
 		f.b.WriteString(strings.Join(flags, " "))
 		return
