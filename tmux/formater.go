@@ -269,6 +269,7 @@ func (f *Formater) flags() {
 
 		f.clear()
 		f.b.WriteString(strings.Join(flags, " "))
+		f.b.WriteString(" ")
 		return
 	}
 
