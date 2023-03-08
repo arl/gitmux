@@ -265,6 +265,7 @@ func (f *Formater) flags() {
 		flags = append(flags, fmt.Sprintf("%s%s", f.Styles.Clean, f.Symbols.Clean))
 		f.clear()
 		f.b.WriteString(strings.Join(flags, " "))
+		f.b.WriteString(" ")
 		return
 	}
 
