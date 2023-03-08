@@ -318,5 +318,6 @@ func (f *Formater) stats() {
 	if len(stats) != 0 {
 		f.clear()
 		f.b.WriteString(strings.Join(stats, " "))
+		f.b.WriteString(" ")
 	}
 }
