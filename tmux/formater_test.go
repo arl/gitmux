@@ -547,6 +547,42 @@ func TestFormat(t *testing.T) {
 			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
 				"StyleClear" + "StyleBranch" + "branchName",
 		},
+		{
+			name: "hide clean option true",
+			styles: styles{
+				Clear: "StyleClear",
+				Clean: "StyleClean",
+			},
+			symbols: symbols{
+				Clean: "SymbolClean",
+			},
+			layout: []string{"flags"},
+			st: &gitstatus.Status{
+				IsClean: true,
+			},
+			options: options{
+				HideClean: true,
+			},
+			want: "StyleClear",
+		},
+		{
+			name: "hide clean option false",
+			styles: styles{
+				Clear: "StyleClear",
+				Clean: "StyleClean",
+			},
+			symbols: symbols{
+				Clean: "SymbolClean",
+			},
+			layout: []string{"flags"},
+			st: &gitstatus.Status{
+				IsClean: true,
+			},
+			options: options{
+				HideClean: false,
+			},
+			want: "StyleClear" + "StyleCleanSymbolClean",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
