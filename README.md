@@ -133,6 +133,7 @@ tmux:
         branch_max_len: 0
         branch_trim: right
         ellipsis: …
+	hide_clean: false
 ```
 
 First, save the default configuration to a new file:
@@ -269,6 +270,7 @@ This is the list of additional configuration `options`:
 | `branch_max_len` | Maximum displayed length for local and remote branch names |   `0` (no limit)   |
 | `branch_trim`    | Trim left or right end of the branch (`right` or `left`)   | `right` (trailing) |
 | `ellipsis`       | Character to show branch name has been truncated           |        `…`         |
+| `hide_clean`     | Hides the clean flag entirely                              |      `false`       |
 
 
 ## Troubleshooting
