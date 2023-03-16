@@ -133,7 +133,7 @@ tmux:
         branch_max_len: 0
         branch_trim: right
         ellipsis: …
-	hide_clean: false
+        hide_clean: false
 ```
 
 First, save the default configuration to a new file:
