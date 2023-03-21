@@ -1,7 +1,6 @@
 package tmux
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -95,7 +94,6 @@ type options struct {
 // A Formater formats git status to a tmux style string.
 type Formater struct {
 	Config
-	b  bytes.Buffer
 	st *gitstatus.Status
 }
 
@@ -137,125 +135,138 @@ func truncate(s, ellipsis string, max int, dir direction) string {
 // Format writes st as json into w.
 func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 	f.st = st
-	f.clear()
-
 	// overall working tree state
 	if f.st.IsInitial {
 		branch := truncate(f.st.LocalBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
-		fmt.Fprintf(w, "%s%s [no commits yet]", f.Styles.Branch, branch)
-		f.flags()
-		_, err := f.b.WriteTo(w)
-
+		s := fmt.Sprintf("%s%s%s [no commits yet]", f.Styles.Clear, f.Styles.Branch, branch)
+		if flags := f.flags(); flags != "" {
+			s += flags
+		}
+		_, err := io.WriteString(w, s)
 		return err
 	}
 
-	f.format()
-	_, err := f.b.WriteTo(w)
-
+	_, err := fmt.Fprintf(w, "%s%s", f.Styles.Clear, f.format())
 	return err
 }
 
-func (f *Formater) format() {
+func (f *Formater) format() string {
+	var ss []string
 	for _, item := range f.Layout {
 		switch item {
 		case "branch":
-			f.specialState()
+			ss = append(ss, f.specialState())
 		case "remote":
-			f.remoteBranch()
-			f.divergence()
+			ss = append(ss, f.remoteBranch(), f.divergence())
 		case "remote-branch":
-			f.remoteBranch()
+			ss = append(ss, f.remoteBranch())
 		case "divergence":
-			f.divergence()
+			ss = append(ss, f.divergence())
 		case "flags":
-			f.flags()
+			ss = append(ss, f.flags())
 		case "stats":
-			f.stats()
+			ss = append(ss, f.stats())
 		default:
-			f.clear()
-			f.b.WriteString(item)
+			ss = append(ss, f.Styles.Clear+item)
 		}
 	}
+
+	// Remove empty status elements.
+	i := 0
+	for _, s := range ss {
+		if s != "" {
+			ss[i] = s
+			i++
+		}
+	}
+	ss = ss[:i]
+
+	// TODO(arl) replace with stings.Join(ss, " ") after having removed all " " added here and there
+	return strings.Join(ss, "")
 }
 
-func (f *Formater) specialState() {
-	f.clear()
+func (f *Formater) specialState() string {
+	s := f.Styles.Clear
 
 	switch f.st.State {
 	case gitstatus.Rebasing:
-		fmt.Fprintf(&f.b, "%s[rebase] ", f.Styles.State)
+		s += fmt.Sprintf("%s[rebase] ", f.Styles.State)
 	case gitstatus.AM:
-		fmt.Fprintf(&f.b, "%s[am] ", f.Styles.State)
+		s += fmt.Sprintf("%s[am] ", f.Styles.State)
 	case gitstatus.AMRebase:
-		fmt.Fprintf(&f.b, "%s[am-rebase] ", f.Styles.State)
+		s += fmt.Sprintf("%s[am-rebase] ", f.Styles.State)
 	case gitstatus.Merging:
-		fmt.Fprintf(&f.b, "%s[merge] ", f.Styles.State)
+		s += fmt.Sprintf("%s[merge] ", f.Styles.State)
 	case gitstatus.CherryPicking:
-		fmt.Fprintf(&f.b, "%s[cherry-pick] ", f.Styles.State)
+		s += fmt.Sprintf("%s[cherry-pick] ", f.Styles.State)
 	case gitstatus.Reverting:
-		fmt.Fprintf(&f.b, "%s[revert] ", f.Styles.State)
+		s += fmt.Sprintf("%s[revert] ", f.Styles.State)
 	case gitstatus.Bisecting:
-		fmt.Fprintf(&f.b, "%s[bisect] ", f.Styles.State)
+		s += fmt.Sprintf("%s[bisect] ", f.Styles.State)
 	case gitstatus.Default:
-		fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch, f.Symbols.Branch)
+		s += fmt.Sprintf("%s%s", f.Styles.Branch, f.Symbols.Branch)
 	}
 
-	f.currentRef()
+	s += f.currentRef()
+	return s
 }
 
-func (f *Formater) remoteBranch() {
+func (f *Formater) remoteBranch() string {
 	if f.st.RemoteBranch == "" {
-		return
+		return ""
 	}
 
-	f.clear()
+	s := f.Styles.Clear
 
 	branch := truncate(f.st.RemoteBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
-	fmt.Fprintf(&f.b, "%s%s", f.Styles.Remote, branch)
-	f.b.WriteString(" ")
+	s += fmt.Sprintf("%s%s", f.Styles.Remote, branch)
+	s += " "
+	return s
 }
 
-func (f *Formater) divergence() {
+func (f *Formater) divergence() string {
 	if f.st.BehindCount == 0 && f.st.AheadCount == 0 {
-		return
+		return ""
 	}
 
-	f.clear()
-	fmt.Fprintf(&f.b, "%s", f.Styles.Divergence)
+	s := f.Styles.Clear
+	s += fmt.Sprintf("%s", f.Styles.Divergence)
 
 	if f.st.BehindCount != 0 {
-		fmt.Fprintf(&f.b, "%s%d", f.Symbols.Behind, f.st.BehindCount)
+		s += fmt.Sprintf("%s%d", f.Symbols.Behind, f.st.BehindCount)
 	}
 
 	if f.st.AheadCount != 0 {
-		fmt.Fprintf(&f.b, "%s%d", f.Symbols.Ahead, f.st.AheadCount)
+		s += fmt.Sprintf("%s%d", f.Symbols.Ahead, f.st.AheadCount)
 	}
 
 	if f.st.BehindCount != 0 || f.st.AheadCount != 0 {
-		f.b.WriteString(" ")
+		s += " "
 	}
+	return s
 }
 
-func (f *Formater) clear() {
-	// clear global style
-	f.b.WriteString(f.Styles.Clear)
-}
+// func (f *Formater) clear() {
+// 	// clear global style
+// 	f.b.WriteString(f.Styles.Clear)
+// }
 
-func (f *Formater) currentRef() {
-	f.clear()
+func (f *Formater) currentRef() string {
+	s := f.Styles.Clear
 
 	if f.st.IsDetached {
-		fmt.Fprintf(&f.b, "%s%s%s", f.Styles.Branch, f.Symbols.HashPrefix, f.st.HEAD)
-		f.b.WriteString(" ")
-		return
+		s += fmt.Sprintf("%s%s%s", f.Styles.Branch, f.Symbols.HashPrefix, f.st.HEAD)
+		s += " "
+		return s
 	}
 
 	branch := truncate(f.st.LocalBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
-	fmt.Fprintf(&f.b, "%s%s", f.Styles.Branch, branch)
-	f.b.WriteString(" ")
+	s += fmt.Sprintf("%s%s", f.Styles.Branch, branch)
+	s += " "
+	return s
 }
 
-func (f *Formater) flags() {
+func (f *Formater) flags() string {
 	var flags []string
 	if f.st.IsClean {
 		if f.st.NumStashed != 0 {
@@ -263,14 +274,12 @@ func (f *Formater) flags() {
 				fmt.Sprintf("%s%s%d", f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
 		}
 
-		if f.Options.HideClean != true {
+		if !f.Options.HideClean {
 			flags = append(flags, fmt.Sprintf("%s%s", f.Styles.Clean, f.Symbols.Clean))
 		}
-
-		f.clear()
-		f.b.WriteString(strings.Join(flags, " "))
-		f.b.WriteString(" ")
-		return
+		s := f.Styles.Clear + strings.Join(flags, " ")
+		s += " "
+		return s
 	}
 
 	if f.st.NumStaged != 0 {
@@ -299,13 +308,15 @@ func (f *Formater) flags() {
 	}
 
 	if len(flags) > 0 {
-		f.clear()
-		f.b.WriteString(strings.Join(flags, " "))
-		f.b.WriteString(" ")
+		s := f.Styles.Clear + strings.Join(flags, " ")
+		s += " "
+		return s
 	}
+
+	return ""
 }
 
-func (f *Formater) stats() {
+func (f *Formater) stats() string {
 	stats := make([]string, 0, 2)
 
 	if f.st.Insertions != 0 {
@@ -317,8 +328,9 @@ func (f *Formater) stats() {
 	}
 
 	if len(stats) != 0 {
-		f.clear()
-		f.b.WriteString(strings.Join(stats, " "))
-		f.b.WriteString(" ")
+		s := f.Styles.Clear + strings.Join(stats, " ")
+		s += " "
+		return s
 	}
+	return ""
 }

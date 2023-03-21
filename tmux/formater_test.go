@@ -98,9 +98,8 @@ func TestFlags(t *testing.T) {
 				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Layout: tt.layout},
 				st:     tt.st,
 			}
-			f.flags()
 
-			if got := f.b.String(); got != tt.want {
+			if got := f.flags(); got != tt.want {
 				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
 			}
 		})
@@ -190,9 +189,8 @@ func TestDivergence(t *testing.T) {
 				Config: Config{Styles: tt.styles, Symbols: tt.symbols},
 				st:     tt.st,
 			}
-			f.divergence()
 
-			if got := f.b.String(); got != tt.want {
+			if got := f.divergence(); got != tt.want {
 				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
 			}
 		})
@@ -594,8 +592,7 @@ func TestFormat(t *testing.T) {
 				return
 			}
 
-			f.format()
-			if got := f.b.String(); got != tt.want {
+			if got := f.format(); got != tt.want {
 				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
 			}
 		})
@@ -650,9 +647,8 @@ func Test_stats(t *testing.T) {
 					Deletions:  tt.deletions,
 				},
 			}
-			f.stats()
 
-			if got := f.b.String(); got != tt.want {
+			if got := f.stats(); got != tt.want {
 				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
 			}
 		})
