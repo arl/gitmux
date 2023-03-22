@@ -25,7 +25,7 @@ func TestFlags(t *testing.T) {
 			symbols: symbols{
 				Clean: "SymbolClean",
 			},
-			layout: []string{"branch", "..", "remote", " - ", "flags"},
+			layout: []string{"branch", "..", "remote", "- ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
@@ -62,7 +62,7 @@ func TestFlags(t *testing.T) {
 				Stashed:  "SymbolStash",
 				Staged:   "SymbolStaged",
 			},
-			layout: []string{"branch", "..", "remote", " - ", "flags"},
+			layout: []string{"branch", "..", "remote", "- ", "flags"},
 			st: &gitstatus.Status{
 				NumStashed: 1,
 				Porcelain: gitstatus.Porcelain{
@@ -98,11 +98,8 @@ func TestFlags(t *testing.T) {
 				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Layout: tt.layout},
 				st:     tt.st,
 			}
-			f.flags()
 
-			if got := f.b.String(); got != tt.want {
-				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
-			}
+			compareStrings(t, tt.want, f.flags())
 		})
 	}
 }
@@ -147,7 +144,7 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 0,
 				},
 			},
-			want: "StyleClear" + " ↓·4",
+			want: "StyleClear" + "↓·4",
 		},
 		{
 			name: "behind only",
@@ -164,7 +161,7 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 12,
 				},
 			},
-			want: "StyleClear" + " ↑·12",
+			want: "StyleClear" + "↑·12",
 		},
 		{
 			name: "diverged both ways",
@@ -181,7 +178,7 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 128,
 				},
 			},
-			want: "StyleClear" + " ↑·128↓·41",
+			want: "StyleClear" + "↑·128↓·41",
 		},
 	}
 	for _, tt := range tests {
@@ -190,11 +187,8 @@ func TestDivergence(t *testing.T) {
 				Config: Config{Styles: tt.styles, Symbols: tt.symbols},
 				st:     tt.st,
 			}
-			f.divergence()
 
-			if got := f.b.String(); got != tt.want {
-				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
-			}
+			compareStrings(t, tt.want, f.divergence())
 		})
 	}
 }
@@ -360,9 +354,7 @@ func Test_truncate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
-			if got := truncate(tt.s, tt.ellipsis, tt.max, tt.dir); got != tt.want {
-				t.Errorf("truncate(%q, %d, %s) = %q, want %q", tt.s, tt.max, tt.dir, got, tt.want)
-			}
+			compareStrings(t, tt.want, truncate(tt.s, tt.ellipsis, tt.max, tt.dir))
 		})
 	}
 }
@@ -391,7 +383,7 @@ func TestFormat(t *testing.T) {
 				Clean:    "SymbolClean",
 				Modified: "SymbolMod",
 			},
-			layout: []string{"branch", "..", "remote", " - ", "flags"},
+			layout: []string{"branch", " .. ", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
 					LocalBranch:  "Local",
@@ -401,7 +393,7 @@ func TestFormat(t *testing.T) {
 			},
 			want: "StyleClear" + "StyleBranchSymbolBranch" +
 				"StyleClear" + "StyleBranch" + "Local" +
-				"StyleClear" + ".." +
+				"StyleClear" + " .. " +
 				"StyleClear" + "StyleRemoteRemote" +
 				"StyleClear" + " - " +
 				"StyleClear" + "StyleModSymbolMod2",
@@ -419,7 +411,7 @@ func TestFormat(t *testing.T) {
 				Ahead:    "SymbolAhead",
 				Modified: "SymbolMod",
 			},
-			layout: []string{"branch", " ~~ ", "flags"},
+			layout: []string{"branch", "~~", "flags"},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
 					LocalBranch:  "Local",
@@ -430,7 +422,7 @@ func TestFormat(t *testing.T) {
 			},
 			want: "StyleClear" + "StyleBranchSymbolBranch" +
 				"StyleClear" + "StyleBranch" + "Local" +
-				"StyleClear" + " ~~ " +
+				"StyleClear" + "~~" +
 				"StyleClear" + "StyleModSymbolMod2",
 		},
 		{
@@ -452,8 +444,8 @@ func TestFormat(t *testing.T) {
 					AheadCount:   1,
 				},
 			},
-			want: "StyleClear" + "StyleRemoteRemote" +
-				"StyleClear" + " SymbolAhead1",
+			want: "StyleClear" + "StyleRemoteRemote " +
+				"StyleClear" + "SymbolAhead1",
 		},
 		{
 			name: "empty",
@@ -512,7 +504,7 @@ func TestFormat(t *testing.T) {
 			symbols: symbols{
 				Branch: "SymbolBranch",
 			},
-			layout: []string{"branch", " ", "remote"},
+			layout: []string{"branch", "remote"},
 			options: options{
 				BranchMaxLen: 9,
 				BranchTrim:   dirLeft,
@@ -525,8 +517,7 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "...Branch" +
-				"StyleClear" + " " +
+				"StyleClear" + "StyleBranch" + "...Branch " +
 				"StyleClear" + "StyleRemote" + "...Branch",
 		},
 		{
@@ -595,10 +586,7 @@ func TestFormat(t *testing.T) {
 				return
 			}
 
-			f.format()
-			if got := f.b.String(); got != tt.want {
-				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
-			}
+			compareStrings(t, tt.want, f.format())
 		})
 	}
 }
@@ -651,11 +639,19 @@ func Test_stats(t *testing.T) {
 					Deletions:  tt.deletions,
 				},
 			}
-			f.stats()
 
-			if got := f.b.String(); got != tt.want {
-				t.Errorf("got:\n%s\n\nwant:\n%s\n", got, tt.want)
-			}
+			compareStrings(t, tt.want, f.stats())
 		})
+	}
+}
+
+func compareStrings(t *testing.T, want, got string) {
+	if got != want {
+		t.Errorf(`
+	got:
+%q
+
+	want:
+%q`, got, want)
 	}
 }

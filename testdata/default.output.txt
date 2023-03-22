@@ -51,4 +51,4 @@ with some different content
 
 -- empty_file --
 -- output.golden --
-#[fg=default]#[fg=default]#[fg=white,bold]⎇ #[fg=default]#[fg=white,bold]main#[fg=default] #[fg=default] - #[fg=default]#[fg=green,bold]● 1 #[fg=red,bold]✚ 1 #[fg=cyan,bold]⚑ 1 #[fg=magenta,bold]… 2
+#[fg=default]#[fg=default]#[fg=white,bold]⎇ #[fg=default]#[fg=white,bold]main#[fg=default] - #[fg=default]#[fg=green,bold]● 1 #[fg=red,bold]✚ 1 #[fg=cyan,bold]⚑ 1 #[fg=magenta,bold]… 2
