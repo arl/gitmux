@@ -79,5 +79,5 @@ tmux:
         branch_trim: right
         # Character indicating whether and where a branch was truncated.
         ellipsis: …
-        # Hides the clean flag
+        # Hides the clean flag.
         hide_clean: false
