@@ -69,7 +69,7 @@ tmux:
     #  - flags:             symbols representing the working tree state, for example `✚ 1 ⚑ 1 … 2`
     #  - stats:             insertions/deletions (lines), for example`Σ56 Δ21`
     #  - some string `foo`: any other character of string is directly shown, for example `foo` or `|`
-    layout: [branch, remote-branch, divergence, "- ", flags]
+    layout: [branch, remote-branch, divergence, " - ", flags]
 
     # Additional configuration options.
     options:
