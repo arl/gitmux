@@ -85,10 +85,11 @@ func (d *direction) UnmarshalYAML(value *yaml.Node) error {
 }
 
 type options struct {
-	BranchMaxLen int       `yaml:"branch_max_len"`
-	BranchTrim   direction `yaml:"branch_trim"`
-	Ellipsis     string    `yaml:"ellipsis"`
-	HideClean    bool      `yaml:"hide_clean"`
+	BranchMaxLen  int       `yaml:"branch_max_len"`
+	BranchTrim    direction `yaml:"branch_trim"`
+	Ellipsis      string    `yaml:"ellipsis"`
+	HideClean     bool      `yaml:"hide_clean"`
+	TrailingSpace bool      `yaml:"trailing_space"`
 }
 
 // A Formater formats git status to a tmux style string.
@@ -160,7 +161,14 @@ func (f *Formater) format() string {
 				i++
 			}
 		}
-		return strings.Join(comps[:i], " ")
+
+		var output = strings.Join(comps[:i], " ")
+
+		if f.Options.TrailingSpace {
+			output += " "
+		}
+
+		return output
 	}
 
 	sb := strings.Builder{}

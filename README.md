@@ -134,6 +134,7 @@ tmux:
         branch_trim: right
         ellipsis: …
         hide_clean: false
+        trailing_space: false
 ```
 
 First, save the default configuration to a new file:
@@ -271,6 +272,7 @@ This is the list of additional configuration `options`:
 | `branch_trim`    | Trim left or right end of the branch (`right` or `left`)   | `right` (trailing) |
 | `ellipsis`       | Character to show branch name has been truncated           |        `…`         |
 | `hide_clean`     | Hides the clean flag entirely                              |      `false`       |
+| `trailing_space` | Adds a trailing space to the layout                        |      `false`       |
 
 
 ## Troubleshooting

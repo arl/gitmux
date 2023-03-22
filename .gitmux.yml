@@ -81,3 +81,5 @@ tmux:
         ellipsis: …
         # Hides the clean flag.
         hide_clean: false
+        # Adds a trailing space to the layout.
+        trailing_space: false

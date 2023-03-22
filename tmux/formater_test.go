@@ -539,6 +539,42 @@ func TestFormat(t *testing.T) {
 				"StyleClear" + "StyleBranch" + "branchName",
 		},
 		{
+			name: "trailing space option false",
+			styles: styles{
+				Clear: "StyleClear",
+				Clean: "StyleClean",
+			},
+			symbols: symbols{
+				Clean: "SymbolClean",
+			},
+			layout: []string{"flags"},
+			st: &gitstatus.Status{
+				IsClean: true,
+			},
+			options: options{
+				TrailingSpace: false,
+			},
+			want: "StyleClear" + "StyleCleanSymbolClean",
+		},
+		{
+			name: "trailing space option true",
+			styles: styles{
+				Clear: "StyleClear",
+				Clean: "StyleClean",
+			},
+			symbols: symbols{
+				Clean: "SymbolClean",
+			},
+			layout: []string{"flags"},
+			st: &gitstatus.Status{
+				IsClean: true,
+			},
+			options: options{
+				TrailingSpace: true,
+			},
+			want: "StyleClear" + "StyleCleanSymbolClean ",
+		},
+		{
 			name: "hide clean option true",
 			styles: styles{
 				Clear: "StyleClear",
