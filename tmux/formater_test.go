@@ -554,7 +554,7 @@ func TestFormat(t *testing.T) {
 			options: options{
 				HideClean: true,
 			},
-			want: "StyleClear",
+			want: "",
 		},
 		{
 			name: "hide clean option false",
