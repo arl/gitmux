@@ -267,7 +267,9 @@ func (f *Formater) flags() string {
 			flags = append(flags, fmt.Sprintf("%s%s", f.Styles.Clean, f.Symbols.Clean))
 		}
 
-		return f.Styles.Clear + strings.Join(flags, " ")
+		if len(flags) != 0 {
+			return f.Styles.Clear + strings.Join(flags, " ")
+		}
 	}
 
 	if f.st.NumStaged != 0 {
