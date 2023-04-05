@@ -396,7 +396,8 @@ func TestFormat(t *testing.T) {
 				"StyleClear" + " .. " +
 				"StyleClear" + "StyleRemoteRemote" +
 				"StyleClear" + " - " +
-				"StyleClear" + "StyleModSymbolMod2",
+				"StyleClear" + "StyleModSymbolMod2" +
+				resetStyles,
 		},
 		{
 			name: "branch, different delimiter, flags",
@@ -423,7 +424,8 @@ func TestFormat(t *testing.T) {
 			want: "StyleClear" + "StyleBranchSymbolBranch" +
 				"StyleClear" + "StyleBranch" + "Local" +
 				"StyleClear" + "~~" +
-				"StyleClear" + "StyleModSymbolMod2",
+				"StyleClear" + "StyleModSymbolMod2" +
+				resetStyles,
 		},
 		{
 			name: "remote only",
@@ -445,7 +447,8 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: "StyleClear" + "StyleRemoteRemote " +
-				"StyleClear" + "SymbolAhead1",
+				"StyleClear" + "SymbolAhead1" +
+				resetStyles,
 		},
 		{
 			name: "empty",
@@ -465,7 +468,7 @@ func TestFormat(t *testing.T) {
 					NumModified: 2,
 				},
 			},
-			want: "",
+			want: resetStyles,
 		},
 		{
 			name: "branch and remote, branch_max_len not zero",
@@ -492,7 +495,8 @@ func TestFormat(t *testing.T) {
 			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
 				"StyleClear" + "StyleBranch" + "branchNa…" +
 				"StyleClear" + "/" +
-				"StyleClear" + "StyleRemote" + "remote/b…",
+				"StyleClear" + "StyleRemote" + "remote/b…" +
+				resetStyles,
 		},
 		{
 			name: "branch and remote, branch_max_len not zero and trim left",
@@ -518,7 +522,8 @@ func TestFormat(t *testing.T) {
 			},
 			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
 				"StyleClear" + "StyleBranch" + "...Branch " +
-				"StyleClear" + "StyleRemote" + "...Branch",
+				"StyleClear" + "StyleRemote" + "...Branch" +
+				resetStyles,
 		},
 		{
 			name: "issue-32",
@@ -536,7 +541,8 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "branchName",
+				"StyleClear" + "StyleBranch" + "branchName" +
+				resetStyles,
 		},
 		{
 			name: "hide clean option true",
@@ -554,7 +560,7 @@ func TestFormat(t *testing.T) {
 			options: options{
 				HideClean: true,
 			},
-			want: "",
+			want: resetStyles,
 		},
 		{
 			name: "hide clean option false",
@@ -572,7 +578,7 @@ func TestFormat(t *testing.T) {
 			options: options{
 				HideClean: false,
 			},
-			want: "StyleClear" + "StyleCleanSymbolClean",
+			want: "StyleClear" + "StyleCleanSymbolClean" + resetStyles,
 		},
 	}
 	for _, tt := range tests {

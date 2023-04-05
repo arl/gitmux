@@ -148,6 +148,8 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 	return err
 }
 
+const resetStyles = "#[fg=default,bg=default]"
+
 func (f *Formater) format() string {
 	var comps []string
 
@@ -188,6 +190,10 @@ func (f *Formater) format() string {
 	}
 
 	sb.WriteString(joinComps())
+
+	// Reset foreground and background styles to default, since there could be
+	// successive elements in user tmux status strings.
+	sb.WriteString(resetStyles)
 	return sb.String()
 }
 
