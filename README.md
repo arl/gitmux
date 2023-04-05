@@ -6,12 +6,10 @@
 
 <p align="center">
 
-<a href="https://github.com/arl/gitmux/actions/workflows/ci.yml">
-  <img alt="tests" src="https://github.com/arl/gitmux/actions/workflows/ci.yml/badge.svg" />
+<a href="https://github.com/arl/gitmux/actions/workflows/ci-cd.yaml">
+  <img alt="tests" src="https://github.com/arl/gitmux/actions/workflows/ci-cd.yaml/badge.svg" />
 </a>
-<a href="https://github.com/arl/gitmux/actions/workflows/cd.yml">
-  <img alt="tests" src="https://github.com/arl/gitmux/actions/workflows/cd.yml/badge.svg" />
-</a>
+
 <a href="https://goreportcard.com/report/github.com/arl/gitmux">
   <img alt="goreport" src="https://goreportcard.com/badge/github.com/arl/gitmux" />
 </a>
