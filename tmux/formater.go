@@ -85,10 +85,11 @@ func (d *direction) UnmarshalYAML(value *yaml.Node) error {
 }
 
 type options struct {
-	BranchMaxLen int       `yaml:"branch_max_len"`
-	BranchTrim   direction `yaml:"branch_trim"`
-	Ellipsis     string    `yaml:"ellipsis"`
-	HideClean    bool      `yaml:"hide_clean"`
+	BranchMaxLen      int       `yaml:"branch_max_len"`
+	BranchTrim        direction `yaml:"branch_trim"`
+	Ellipsis          string    `yaml:"ellipsis"`
+	HideClean         bool      `yaml:"hide_clean"`
+	SwapDivergence    bool      `yaml:"swap_divergence"`
 }
 
 // A Formater formats git status to a tmux style string.
@@ -240,13 +241,23 @@ func (f *Formater) divergence() string {
 		return ""
 	}
 
+    var s_behind string
+    var s_ahead string
 	s := f.Styles.Clear + f.Styles.Divergence
 	if f.st.BehindCount != 0 {
-		s += fmt.Sprintf("%s%d", f.Symbols.Behind, f.st.BehindCount)
+	    s_behind = fmt.Sprintf("%s%d", f.Symbols.Behind, f.st.BehindCount)
 	}
 
 	if f.st.AheadCount != 0 {
-		s += fmt.Sprintf("%s%d", f.Symbols.Ahead, f.st.AheadCount)
+		s_ahead = fmt.Sprintf("%s%d", f.Symbols.Ahead, f.st.AheadCount)
+	}
+
+	if !f.Options.SwapDivergence {
+	    // Behind first, ahead second
+        s += s_behind + s_ahead
+	} else {
+	    // Ahead first, behind second
+        s += s_ahead + s_behind
 	}
 
 	return s
