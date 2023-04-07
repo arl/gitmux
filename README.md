@@ -132,6 +132,7 @@ tmux:
         branch_trim: right
         ellipsis: …
         hide_clean: false
+        swap_divergence: false
 ```
 
 First, save the default configuration to a new file:
@@ -269,6 +270,7 @@ This is the list of additional configuration `options`:
 | `branch_trim`    | Trim left or right end of the branch (`right` or `left`)   | `right` (trailing) |
 | `ellipsis`       | Character to show branch name has been truncated           |        `…`         |
 | `hide_clean`     | Hides the clean flag entirely                              |      `false`       |
+| `swap_divergence`| Swaps behind & ahead upstream counts' order                |      `false`       |
 
 
 ## Troubleshooting

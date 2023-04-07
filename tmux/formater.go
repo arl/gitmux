@@ -241,23 +241,23 @@ func (f *Formater) divergence() string {
 		return ""
 	}
 
-    var s_behind string
-    var s_ahead string
+    behind := ""
+    ahead := ""
 	s := f.Styles.Clear + f.Styles.Divergence
 	if f.st.BehindCount != 0 {
-	    s_behind = fmt.Sprintf("%s%d", f.Symbols.Behind, f.st.BehindCount)
+	    behind = fmt.Sprintf("%s%d", f.Symbols.Behind, f.st.BehindCount)
 	}
 
 	if f.st.AheadCount != 0 {
-		s_ahead = fmt.Sprintf("%s%d", f.Symbols.Ahead, f.st.AheadCount)
+		ahead = fmt.Sprintf("%s%d", f.Symbols.Ahead, f.st.AheadCount)
 	}
 
 	if !f.Options.SwapDivergence {
 	    // Behind first, ahead second
-        s += s_behind + s_ahead
+        s += behind + ahead
 	} else {
 	    // Ahead first, behind second
-        s += s_ahead + s_behind
+        s += ahead + behind
 	}
 
 	return s
