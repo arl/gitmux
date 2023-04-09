@@ -1,7 +1,9 @@
 package tmux
 
 import (
+	"fmt"
 	"io"
+	"strings"
 	"testing"
 
 	"github.com/arl/gitstatus"
@@ -356,6 +358,36 @@ func Test_truncate(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			compareStrings(t, tt.want, truncate(tt.s, tt.ellipsis, tt.max, tt.dir))
 		})
+	}
+}
+
+func TestFormatBranchAndRemote(t *testing.T) {
+	st := gitstatus.Status{
+		Porcelain: gitstatus.Porcelain{LocalBranch: "main"},
+	}
+
+	tests := []struct {
+		layout []string
+	}{
+		{
+			layout: []string{"branch", "...", "remote-branch"},
+		},
+	}
+
+	for _, tt := range tests {
+		f := &Formater{
+			Config: Config{ /*Styles: tt.styles, Symbols: tt.symbols,*/ Layout: tt.layout /*Options: tt.options*/},
+		}
+
+		sb := &strings.Builder{}
+		if err := f.Format(sb, &st); err != nil {
+			t.Fatalf("Format error: %s", err)
+			return
+		}
+
+		fmt.Println(sb.String())
+
+		// compareStrings(t, tt.want, f.format())
 	}
 }
 
