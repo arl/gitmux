@@ -109,6 +109,7 @@ func TestDivergence(t *testing.T) {
 		name    string
 		styles  styles
 		symbols symbols
+		options options
 		st      *gitstatus.Status
 		want    string
 	}{
@@ -180,11 +181,71 @@ func TestDivergence(t *testing.T) {
 			},
 			want: "StyleClear" + "↑·128↓·41",
 		},
+		{
+			name: "swap divergence ahead only",
+			styles: styles{
+				Clear: "StyleClear",
+			},
+			symbols: symbols{
+				Ahead:  "↓·",
+				Behind: "↑·",
+			},
+			options: options{
+                SwapDivergence: true,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					AheadCount:  4,
+					BehindCount: 0,
+				},
+			},
+			want: "StyleClear" + "↓·4",
+		},
+		{
+			name: "swap divergence behind only",
+			styles: styles{
+				Clear: "StyleClear",
+			},
+			symbols: symbols{
+				Ahead:  "↓·",
+				Behind: "↑·",
+			},
+			options: options{
+                SwapDivergence: true,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					AheadCount:  0,
+					BehindCount: 12,
+				},
+			},
+			want: "StyleClear" + "↑·12",
+		},
+		{
+			name: "swap divergence both ways",
+			styles: styles{
+				Clear: "StyleClear",
+			},
+			symbols: symbols{
+				Ahead:  "↓·",
+				Behind: "↑·",
+			},
+			options: options{
+                SwapDivergence: true,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					AheadCount:  41,
+					BehindCount: 128,
+				},
+			},
+			want: "StyleClear" + "↓·41↑·128",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tt.styles, Symbols: tt.symbols},
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Options: tt.options},
 				st:     tt.st,
 			}
 
