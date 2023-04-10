@@ -270,7 +270,7 @@ This is the list of additional configuration `options`:
 | `branch_trim`    | Trim left or right end of the branch (`right` or `left`)   | `right` (trailing) |
 | `ellipsis`       | Character to show branch name has been truncated           |        `…`         |
 | `hide_clean`     | Hides the clean flag entirely                              |      `false`       |
-| `swap_divergence`| Swaps behind & ahead upstream counts' order                |      `false`       |
+| `swap_divergence`| Swaps order of behind & ahead upstream counts              |      `false`       |
 
 
 ## Troubleshooting
