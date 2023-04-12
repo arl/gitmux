@@ -21,48 +21,48 @@ func TestFlags(t *testing.T) {
 		{
 			name: "clean flag",
 			styles: styles{
-				Clear: "StyleClear",
-				Clean: "StyleClean",
+				Clear: "#[fg=default]",
+				Clean: "#[fg=green,bold]",
 			},
 			symbols: symbols{
-				Clean: "SymbolClean",
+				Clean: "✔",
 			},
 			layout: []string{"branch", "..", "remote", "- ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: "StyleClear" + "StyleCleanSymbolClean",
+			want: "#[fg=default]" + "#[fg=green,bold]✔",
 		},
 		{
 			name: "stash + clean flag",
 			styles: styles{
-				Clear:   "StyleClear",
-				Clean:   "StyleClean",
-				Stashed: "StyleStash",
+				Clear:   "#[fg=default]",
+				Clean:   "#[fg=green,bold]",
+				Stashed: "#[fg=cyan,bold]",
 			},
 			symbols: symbols{
-				Clean:   "SymbolClean",
-				Stashed: "SymbolStash",
+				Clean:   "✔",
+				Stashed: "⚑ ",
 			},
 			layout: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean:    true,
 				NumStashed: 1,
 			},
-			want: "StyleClearStyleStashSymbolStash1 StyleCleanSymbolClean",
+			want: "#[fg=default]#[fg=cyan,bold]⚑ 1 #[fg=green,bold]✔",
 		},
 		{
 			name: "mixed flags",
 			styles: styles{
-				Clear:    "StyleClear",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
-				Staged:   "StyleStaged",
+				Clear:    "#[fg=default]",
+				Modified: "#[fg=red,bold]",
+				Stashed:  "#[fg=cyan,bold]",
+				Staged:   "[fg=green,bold]",
 			},
 			symbols: symbols{
-				Modified: "SymbolMod",
-				Stashed:  "SymbolStash",
-				Staged:   "SymbolStaged",
+				Modified: "✚ ",
+				Stashed:  "⚑ ",
+				Staged:   "● ",
 			},
 			layout: []string{"branch", "..", "remote", "- ", "flags"},
 			st: &gitstatus.Status{
@@ -72,18 +72,18 @@ func TestFlags(t *testing.T) {
 					NumStaged:   3,
 				},
 			},
-			want: "StyleClear" + "StyleStagedSymbolStaged3 StyleModSymbolMod2 StyleStashSymbolStash1",
+			want: "#[fg=default]" + "[fg=green,bold]● 3 #[fg=red,bold]✚ 2 #[fg=cyan,bold]⚑ 1",
 		},
 		{
 			name: "mixed flags 2",
 			styles: styles{
-				Clear:     "StyleClear",
-				Conflict:  "StyleConflict",
-				Untracked: "StyleUntracked",
+				Clear:     "#[fg=default]",
+				Conflict:  "#[fg=red,bold]",
+				Untracked: "#[fg=magenta,bold]",
 			},
 			symbols: symbols{
-				Conflict:  "SymbolConflict",
-				Untracked: "SymbolUntracked",
+				Conflict:  "✖ ",
+				Untracked: "… ",
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -91,7 +91,7 @@ func TestFlags(t *testing.T) {
 					NumUntracked: 17,
 				},
 			},
-			want: "StyleClear" + "StyleConflictSymbolConflict42 StyleUntrackedSymbolUntracked17",
+			want: "#[fg=default]" + "#[fg=red,bold]✖ 42 #[fg=magenta,bold]… 17",
 		},
 	}
 	for _, tt := range tests {
@@ -117,7 +117,7 @@ func TestDivergence(t *testing.T) {
 		{
 			name: "no divergence",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear: "#[fg=default]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -134,7 +134,7 @@ func TestDivergence(t *testing.T) {
 		{
 			name: "ahead only",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear: "#[fg=default]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -146,12 +146,12 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 0,
 				},
 			},
-			want: "StyleClear" + "↓·4",
+			want: "#[fg=default]" + "↓·4",
 		},
 		{
 			name: "behind only",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear: "#[fg=default]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -163,12 +163,12 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 12,
 				},
 			},
-			want: "StyleClear" + "↑·12",
+			want: "#[fg=default]" + "↑·12",
 		},
 		{
 			name: "diverged both ways",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear: "#[fg=default]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -180,7 +180,7 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 128,
 				},
 			},
-			want: "StyleClear" + "↑·128↓·41",
+			want: "#[fg=default]" + "↑·128↓·41",
 		},
 	}
 	for _, tt := range tests {
@@ -404,45 +404,45 @@ func TestFormat(t *testing.T) {
 		{
 			name: "default format",
 			styles: styles{
-				Clear:    "StyleClear",
-				Clean:    "StyleClean",
-				Branch:   "StyleBranch",
-				Modified: "StyleMod",
-				Remote:   "StyleRemote",
+				Clear:    "#[fg=default]",
+				Clean:    "#[fg=green,bold]",
+				Branch:   "#[fg=white,bold]",
+				Modified: "#[fg=red,bold]",
+				Remote:   "#[fg=cyan]",
 			},
 			symbols: symbols{
-				Branch:   "SymbolBranch",
-				Clean:    "SymbolClean",
-				Modified: "SymbolMod",
+				Branch:   "⎇ ",
+				Clean:    "✔",
+				Modified: "✚ ",
 			},
 			layout: []string{"branch", " .. ", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
-					LocalBranch:  "Local",
-					RemoteBranch: "Remote",
+					LocalBranch:  "local",
+					RemoteBranch: "remote",
 					NumModified:  2,
 				},
 			},
-			want: "StyleClear" + "StyleBranchSymbolBranch" +
-				"StyleClear" + "StyleBranch" + "Local" +
-				"StyleClear" + " .. " +
-				"StyleClear" + "StyleRemoteRemote" +
-				"StyleClear" + " - " +
-				"StyleClear" + "StyleModSymbolMod2" +
+			want: "#[fg=default]" + "#[fg=white,bold]⎇ " +
+				"#[fg=default]" + "#[fg=white,bold]" + "local" +
+				"#[fg=default]" + " .. " +
+				"#[fg=default]" + "#[fg=cyan]remote" +
+				"#[fg=default]" + " - " +
+				"#[fg=default]" + "#[fg=red,bold]✚ 2" +
 				resetStyles,
 		},
 		{
 			name: "branch, different delimiter, flags",
 			styles: styles{
-				Clear:    "StyleClear",
-				Branch:   "StyleBranch",
-				Remote:   "StyleRemote",
-				Modified: "StyleMod",
+				Clear:    "#[fg=default]",
+				Branch:   "#[fg=white,bold]",
+				Remote:   "#[fg=cyan]",
+				Modified: "#[fg=red,bold]",
 			},
 			symbols: symbols{
-				Branch:   "SymbolBranch",
-				Ahead:    "SymbolAhead",
-				Modified: "SymbolMod",
+				Branch:   "⎇ ",
+				Ahead:    "↑·",
+				Modified: "✚ ",
 			},
 			layout: []string{"branch", "~~", "flags"},
 			st: &gitstatus.Status{
@@ -453,22 +453,22 @@ func TestFormat(t *testing.T) {
 					AheadCount:   1,
 				},
 			},
-			want: "StyleClear" + "StyleBranchSymbolBranch" +
-				"StyleClear" + "StyleBranch" + "Local" +
-				"StyleClear" + "~~" +
-				"StyleClear" + "StyleModSymbolMod2" +
+			want: "#[fg=default]" + "#[fg=white,bold]⎇ " +
+				"#[fg=default]" + "#[fg=white,bold]" + "Local" +
+				"#[fg=default]" + "~~" +
+				"#[fg=default]" + "#[fg=red,bold]✚ 2" +
 				resetStyles,
 		},
 		{
 			name: "remote only",
 			styles: styles{
-				Clear:  "StyleClear",
-				Branch: "StyleBranch",
-				Remote: "StyleRemote",
+				Clear:  "#[fg=default]",
+				Branch: "#[fg=white,bold]",
+				Remote: "#[fg=cyan]",
 			},
 			symbols: symbols{
-				Branch: "SymbolBranch",
-				Ahead:  "SymbolAhead",
+				Branch: "⎇ ",
+				Ahead:  "↑·",
 			},
 			layout: []string{"remote"},
 			st: &gitstatus.Status{
@@ -478,20 +478,20 @@ func TestFormat(t *testing.T) {
 					AheadCount:   1,
 				},
 			},
-			want: "StyleClear" + "StyleRemoteRemote " +
-				"StyleClear" + "SymbolAhead1" +
+			want: "#[fg=default]" + "#[fg=cyan]Remote " +
+				"#[fg=default]" + "↑·1" +
 				resetStyles,
 		},
 		{
 			name: "empty",
 			styles: styles{
-				Clear:    "StyleClear",
-				Branch:   "StyleBranch",
-				Modified: "StyleMod",
+				Clear:    "#[fg=default]",
+				Branch:   "#[fg=white,bold]",
+				Modified: "#[fg=red,bold]",
 			},
 			symbols: symbols{
-				Branch:   "SymbolBranch",
-				Modified: "SymbolMod",
+				Branch:   "⎇ ",
+				Modified: "✚ ",
 			},
 			layout: []string{},
 			st: &gitstatus.Status{
@@ -505,12 +505,12 @@ func TestFormat(t *testing.T) {
 		{
 			name: "branch and remote, branch_max_len not zero",
 			styles: styles{
-				Clear:  "StyleClear",
-				Branch: "StyleBranch",
-				Remote: "StyleRemote",
+				Clear:  "#[fg=default]",
+				Branch: "#[fg=white,bold]",
+				Remote: "#[fg=cyan]",
 			},
 			symbols: symbols{
-				Branch: "SymbolBranch",
+				Branch: "⎇ ",
 			},
 			layout: []string{"branch", "/", "remote"},
 			options: options{
@@ -524,21 +524,21 @@ func TestFormat(t *testing.T) {
 					RemoteBranch: "remote/branchName",
 				},
 			},
-			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "branchNa…" +
-				"StyleClear" + "/" +
-				"StyleClear" + "StyleRemote" + "remote/b…" +
+			want: "#[fg=default]" + "#[fg=white,bold]" + "⎇ " +
+				"#[fg=default]" + "#[fg=white,bold]" + "branchNa…" +
+				"#[fg=default]" + "/" +
+				"#[fg=default]" + "#[fg=cyan]" + "remote/b…" +
 				resetStyles,
 		},
 		{
 			name: "branch and remote, branch_max_len not zero and trim left",
 			styles: styles{
-				Clear:  "StyleClear",
-				Branch: "StyleBranch",
-				Remote: "StyleRemote",
+				Clear:  "#[fg=default]",
+				Branch: "#[fg=white,bold]",
+				Remote: "#[fg=cyan]",
 			},
 			symbols: symbols{
-				Branch: "SymbolBranch",
+				Branch: "⎇ ",
 			},
 			layout: []string{"branch", "remote"},
 			options: options{
@@ -552,19 +552,19 @@ func TestFormat(t *testing.T) {
 					RemoteBranch: "remote/nameBranch",
 				},
 			},
-			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "...Branch " +
-				"StyleClear" + "StyleRemote" + "...Branch" +
+			want: "#[fg=default]" + "#[fg=white,bold]" + "⎇ " +
+				"#[fg=default]" + "#[fg=white,bold]" + "...Branch " +
+				"#[fg=default]" + "#[fg=cyan]" + "...Branch" +
 				resetStyles,
 		},
 		{
 			name: "issue-32",
 			styles: styles{
-				Clear:  "StyleClear",
-				Branch: "StyleBranch",
+				Clear:  "#[fg=default]",
+				Branch: "#[fg=white,bold]",
 			},
 			symbols: symbols{
-				Branch: "SymbolBranch",
+				Branch: "⎇ ",
 			},
 			layout: []string{"branch"},
 			st: &gitstatus.Status{
@@ -572,18 +572,18 @@ func TestFormat(t *testing.T) {
 					LocalBranch: "branchName",
 				},
 			},
-			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "branchName" +
+			want: "#[fg=default]" + "#[fg=white,bold]" + "⎇ " +
+				"#[fg=default]" + "#[fg=white,bold]" + "branchName" +
 				resetStyles,
 		},
 		{
 			name: "hide clean option true",
 			styles: styles{
-				Clear: "StyleClear",
-				Clean: "StyleClean",
+				Clear: "#[fg=default]",
+				Clean: "#[fg=green,bold]",
 			},
 			symbols: symbols{
-				Clean: "SymbolClean",
+				Clean: "✔",
 			},
 			layout: []string{"flags"},
 			st: &gitstatus.Status{
@@ -597,11 +597,11 @@ func TestFormat(t *testing.T) {
 		{
 			name: "hide clean option false",
 			styles: styles{
-				Clear: "StyleClear",
-				Clean: "StyleClean",
+				Clear: "#[fg=default]",
+				Clean: "#[fg=green,bold]",
 			},
 			symbols: symbols{
-				Clean: "SymbolClean",
+				Clean: "✔",
 			},
 			layout: []string{"flags"},
 			st: &gitstatus.Status{
@@ -610,7 +610,7 @@ func TestFormat(t *testing.T) {
 			options: options{
 				HideClean: false,
 			},
-			want: "StyleClear" + "StyleCleanSymbolClean" + resetStyles,
+			want: "#[fg=default]" + "#[fg=green,bold]✔" + resetStyles,
 		},
 	}
 	for _, tt := range tests {
@@ -643,18 +643,18 @@ func Test_stats(t *testing.T) {
 		{
 			name:       "insertions",
 			insertions: 12,
-			want:       "StyleClear" + "StyleInsertionsSymbolInsertions12",
+			want:       "#[fg=default]" + "#[fg=green]Σ12",
 		},
 		{
 			name:      "deletions",
 			deletions: 12,
-			want:      "StyleClear" + "StyleDeletionsSymbolDeletions12",
+			want:      "#[fg=default]" + "#[fg=red]Δ12",
 		},
 		{
 			name:       "insertions and deletions",
 			insertions: 1,
 			deletions:  2,
-			want:       "StyleClear" + "StyleInsertionsSymbolInsertions1" + " " + "StyleDeletionsSymbolDeletions2",
+			want:       "#[fg=default]" + "#[fg=green]Σ1" + " " + "#[fg=red]Δ2",
 		},
 	}
 	for _, tt := range tests {
@@ -662,13 +662,13 @@ func Test_stats(t *testing.T) {
 			f := &Formater{
 				Config: Config{
 					Styles: styles{
-						Clear:      "StyleClear",
-						Deletions:  "StyleDeletions",
-						Insertions: "StyleInsertions",
+						Clear:      "#[fg=default]",
+						Deletions:  "#[fg=red]",
+						Insertions: "#[fg=green]",
 					},
 					Symbols: symbols{
-						Deletions:  "SymbolDeletions",
-						Insertions: "SymbolInsertions",
+						Deletions:  "Δ",
+						Insertions: "Σ",
 					},
 					Layout: []string{"stats"},
 				},
