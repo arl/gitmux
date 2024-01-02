@@ -4,8 +4,9 @@ import (
 	_ "embed"
 	"fmt"
 
-	"github.com/arl/gitmux/tmux"
 	"gopkg.in/yaml.v3"
+
+	"github.com/arl/gitmux/tmux"
 )
 
 // Config configures output formatting.

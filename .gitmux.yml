@@ -32,7 +32,7 @@ tmux:
     # https://man7.org/linux/man-pages/man1/tmux.1.html#STYLES.
     styles:
         # Clear previous style.
-        clear: "#[fg=default]"
+        clear: "#[none]"
         # Special tree state strings such as [rebase], [merge], etc.
         state: "#[fg=red,bold]"
         # Local branch name
