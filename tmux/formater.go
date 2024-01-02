@@ -135,6 +135,8 @@ func truncate(s, ellipsis string, max int, dir direction) string {
 
 // Format writes st as json into w.
 func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
+	defer fmt.Fprintf(w, "%s", f.Styles.Clear)
+
 	f.st = st
 
 	// Overall working tree state
