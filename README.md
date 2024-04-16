@@ -133,7 +133,7 @@ tmux:
         ellipsis: …
         hide_clean: false
         swap_divergence: false
-        space_between_divergence: false
+        divergence_space: false
 ```
 
 First, save the default configuration to a new file:
@@ -272,7 +272,7 @@ This is the list of additional configuration `options`:
 | `ellipsis`                | Character to show branch name has been truncated           |        `…`         |
 | `hide_clean`              | Hides the clean flag entirely                              |      `false`       |
 | `swap_divergence`         | Swaps order of behind & ahead upstream counts              |      `false`       |
-| `space_between_divergence`| Add space between behind & ahead upstream counts           |      `false`       |
+| `divergence_space`        | Add space between behind & ahead upstream counts           |      `false`       |
 
 
 ## Troubleshooting

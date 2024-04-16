@@ -182,6 +182,88 @@ func TestDivergence(t *testing.T) {
 			want: "StyleClear" + "↑·128↓·41",
 		},
 		{
+			name: "space between behind only",
+			styles: styles{
+				Clear: "StyleClear",
+			},
+			symbols: symbols{
+				Ahead:  "↓·",
+				Behind: "↑·",
+			},
+			options: options{
+				DivergenceSpace: true,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					AheadCount:  0,
+					BehindCount: 12,
+				},
+			},
+			want: "StyleClear" + "↑·12",
+		},
+		{
+			name: "space between diverged both way",
+			styles: styles{
+				Clear: "StyleClear",
+			},
+			symbols: symbols{
+				Ahead:  "↓·",
+				Behind: "↑·",
+			},
+			options: options{
+				DivergenceSpace: true,
+				SwapDivergence: false
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+				AheadCount:  41,
+				BehindCount: 128,
+				},
+			},
+			want: "StyleClear" + "↑·128 ↓·41",
+		},
+		{
+			name: "space between swap divergence both ways",
+			styles: styles{
+				Clear: "StyleClear",
+			},
+			symbols: symbols{
+				Ahead:  "↓·",
+				Behind: "↑·",
+			},
+			options: options{
+				DivergenceSpace: true,
+				SwapDivergence: true,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+				AheadCount:  41,
+				BehindCount: 128,
+				},
+			},
+			want: "StyleClear" + "↓·41 ↑·128",
+		},
+		{
+			name: "no space between diverged both way",
+			styles: styles{
+				Clear: "StyleClear",
+			},
+			symbols: symbols{
+				Ahead:  "↓·",
+				Behind: "↑·",
+			},
+			options: options{
+				DivergenceSpace: false,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+				AheadCount:  41,
+				BehindCount: 128,
+				},
+			},
+			want: "StyleClear" + "↑·128↓·41",
+		},
+		{
 			name: "swap divergence ahead only",
 			styles: styles{
 				Clear: "StyleClear",

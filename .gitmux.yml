@@ -83,4 +83,4 @@ tmux:
         hide_clean: false
         # Swaps order of behind & ahead upstream counts - "↓·1↑·1" -> "↑·1↓·1"
         swap_divergence: false
-        space_between_divergence: false
+        divergence_space: false
