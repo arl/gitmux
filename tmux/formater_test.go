@@ -116,7 +116,8 @@ func TestDivergence(t *testing.T) {
 		{
 			name: "no divergence",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -133,7 +134,8 @@ func TestDivergence(t *testing.T) {
 		{
 			name: "ahead only",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -145,12 +147,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 0,
 				},
 			},
-			want: "StyleClear" + "↓·4",
+			want: "StyleClearStyleDivergence" + "↓·4",
 		},
 		{
 			name: "behind only",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -162,12 +165,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 12,
 				},
 			},
-			want: "StyleClear" + "↑·12",
+			want: "StyleClearStyleDivergence" + "↑·12",
 		},
 		{
 			name: "diverged both ways",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -179,12 +183,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 128,
 				},
 			},
-			want: "StyleClear" + "↑·128↓·41",
+			want: "StyleClearStyleDivergence" + "↑·128↓·41",
 		},
 		{
-			name: "space between behind only",
+			name: "divergence-space:true and ahead:0",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -199,12 +204,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 12,
 				},
 			},
-			want: "StyleClear" + "↑·12",
+			want: "StyleClearStyleDivergence" + "↑·12",
 		},
 		{
-			name: "space between diverged both way",
+			name: "divergence-space:false and diverged both ways",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -212,20 +218,21 @@ func TestDivergence(t *testing.T) {
 			},
 			options: options{
 				DivergenceSpace: true,
-				SwapDivergence: false
+				SwapDivergence:  false,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
-				AheadCount:  41,
-				BehindCount: 128,
+					AheadCount:  41,
+					BehindCount: 128,
 				},
 			},
-			want: "StyleClear" + "↑·128 ↓·41",
+			want: "StyleClearStyleDivergence" + "↑·128 ↓·41",
 		},
 		{
-			name: "space between swap divergence both ways",
+			name: "divergence-space:true and diverged both ways",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -233,47 +240,28 @@ func TestDivergence(t *testing.T) {
 			},
 			options: options{
 				DivergenceSpace: true,
-				SwapDivergence: true,
+				SwapDivergence:  true,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
-				AheadCount:  41,
-				BehindCount: 128,
+					AheadCount:  41,
+					BehindCount: 128,
 				},
 			},
-			want: "StyleClear" + "↓·41 ↑·128",
-		},
-		{
-			name: "no space between diverged both way",
-			styles: styles{
-				Clear: "StyleClear",
-			},
-			symbols: symbols{
-				Ahead:  "↓·",
-				Behind: "↑·",
-			},
-			options: options{
-				DivergenceSpace: false,
-			},
-			st: &gitstatus.Status{
-				Porcelain: gitstatus.Porcelain{
-				AheadCount:  41,
-				BehindCount: 128,
-				},
-			},
-			want: "StyleClear" + "↑·128↓·41",
+			want: "StyleClearStyleDivergence" + "↓·41 ↑·128",
 		},
 		{
 			name: "swap divergence ahead only",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
 				Behind: "↑·",
 			},
 			options: options{
-                SwapDivergence: true,
+				SwapDivergence: true,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -281,19 +269,20 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 0,
 				},
 			},
-			want: "StyleClear" + "↓·4",
+			want: "StyleClearStyleDivergence" + "↓·4",
 		},
 		{
 			name: "swap divergence behind only",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
 				Behind: "↑·",
 			},
 			options: options{
-                SwapDivergence: true,
+				SwapDivergence: true,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -301,19 +290,20 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 12,
 				},
 			},
-			want: "StyleClear" + "↑·12",
+			want: "StyleClearStyleDivergence" + "↑·12",
 		},
 		{
 			name: "swap divergence both ways",
 			styles: styles{
-				Clear: "StyleClear",
+				Clear:      "StyleClear",
+				Divergence: "StyleDivergence",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
 				Behind: "↑·",
 			},
 			options: options{
-                SwapDivergence: true,
+				SwapDivergence: true,
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -321,7 +311,7 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 128,
 				},
 			},
-			want: "StyleClear" + "↓·41↑·128",
+			want: "StyleClearStyleDivergence" + "↓·41↑·128",
 		},
 	}
 	for _, tt := range tests {
