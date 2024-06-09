@@ -85,12 +85,12 @@ func (d *direction) UnmarshalYAML(value *yaml.Node) error {
 }
 
 type options struct {
-	BranchMaxLen    int          `yaml:"branch_max_len"`
-	BranchTrim      direction    `yaml:"branch_trim"`
-	Ellipsis        string       `yaml:"ellipsis"`
-	HideClean       bool         `yaml:"hide_clean"`
-	DivergenceSpace bool         `yaml:"divergence_space"`
-	SwapDivergence  bool         `yaml:"swap_divergence"`
+	BranchMaxLen    int       `yaml:"branch_max_len"`
+	BranchTrim      direction `yaml:"branch_trim"`
+	Ellipsis        string    `yaml:"ellipsis"`
+	HideClean       bool      `yaml:"hide_clean"`
+	DivergenceSpace bool      `yaml:"divergence_space"`
+	SwapDivergence  bool      `yaml:"swap_divergence"`
 }
 
 // A Formater formats git status to a tmux style string.
