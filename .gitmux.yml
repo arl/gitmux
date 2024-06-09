@@ -75,7 +75,7 @@ tmux:
     options:
         # Maximum displayed length for local and remote branch names.
         branch_max_len: 0
-        # Trim left or right end of the branch (`right` or `left`).
+        # Trim left, right or from the center of the branch (`right`, `left` or `center`).
         branch_trim: right
         # Character indicating whether and where a branch was truncated.
         ellipsis: …
