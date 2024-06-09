@@ -1,3 +1,4 @@
+version: 2
 before:
   hooks:
     - go mod tidy
@@ -20,7 +21,6 @@ archives:
     files:
       - LICENSE
       - README.md
-    rlcp: true
 checksum:
   name_template: "checksums.txt"
 snapshot:
@@ -39,9 +39,8 @@ brews:
     license: "MIT"
     url_template: "https://github.com/arl/gitmux/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
-    folder: Formula
     skip_upload: false
-    tap:
+    repository:
       owner: arl
       name: homebrew-arl
       branch: main
