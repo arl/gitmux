@@ -53,10 +53,10 @@ gh_install() {
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then help && exit 0; fi
 
-_have curl || echo "This script depends on curl" && exit 1
+! _have curl && echo "This script depends on curl" && exit 1
 [ -z "$INSTALL_PATH" ] && echo "Please set the INSTALL_PATH envvar to specify installation directory" && exit 1
 
-echo "Installing gitmux"
+echo "Installing gitmux..."
 if gh_install "$@"; then
     echo "Successfully installed gitmux"
 else
