@@ -62,8 +62,9 @@ type styles struct {
 }
 
 const (
-	dirLeft  direction = "left"
-	dirRight direction = "right"
+	dirLeft   direction = "left"
+	dirRight  direction = "right"
+	dirCenter direction = "center"
 )
 
 type direction string
@@ -78,6 +79,8 @@ func (d *direction) UnmarshalYAML(value *yaml.Node) error {
 		*d = dirLeft
 	case dirRight:
 		*d = dirRight
+	case dirCenter:
+		*d = dirCenter
 	default:
 		return fmt.Errorf("'direction': unexpected value %v", s)
 	}
@@ -99,8 +102,8 @@ type Formater struct {
 }
 
 // truncate returns s, truncated so that it is no more than max runes long.
-// Depending on the provided direction, truncation is performed right or left.
-// If s is returned truncated, the truncated part is replaced with the
+// Depending on the provided direction, truncation is performed right, left or
+// center. If s is returned truncated, the truncated part is replaced with the
 // 'ellipsis' string.
 //
 // If max is zero, negative or greater than the number of runes in s, truncate
@@ -129,6 +132,16 @@ func truncate(s, ellipsis string, max int, dir direction) string {
 	case dirLeft:
 		runes = runes[len(runes)+len(ell)-max:]
 		runes = append(ell, runes...)
+	case dirCenter:
+		// We want to keep the same number of runes on both sides of the ellipsis. If the
+		// number of runes on each side is odd, we add one more rune to the right side.
+		llen := (max - len(ell)) / 2
+		rlen := max - len(ell) - llen
+
+		right := runes[len(runes)-rlen:]
+
+		runes = append(runes[:llen], ell...)
+		runes = append(runes, right...)
 	}
 	return string(runes)
 }

@@ -412,6 +412,78 @@ func Test_truncate(t *testing.T) {
 			dir:      dirLeft,
 			want:     "super-long-branch",
 		},
+
+		/* trim center */
+		{
+			s:        "br",
+			ellipsis: "...",
+			max:      1,
+			dir:      dirCenter,
+			want:     "r",
+		},
+		{
+			s:        "br",
+			ellipsis: "",
+			max:      1,
+			dir:      dirCenter,
+			want:     "r",
+		},
+		{
+			s:        "br",
+			ellipsis: "...",
+			max:      3,
+			dir:      dirCenter,
+			want:     "br",
+		},
+		{
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      3,
+			dir:      dirCenter,
+			want:     "...",
+		},
+		{
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      15,
+			dir:      dirCenter,
+			want:     "super-...branch",
+		},
+		{
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      17,
+			dir:      dirCenter,
+			want:     "super-long-branch",
+		},
+		{
+			s:        "长長的-树樹枝",
+			ellipsis: "...",
+			max:      6,
+			dir:      dirCenter,
+			want:     "长...樹枝",
+		},
+		{
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      32,
+			dir:      dirCenter,
+			want:     "super-long-branch",
+		},
+		{
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      0,
+			dir:      dirCenter,
+			want:     "super-long-branch",
+		},
+		{
+			s:        "super-long-branch",
+			ellipsis: "...",
+			max:      -1,
+			dir:      dirCenter,
+			want:     "super-long-branch",
+		},
 	}
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
