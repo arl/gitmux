@@ -13,7 +13,7 @@ Arguments:
   version         Specify the version of gitmux to install. If not provided, the latest version will be installed.
 
 Environment Variables:
-  INSTALL_PATH    Specify the directory where gitmux should be installed.
+  INSTALL_PATH    Specify the directory where gitmux should be installed. Required
 
 Description:
   This script installs the gitmux tool, which provides Git status information in the tmux status line.
