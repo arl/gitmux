@@ -39,6 +39,7 @@ brews:
     license: "MIT"
     url_template: "https://github.com/arl/gitmux/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    directory: Formula
     skip_upload: false
     repository:
       owner: arl
