@@ -1,6 +1,31 @@
 #!/bin/sh
 
 _have() { type "$1" >/dev/null 2>&1; }
+
+help() {
+    cat <<EOF
+Usage: ${0##*/} [options] [version]
+
+Options:
+  -h, --help      Show this help message and exit.
+
+Arguments:
+  version         Specify the version of gitmux to install. If not provided, the latest version will be installed.
+
+Environment Variables:
+  INSTALL_PATH    Specify the directory where gitmux should be installed.
+
+Description:
+  This script installs the gitmux tool, which provides Git status information in the tmux status line.
+  It automatically detects the system architecture and downloads the appropriate version of gitmux.
+
+Examples:
+  INSTALL_PATH=/usr/local/bin ${0##*/}            Install the latest version of gitmux to /usr/local/bin.
+  INSTALL_PATH=/usr/local/bin ${0##*/} v0.7.0     Install version 0.7.0 of gitmux to /usr/local/bin.
+
+EOF
+}
+
 gh_install() {
     ver="$1"
     repo='arl/gitmux'
@@ -25,6 +50,8 @@ gh_install() {
         mv gitmux "${INSTALL_PATH}"
     [ -d "$tmpdir" ] && rm -rf "$tmpdir"
 }
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then help && exit 0; fi
 
 _have curl || echo "This script depends on curl" && exit 1
 [ -z "$INSTALL_PATH" ] && echo "Please set the INSTALL_PATH envvar to specify installation directory" && exit 1
