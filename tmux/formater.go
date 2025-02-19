@@ -110,9 +110,9 @@ type Formater struct {
 // If max is zero, negative or greater than the number of runes in s, truncate
 // just returns s.
 //
-// NOTE: If max is lower than len(ellipsis), in other words it we're not even
+// NOTE: If max is lower than len(ellipsis), in other words if we're not even
 // allowed to just return the ellipsis string, then we just return the maximum
-// number of runes we can, without inserting ellpisis.
+// number of runes we can, without inserting ellipsis.
 func truncate(s, ellipsis string, max int, dir direction) string {
 	slen := utf8.RuneCountInString(s)
 	if max <= 0 || slen <= max {
@@ -144,6 +144,7 @@ func truncate(s, ellipsis string, max int, dir direction) string {
 		runes = append(runes[:llen], ell...)
 		runes = append(runes, right...)
 	}
+
 	return string(runes)
 }
 
