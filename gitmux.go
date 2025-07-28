@@ -10,8 +10,8 @@ import (
 	"github.com/arl/gitstatus"
 	"gopkg.in/yaml.v3"
 
-	"github.com/arl/gitmux/json"
-	"github.com/arl/gitmux/tmux"
+	"gitmux/json"
+	"gitmux/tmux"
 )
 
 var version = "<<development version>>"
@@ -23,7 +23,7 @@ gitmux prints the status of a Git working tree as a tmux format string.
 If directory is not given, it default to the working directory.  
 
 Options:
-  -cfg cfgfile    use cfgfile when printing git status.
+  -cfg FILE       read gitmux config from FILE.
   -printcfg       prints default configuration file.
   -dbg            outputs Git status as JSON and print errors.
   -timeout DUR    exits if still running after given duration (ex: 2s, 500ms).

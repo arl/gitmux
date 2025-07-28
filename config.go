@@ -6,7 +6,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/arl/gitmux/tmux"
+	"gitmux/tmux"
 )
 
 // Config configures output formatting.
