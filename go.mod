@@ -1,4 +1,4 @@
-module gitmux
+module github.com/arl/gitmux
 
 go 1.24
 
