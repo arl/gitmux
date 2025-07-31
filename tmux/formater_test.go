@@ -979,6 +979,186 @@ func Test_stats(t *testing.T) {
 	}
 }
 
+func TestFlagsWithEmptySymbols(t *testing.T) {
+	tests := []struct {
+		name    string
+		styles  styles
+		symbols symbols
+		st      *gitstatus.Status
+		want    string
+	}{
+		{
+			name: "empty stashed symbol hides stash count",
+			styles: styles{
+				Clear:    "StyleClear",
+				Modified: "StyleMod",
+				Stashed:  "StyleStash",
+			},
+			symbols: symbols{
+				Modified: "SymbolMod",
+				Stashed:  "", // empty symbol should hide this flag
+			},
+			st: &gitstatus.Status{
+				NumStashed: 5,
+				Porcelain: gitstatus.Porcelain{
+					NumModified: 2,
+				},
+			},
+			want: "StyleClear" + "StyleModSymbolMod2",
+		},
+		{
+			name: "empty modified symbol hides modified count",
+			styles: styles{
+				Clear:    "StyleClear",
+				Modified: "StyleMod",
+				Stashed:  "StyleStash",
+			},
+			symbols: symbols{
+				Modified: "", // empty symbol should hide this flag
+				Stashed:  "SymbolStash",
+			},
+			st: &gitstatus.Status{
+				NumStashed: 1,
+				Porcelain: gitstatus.Porcelain{
+					NumModified: 2,
+				},
+			},
+			want: "StyleClear" + "StyleStashSymbolStash1",
+		},
+		{
+			name: "empty staged symbol hides staged count",
+			styles: styles{
+				Clear:   "StyleClear",
+				Staged:  "StyleStaged",
+				Stashed: "StyleStash",
+			},
+			symbols: symbols{
+				Staged:  "", // empty symbol should hide this flag
+				Stashed: "SymbolStash",
+			},
+			st: &gitstatus.Status{
+				NumStashed: 1,
+				Porcelain: gitstatus.Porcelain{
+					NumStaged: 3,
+				},
+			},
+			want: "StyleClear" + "StyleStashSymbolStash1",
+		},
+		{
+			name: "empty untracked symbol hides untracked count",
+			styles: styles{
+				Clear:     "StyleClear",
+				Untracked: "StyleUntracked",
+				Stashed:   "StyleStash",
+			},
+			symbols: symbols{
+				Untracked: "", // empty symbol should hide this flag
+				Stashed:   "SymbolStash",
+			},
+			st: &gitstatus.Status{
+				NumStashed: 1,
+				Porcelain: gitstatus.Porcelain{
+					NumUntracked: 7,
+				},
+			},
+			want: "StyleClear" + "StyleStashSymbolStash1",
+		},
+		{
+			name: "empty conflict symbol hides conflict count",
+			styles: styles{
+				Clear:    "StyleClear",
+				Conflict: "StyleConflict",
+				Stashed:  "StyleStash",
+			},
+			symbols: symbols{
+				Conflict: "", // empty symbol should hide this flag
+				Stashed:  "SymbolStash",
+			},
+			st: &gitstatus.Status{
+				NumStashed: 1,
+				Porcelain: gitstatus.Porcelain{
+					NumConflicts: 3,
+				},
+			},
+			want: "StyleClear" + "StyleStashSymbolStash1",
+		},
+		{
+			name: "empty clean symbol hides clean flag",
+			styles: styles{
+				Clear:   "StyleClear",
+				Clean:   "StyleClean",
+				Stashed: "StyleStash",
+			},
+			symbols: symbols{
+				Clean:   "", // empty symbol should hide this flag
+				Stashed: "SymbolStash",
+			},
+			st: &gitstatus.Status{
+				IsClean:    true,
+				NumStashed: 1,
+			},
+			want: "StyleClear" + "StyleStashSymbolStash1",
+		},
+		{
+			name: "empty stashed symbol in clean state hides stash count",
+			styles: styles{
+				Clear: "StyleClear",
+				Clean: "StyleClean",
+			},
+			symbols: symbols{
+				Clean:   "SymbolClean",
+				Stashed: "", // empty symbol should hide this flag
+			},
+			st: &gitstatus.Status{
+				IsClean:    true,
+				NumStashed: 1,
+			},
+			want: "StyleClear" + "StyleCleanSymbolClean",
+		},
+		{
+			name: "all symbols empty shows nothing",
+			styles: styles{
+				Clear:     "StyleClear",
+				Clean:     "StyleClean",
+				Staged:    "StyleStaged",
+				Modified:  "StyleMod",
+				Conflict:  "StyleConflict",
+				Untracked: "StyleUntracked",
+				Stashed:   "StyleStash",
+			},
+			symbols: symbols{
+				Clean:     "",
+				Staged:    "",
+				Modified:  "",
+				Conflict:  "",
+				Untracked: "",
+				Stashed:   "",
+			},
+			st: &gitstatus.Status{
+				IsClean:    false,
+				NumStashed: 1,
+				Porcelain: gitstatus.Porcelain{
+					NumStaged:    3,
+					NumModified:  2,
+					NumConflicts: 1,
+					NumUntracked: 4,
+				},
+			},
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := &Formater{
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols},
+				st:     tt.st,
+			}
+
+			compareStrings(t, tt.want, f.flags())
+		})
+	}
+}
+
 func compareStrings(t *testing.T, want, got string) {
 	if got != want {
 		t.Errorf(`

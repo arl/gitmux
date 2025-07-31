@@ -306,11 +306,11 @@ func (f *Formater) formatFlag(style, symbol string, count int) string {
 func (f *Formater) flags() string {
 	var flags []string
 	if f.st.IsClean {
-		if f.st.NumStashed != 0 {
+		if f.st.NumStashed != 0 && f.Symbols.Stashed != "" {
 			flags = append(flags, f.formatFlag(f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
 		}
 
-		if !f.Options.HideClean {
+		if !f.Options.HideClean && f.Symbols.Clean != "" {
 			flags = append(flags, fmt.Sprintf("%s%s", f.Styles.Clean, f.Symbols.Clean))
 		}
 
@@ -319,23 +319,23 @@ func (f *Formater) flags() string {
 		}
 	}
 
-	if f.st.NumStaged != 0 {
+	if f.st.NumStaged != 0 && f.Symbols.Staged != "" {
 		flags = append(flags, f.formatFlag(f.Styles.Staged, f.Symbols.Staged, f.st.NumStaged))
 	}
 
-	if f.st.NumConflicts != 0 {
+	if f.st.NumConflicts != 0 && f.Symbols.Conflict != "" {
 		flags = append(flags, f.formatFlag(f.Styles.Conflict, f.Symbols.Conflict, f.st.NumConflicts))
 	}
 
-	if f.st.NumModified != 0 {
+	if f.st.NumModified != 0 && f.Symbols.Modified != "" {
 		flags = append(flags, f.formatFlag(f.Styles.Modified, f.Symbols.Modified, f.st.NumModified))
 	}
 
-	if f.st.NumStashed != 0 {
+	if f.st.NumStashed != 0 && f.Symbols.Stashed != "" {
 		flags = append(flags, f.formatFlag(f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
 	}
 
-	if f.st.NumUntracked != 0 {
+	if f.st.NumUntracked != 0 && f.Symbols.Untracked != "" {
 		flags = append(flags, f.formatFlag(f.Styles.Untracked, f.Symbols.Untracked, f.st.NumUntracked))
 	}
 
