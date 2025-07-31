@@ -32,10 +32,11 @@
 - [Prerequisites](#prerequisites)
 - [Installing](#installing)
   - [Binary release](#binary-release)
-  - [Homebrew tap (macOS and linux) (amd64 and arm64)](#homebrew-tap-macos-and-linux-amd64-and-arm64)
+  - [Homebrew (macOS and linux) (amd64 and arm64)](#homebrew-macos-and-linux-amd64-and-arm64)
   - [AUR](#aur)
   - [From source](#from-source)
 - [Getting started](#getting-started)
+  - [Command line interface](#command-line-interface)
 - [Customizing](#customizing)
   - [Symbols](#symbols)
   - [Styles](#styles)
@@ -89,6 +90,29 @@ to achieve relatively similar behaviour: `gitmux` will refresh after every shell
 you run or when you switch windows, however it won't refresh automatically, nor when switching panes.  
 
 Note that `tmux v2.1` was released in 2015 so you're probably better off updating to a more recent version anyway 🙂.
+
+
+### Command line interface
+
+`gitmux` is not meant to be used directly but it still has a command line interface
+that can be used to troubleshoot your installation, or create the default configuration:
+
+```
+$ gitmux -h
+gitmux v0.11.5
+Usage: gitmux [options] [dir]
+
+gitmux prints the status of a Git working tree as a tmux format string.
+If directory is not given, it default to the working directory.
+
+Options:
+  -cfg FILE       read gitmux config from FILE.
+  -printcfg       prints default configuration file.
+  -dbg            outputs Git status as JSON and print errors.
+  -timeout DUR    exits if still running after given duration (ex: 2s, 500ms).
+  -V              prints gitmux version and exits.
+```
+
 
 ## Customizing
 
