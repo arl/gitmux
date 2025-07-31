@@ -87,3 +87,5 @@ tmux:
         divergence_space: false
         # Show flags symbols without counts.
         flags_without_count: false
+        # Hide flag count when symbol is empty (default false shows count only).
+        hide_flag_count_if_empty_symbol: false
