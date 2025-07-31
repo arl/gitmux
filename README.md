@@ -264,14 +264,15 @@ layout: [branch, "|", flags, "|", stats]
 
 This is the list of additional configuration `options`:
 
-| Option             | Description                                                                     |      Default       |
-| :----------------- | :------------------------------------------------------------------------------ | :----------------: |
-| `branch_max_len`   | Maximum displayed length for local and remote branch names                      |   `0` (no limit)   |
-| `branch_trim`      | Trim left, right or from the center of the branch (`right`, `left` or `center`) | `right` (trailing) |
-| `ellipsis`         | Character to show branch name has been truncated                                |        `…`         |
-| `hide_clean`       | Hides the clean flag entirely                                                   |      `false`       |
-| `swap_divergence`  | Swaps order of behind & ahead upstream counts                                   |      `false`       |
-| `divergence_space` | Add a space between behind & ahead upstream counts                              |      `false`       |
+| Option               | Description                                                                     |      Default       |
+| :------------------- | :------------------------------------------------------------------------------ | :----------------: |
+| `branch_max_len`     | Maximum displayed length for local and remote branch names                      |   `0` (no limit)   |
+| `branch_trim`        | Trim left, right or from the center of the branch (`right`, `left` or `center`) | `right` (trailing) |
+| `ellipsis`           | Character to show branch name has been truncated                                |        `…`         |
+| `hide_clean`         | Hides the clean flag entirely                                                   |      `false`       |
+| `swap_divergence`    | Swaps order of behind & ahead upstream counts                                   |      `false`       |
+| `divergence_space`   | Add a space between behind & ahead upstream counts                              |      `false`       |
+| `flags_without_count`| Show flags symbols without counts                                               |      `false`       |
 
 ## Troubleshooting
 

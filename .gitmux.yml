@@ -85,3 +85,5 @@ tmux:
         swap_divergence: false
         # Add a space between behind & ahead upstream counts.
         divergence_space: false
+        # Show flags symbols without counts.
+        flags_without_count: false
