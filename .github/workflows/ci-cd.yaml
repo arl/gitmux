@@ -35,17 +35,3 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-  check_brew:
-    name: Check Brew Tap
-    needs: goreleaser
-    runs-on: macos-latest
-    steps:
-      - name: Install gitmux with brew
-        run: |
-          brew tap arl/arl
-          brew install gitmux
-          gitmux -V
-      - name: Check installed gitmux version
-        run: |
-          [ v$(gitmux -V) == "$GITHUB_REF_NAME" ]
