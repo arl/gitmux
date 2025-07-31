@@ -104,6 +104,129 @@ func TestFlags(t *testing.T) {
 	}
 }
 
+func TestFlagsWithoutCount(t *testing.T) {
+	tests := []struct {
+		name    string
+		styles  styles
+		symbols symbols
+		options options
+		st      *gitstatus.Status
+		want    string
+	}{
+		{
+			name: "flags with counts (default)",
+			styles: styles{
+				Clear:    "StyleClear",
+				Modified: "StyleMod",
+				Stashed:  "StyleStash",
+				Staged:   "StyleStaged",
+			},
+			symbols: symbols{
+				Modified: "SymbolMod",
+				Stashed:  "SymbolStash",
+				Staged:   "SymbolStaged",
+			},
+			options: options{
+				FlagsWithoutCount: false,
+			},
+			st: &gitstatus.Status{
+				NumStashed: 1,
+				Porcelain: gitstatus.Porcelain{
+					NumModified: 2,
+					NumStaged:   3,
+				},
+			},
+			want: "StyleClear" + "StyleStagedSymbolStaged3 StyleModSymbolMod2 StyleStashSymbolStash1",
+		},
+		{
+			name: "flags without counts",
+			styles: styles{
+				Clear:    "StyleClear",
+				Modified: "StyleMod",
+				Stashed:  "StyleStash",
+				Staged:   "StyleStaged",
+			},
+			symbols: symbols{
+				Modified: "SymbolMod",
+				Stashed:  "SymbolStash",
+				Staged:   "SymbolStaged",
+			},
+			options: options{
+				FlagsWithoutCount: true,
+			},
+			st: &gitstatus.Status{
+				NumStashed: 1,
+				Porcelain: gitstatus.Porcelain{
+					NumModified: 2,
+					NumStaged:   3,
+				},
+			},
+			want: "StyleClear" + "StyleStagedSymbolStaged StyleModSymbolMod StyleStashSymbolStash",
+		},
+		{
+			name: "all flags without counts",
+			styles: styles{
+				Clear:     "StyleClear",
+				Conflict:  "StyleConflict",
+				Modified:  "StyleMod",
+				Stashed:   "StyleStash",
+				Staged:    "StyleStaged",
+				Untracked: "StyleUntracked",
+			},
+			symbols: symbols{
+				Conflict:  "SymbolConflict",
+				Modified:  "SymbolMod",
+				Stashed:   "SymbolStash",
+				Staged:    "SymbolStaged",
+				Untracked: "SymbolUntracked",
+			},
+			options: options{
+				FlagsWithoutCount: true,
+			},
+			st: &gitstatus.Status{
+				NumStashed: 5,
+				Porcelain: gitstatus.Porcelain{
+					NumConflicts: 1,
+					NumModified:  10,
+					NumStaged:    3,
+					NumUntracked: 7,
+				},
+			},
+			want: "StyleClear" + "StyleStagedSymbolStaged StyleConflictSymbolConflict StyleModSymbolMod StyleStashSymbolStash StyleUntrackedSymbolUntracked",
+		},
+		{
+			name: "clean with stash without count",
+			styles: styles{
+				Clear:   "StyleClear",
+				Clean:   "StyleClean",
+				Stashed: "StyleStash",
+			},
+			symbols: symbols{
+				Clean:   "SymbolClean",
+				Stashed: "SymbolStash",
+			},
+			options: options{
+				FlagsWithoutCount: true,
+			},
+			st: &gitstatus.Status{
+				IsClean:    true,
+				NumStashed: 1,
+			},
+			want: "StyleClearStyleStashSymbolStash StyleCleanSymbolClean",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := &Formater{
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Options: tt.options},
+				st:     tt.st,
+			}
+
+			compareStrings(t, tt.want, f.flags())
+		})
+	}
+}
+
 func TestDivergence(t *testing.T) {
 	tests := []struct {
 		name    string

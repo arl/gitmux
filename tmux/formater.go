@@ -88,12 +88,13 @@ func (d *direction) UnmarshalYAML(value *yaml.Node) error {
 }
 
 type options struct {
-	BranchMaxLen    int       `yaml:"branch_max_len"`
-	BranchTrim      direction `yaml:"branch_trim"`
-	Ellipsis        string    `yaml:"ellipsis"`
-	HideClean       bool      `yaml:"hide_clean"`
-	DivergenceSpace bool      `yaml:"divergence_space"`
-	SwapDivergence  bool      `yaml:"swap_divergence"`
+	BranchMaxLen      int       `yaml:"branch_max_len"`
+	BranchTrim        direction `yaml:"branch_trim"`
+	Ellipsis          string    `yaml:"ellipsis"`
+	HideClean         bool      `yaml:"hide_clean"`
+	DivergenceSpace   bool      `yaml:"divergence_space"`
+	SwapDivergence    bool      `yaml:"swap_divergence"`
+	FlagsWithoutCount bool      `yaml:"flags_without_count"`
 }
 
 // A Formater formats git status to a tmux style string.
@@ -294,12 +295,19 @@ func (f *Formater) currentRef() string {
 	return fmt.Sprintf("%s%s%s", f.Styles.Clear, f.Styles.Branch, branch)
 }
 
+// formatFlag formats a flag with or without count based on the flags_without_count option
+func (f *Formater) formatFlag(style, symbol string, count int) string {
+	if f.Options.FlagsWithoutCount {
+		return fmt.Sprintf("%s%s", style, symbol)
+	}
+	return fmt.Sprintf("%s%s%d", style, symbol, count)
+}
+
 func (f *Formater) flags() string {
 	var flags []string
 	if f.st.IsClean {
 		if f.st.NumStashed != 0 {
-			flags = append(flags,
-				fmt.Sprintf("%s%s%d", f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
+			flags = append(flags, f.formatFlag(f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
 		}
 
 		if !f.Options.HideClean {
@@ -312,28 +320,23 @@ func (f *Formater) flags() string {
 	}
 
 	if f.st.NumStaged != 0 {
-		flags = append(flags,
-			fmt.Sprintf("%s%s%d", f.Styles.Staged, f.Symbols.Staged, f.st.NumStaged))
+		flags = append(flags, f.formatFlag(f.Styles.Staged, f.Symbols.Staged, f.st.NumStaged))
 	}
 
 	if f.st.NumConflicts != 0 {
-		flags = append(flags,
-			fmt.Sprintf("%s%s%d", f.Styles.Conflict, f.Symbols.Conflict, f.st.NumConflicts))
+		flags = append(flags, f.formatFlag(f.Styles.Conflict, f.Symbols.Conflict, f.st.NumConflicts))
 	}
 
 	if f.st.NumModified != 0 {
-		flags = append(flags,
-			fmt.Sprintf("%s%s%d", f.Styles.Modified, f.Symbols.Modified, f.st.NumModified))
+		flags = append(flags, f.formatFlag(f.Styles.Modified, f.Symbols.Modified, f.st.NumModified))
 	}
 
 	if f.st.NumStashed != 0 {
-		flags = append(flags,
-			fmt.Sprintf("%s%s%d", f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
+		flags = append(flags, f.formatFlag(f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
 	}
 
 	if f.st.NumUntracked != 0 {
-		flags = append(flags,
-			fmt.Sprintf("%s%s%d", f.Styles.Untracked, f.Symbols.Untracked, f.st.NumUntracked))
+		flags = append(flags, f.formatFlag(f.Styles.Untracked, f.Symbols.Untracked, f.st.NumUntracked))
 	}
 
 	if len(flags) > 0 {
