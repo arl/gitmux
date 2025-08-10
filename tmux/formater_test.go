@@ -121,7 +121,7 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 				Staged:  "StyleStaged",
 			},
 			symbols: symbols{
-				Staged: "S",
+				Staged: "SymbolStaged",
 			},
 			options: options{
 				FlagsWithoutCount: false,
@@ -131,7 +131,7 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 					NumStaged: 1,
 				},
 			},
-			want: "StyleClearStyleStagedS1",
+			want: "StyleClearStyleStagedSymbolStaged1",
 		},
 		// Case 1: non-empty symbol, count=1, flags_without_count=true
 		{
@@ -141,7 +141,7 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 				Staged:  "StyleStaged",
 			},
 			symbols: symbols{
-				Staged: "S",
+				Staged: "SymbolStaged",
 			},
 			options: options{
 				FlagsWithoutCount: true,
@@ -151,7 +151,7 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 					NumStaged: 1,
 				},
 			},
-			want: "StyleClearStyleStagedS",
+			want: "StyleClearStyleStagedSymbolStaged",
 		},
 		// Case 2: empty symbol, count=1, flags_without_count=false
 		{
@@ -201,7 +201,7 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 				Staged:  "StyleStaged",
 			},
 			symbols: symbols{
-				Staged: "S",
+				Staged: "SymbolStaged",
 			},
 			options: options{
 				FlagsWithoutCount: false,
@@ -221,7 +221,7 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 				Staged:  "StyleStaged",
 			},
 			symbols: symbols{
-				Staged: "S",
+				Staged: "SymbolStaged",
 			},
 			options: options{
 				FlagsWithoutCount: true,
