@@ -296,7 +296,9 @@ This is the list of additional configuration `options`:
 | `hide_clean`         | Hides the clean flag entirely                                                   |      `false`       |
 | `swap_divergence`    | Swaps order of behind & ahead upstream counts                                   |      `false`       |
 | `divergence_space`   | Add a space between behind & ahead upstream counts                              |      `false`       |
-| `flags_without_count`| Show flags symbols without counts                                               |      `false`       |
+| `flags_without_count`| Show flags symbols without counts*                                              |      `false`       |
+
+*When `flags_without_count` is true, shows only symbols (empty symbols show nothing). When false (default), shows symbols with counts (empty symbols show counts only).
 
 ## Troubleshooting
 

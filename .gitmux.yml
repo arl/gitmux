@@ -86,4 +86,6 @@ tmux:
         # Add a space between behind & ahead upstream counts.
         divergence_space: false
         # Show flags symbols without counts.
+        # When true, shows only symbols (empty symbols show nothing).
+        # When false (default), shows symbols with counts (empty symbols show counts only).
         flags_without_count: false
