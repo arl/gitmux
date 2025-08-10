@@ -297,19 +297,34 @@ func (f *Formater) currentRef() string {
 
 // formatFlag formats a flag with or without count based on the flags_without_count option
 func (f *Formater) formatFlag(style, symbol string, count int) string {
+	if count == 0 {
+		return ""
+	}
+	
 	if f.Options.FlagsWithoutCount {
+		// When flags_without_count is true, show symbol only (empty string if symbol is empty)
+		if symbol == "" {
+			return ""
+		}
 		return fmt.Sprintf("%s%s", style, symbol)
 	}
+	
+	// When flags_without_count is false, show symbol + count, or just count if symbol is empty
 	return fmt.Sprintf("%s%s%d", style, symbol, count)
 }
 
 func (f *Formater) flags() string {
 	var flags []string
 	if f.st.IsClean {
-		if f.st.NumStashed != 0 && f.Symbols.Stashed != "" {
-			flags = append(flags, f.formatFlag(f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
+		// For stashed in clean state, handle empty symbols properly
+		if f.st.NumStashed != 0 {
+			flag := f.formatFlag(f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed)
+			if flag != "" {
+				flags = append(flags, flag)
+			}
 		}
 
+		// Clean flag only shows if symbol is not empty and hide_clean is false
 		if !f.Options.HideClean && f.Symbols.Clean != "" {
 			flags = append(flags, fmt.Sprintf("%s%s", f.Styles.Clean, f.Symbols.Clean))
 		}
@@ -319,24 +334,40 @@ func (f *Formater) flags() string {
 		}
 	}
 
-	if f.st.NumStaged != 0 && f.Symbols.Staged != "" {
-		flags = append(flags, f.formatFlag(f.Styles.Staged, f.Symbols.Staged, f.st.NumStaged))
+	// For all other flags, handle empty symbols properly
+	if f.st.NumStaged != 0 {
+		flag := f.formatFlag(f.Styles.Staged, f.Symbols.Staged, f.st.NumStaged)
+		if flag != "" {
+			flags = append(flags, flag)
+		}
 	}
 
-	if f.st.NumConflicts != 0 && f.Symbols.Conflict != "" {
-		flags = append(flags, f.formatFlag(f.Styles.Conflict, f.Symbols.Conflict, f.st.NumConflicts))
+	if f.st.NumConflicts != 0 {
+		flag := f.formatFlag(f.Styles.Conflict, f.Symbols.Conflict, f.st.NumConflicts)
+		if flag != "" {
+			flags = append(flags, flag)
+		}
 	}
 
-	if f.st.NumModified != 0 && f.Symbols.Modified != "" {
-		flags = append(flags, f.formatFlag(f.Styles.Modified, f.Symbols.Modified, f.st.NumModified))
+	if f.st.NumModified != 0 {
+		flag := f.formatFlag(f.Styles.Modified, f.Symbols.Modified, f.st.NumModified)
+		if flag != "" {
+			flags = append(flags, flag)
+		}
 	}
 
-	if f.st.NumStashed != 0 && f.Symbols.Stashed != "" {
-		flags = append(flags, f.formatFlag(f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed))
+	if f.st.NumStashed != 0 {
+		flag := f.formatFlag(f.Styles.Stashed, f.Symbols.Stashed, f.st.NumStashed)
+		if flag != "" {
+			flags = append(flags, flag)
+		}
 	}
 
-	if f.st.NumUntracked != 0 && f.Symbols.Untracked != "" {
-		flags = append(flags, f.formatFlag(f.Styles.Untracked, f.Symbols.Untracked, f.st.NumUntracked))
+	if f.st.NumUntracked != 0 {
+		flag := f.formatFlag(f.Styles.Untracked, f.Symbols.Untracked, f.st.NumUntracked)
+		if flag != "" {
+			flags = append(flags, flag)
+		}
 	}
 
 	if len(flags) > 0 {

@@ -104,6 +104,200 @@ func TestFlags(t *testing.T) {
 	}
 }
 
+func TestFlagsWithoutCountBehavior(t *testing.T) {
+	tests := []struct {
+		name    string
+		styles  styles
+		symbols symbols
+		options options
+		st      *gitstatus.Status
+		want    string
+	}{
+		// Case 1: non-empty symbol, count=1, flags_without_count=false
+		{
+			name: "case 1a: non-empty symbol, count=1, flags_without_count=false",
+			styles: styles{
+				Clear:   "StyleClear",
+				Staged:  "StyleStaged",
+			},
+			symbols: symbols{
+				Staged: "S",
+			},
+			options: options{
+				FlagsWithoutCount: false,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					NumStaged: 1,
+				},
+			},
+			want: "StyleClearStyleStagedS1",
+		},
+		// Case 1: non-empty symbol, count=1, flags_without_count=true
+		{
+			name: "case 1b: non-empty symbol, count=1, flags_without_count=true",
+			styles: styles{
+				Clear:   "StyleClear",
+				Staged:  "StyleStaged",
+			},
+			symbols: symbols{
+				Staged: "S",
+			},
+			options: options{
+				FlagsWithoutCount: true,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					NumStaged: 1,
+				},
+			},
+			want: "StyleClearStyleStagedS",
+		},
+		// Case 2: empty symbol, count=1, flags_without_count=false
+		{
+			name: "case 2a: empty symbol, count=1, flags_without_count=false",
+			styles: styles{
+				Clear:   "StyleClear",
+				Staged:  "StyleStaged",
+			},
+			symbols: symbols{
+				Staged: "",
+			},
+			options: options{
+				FlagsWithoutCount: false,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					NumStaged: 1,
+				},
+			},
+			want: "StyleClearStyleStaged1",
+		},
+		// Case 2: empty symbol, count=1, flags_without_count=true
+		{
+			name: "case 2b: empty symbol, count=1, flags_without_count=true",
+			styles: styles{
+				Clear:   "StyleClear",
+				Staged:  "StyleStaged",
+			},
+			symbols: symbols{
+				Staged: "",
+			},
+			options: options{
+				FlagsWithoutCount: true,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					NumStaged: 1,
+				},
+			},
+			want: "",
+		},
+		// Case 3: count=0, flags_without_count=false
+		{
+			name: "case 3a: count=0, flags_without_count=false",
+			styles: styles{
+				Clear:   "StyleClear",
+				Staged:  "StyleStaged",
+			},
+			symbols: symbols{
+				Staged: "S",
+			},
+			options: options{
+				FlagsWithoutCount: false,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					NumStaged: 0,
+				},
+			},
+			want: "",
+		},
+		// Case 3: count=0, flags_without_count=true
+		{
+			name: "case 3b: count=0, flags_without_count=true",
+			styles: styles{
+				Clear:   "StyleClear",
+				Staged:  "StyleStaged",
+			},
+			symbols: symbols{
+				Staged: "S",
+			},
+			options: options{
+				FlagsWithoutCount: true,
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					NumStaged: 0,
+				},
+			},
+			want: "",
+		},
+		// Mixed case: multiple flags with different symbol states
+		{
+			name: "mixed flags: some empty symbols, some non-empty, flags_without_count=false",
+			styles: styles{
+				Clear:    "StyleClear",
+				Staged:   "StyleStaged",
+				Modified: "StyleMod",
+				Stashed:  "StyleStash",
+			},
+			symbols: symbols{
+				Staged:   "",      // empty symbol, should show count only
+				Modified: "M",     // non-empty symbol, should show symbol+count
+				Stashed:  "",      // empty symbol, should show count only
+			},
+			options: options{
+				FlagsWithoutCount: false,
+			},
+			st: &gitstatus.Status{
+				NumStashed: 2,
+				Porcelain: gitstatus.Porcelain{
+					NumStaged:   1,
+					NumModified: 3,
+				},
+			},
+			want: "StyleClearStyleStaged1 StyleModM3 StyleStash2",
+		},
+		// Mixed case: multiple flags with different symbol states, flags_without_count=true
+		{
+			name: "mixed flags: some empty symbols, some non-empty, flags_without_count=true",
+			styles: styles{
+				Clear:    "StyleClear",
+				Staged:   "StyleStaged",
+				Modified: "StyleMod",
+				Stashed:  "StyleStash",
+			},
+			symbols: symbols{
+				Staged:   "",      // empty symbol, should show nothing
+				Modified: "M",     // non-empty symbol, should show symbol only
+				Stashed:  "",      // empty symbol, should show nothing
+			},
+			options: options{
+				FlagsWithoutCount: true,
+			},
+			st: &gitstatus.Status{
+				NumStashed: 2,
+				Porcelain: gitstatus.Porcelain{
+					NumStaged:   1,
+					NumModified: 3,
+				},
+			},
+			want: "StyleClearStyleModM",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := &Formater{
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Options: tt.options},
+				st:     tt.st,
+			}
+
+			compareStrings(t, tt.want, f.flags())
+		})
+	}
+}
+
 func TestFlagsWithoutCount(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -988,7 +1182,7 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 		want    string
 	}{
 		{
-			name: "empty stashed symbol hides stash count",
+			name: "empty stashed symbol shows stash count (flags_without_count=false default)",
 			styles: styles{
 				Clear:    "StyleClear",
 				Modified: "StyleMod",
@@ -996,7 +1190,7 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 			},
 			symbols: symbols{
 				Modified: "SymbolMod",
-				Stashed:  "", // empty symbol should hide this flag
+				Stashed:  "", // empty symbol should show count with default flags_without_count=false
 			},
 			st: &gitstatus.Status{
 				NumStashed: 5,
@@ -1004,17 +1198,17 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumModified: 2,
 				},
 			},
-			want: "StyleClear" + "StyleModSymbolMod2",
+			want: "StyleClear" + "StyleModSymbolMod2 StyleStash5",
 		},
 		{
-			name: "empty modified symbol hides modified count",
+			name: "empty modified symbol shows modified count (flags_without_count=false default)",
 			styles: styles{
 				Clear:    "StyleClear",
 				Modified: "StyleMod",
 				Stashed:  "StyleStash",
 			},
 			symbols: symbols{
-				Modified: "", // empty symbol should hide this flag
+				Modified: "", // empty symbol should show count with default flags_without_count=false
 				Stashed:  "SymbolStash",
 			},
 			st: &gitstatus.Status{
@@ -1023,17 +1217,17 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumModified: 2,
 				},
 			},
-			want: "StyleClear" + "StyleStashSymbolStash1",
+			want: "StyleClear" + "StyleMod2 StyleStashSymbolStash1",
 		},
 		{
-			name: "empty staged symbol hides staged count",
+			name: "empty staged symbol shows staged count (flags_without_count=false default)",
 			styles: styles{
 				Clear:   "StyleClear",
 				Staged:  "StyleStaged",
 				Stashed: "StyleStash",
 			},
 			symbols: symbols{
-				Staged:  "", // empty symbol should hide this flag
+				Staged:  "", // empty symbol should show count with default flags_without_count=false
 				Stashed: "SymbolStash",
 			},
 			st: &gitstatus.Status{
@@ -1042,17 +1236,17 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumStaged: 3,
 				},
 			},
-			want: "StyleClear" + "StyleStashSymbolStash1",
+			want: "StyleClear" + "StyleStaged3 StyleStashSymbolStash1",
 		},
 		{
-			name: "empty untracked symbol hides untracked count",
+			name: "empty untracked symbol shows untracked count (flags_without_count=false default)",
 			styles: styles{
 				Clear:     "StyleClear",
 				Untracked: "StyleUntracked",
 				Stashed:   "StyleStash",
 			},
 			symbols: symbols{
-				Untracked: "", // empty symbol should hide this flag
+				Untracked: "", // empty symbol should show count with default flags_without_count=false
 				Stashed:   "SymbolStash",
 			},
 			st: &gitstatus.Status{
@@ -1061,17 +1255,17 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumUntracked: 7,
 				},
 			},
-			want: "StyleClear" + "StyleStashSymbolStash1",
+			want: "StyleClear" + "StyleStashSymbolStash1 StyleUntracked7",
 		},
 		{
-			name: "empty conflict symbol hides conflict count",
+			name: "empty conflict symbol shows conflict count (flags_without_count=false default)",
 			styles: styles{
 				Clear:    "StyleClear",
 				Conflict: "StyleConflict",
 				Stashed:  "StyleStash",
 			},
 			symbols: symbols{
-				Conflict: "", // empty symbol should hide this flag
+				Conflict: "", // empty symbol should show count with default flags_without_count=false
 				Stashed:  "SymbolStash",
 			},
 			st: &gitstatus.Status{
@@ -1080,7 +1274,7 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumConflicts: 3,
 				},
 			},
-			want: "StyleClear" + "StyleStashSymbolStash1",
+			want: "StyleClear" + "StyleConflict3 StyleStashSymbolStash1",
 		},
 		{
 			name: "empty clean symbol hides clean flag",
@@ -1100,23 +1294,24 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 			want: "StyleClear" + "StyleStashSymbolStash1",
 		},
 		{
-			name: "empty stashed symbol in clean state hides stash count",
+			name: "empty stashed symbol in clean state shows stash count (flags_without_count=false default)",
 			styles: styles{
 				Clear: "StyleClear",
 				Clean: "StyleClean",
+				Stashed: "StyleStash",
 			},
 			symbols: symbols{
 				Clean:   "SymbolClean",
-				Stashed: "", // empty symbol should hide this flag
+				Stashed: "", // empty symbol should show count with default flags_without_count=false
 			},
 			st: &gitstatus.Status{
 				IsClean:    true,
 				NumStashed: 1,
 			},
-			want: "StyleClear" + "StyleCleanSymbolClean",
+			want: "StyleClear" + "StyleStash1 StyleCleanSymbolClean",
 		},
 		{
-			name: "all symbols empty shows nothing",
+			name: "all symbols empty shows counts (flags_without_count=false default)",
 			styles: styles{
 				Clear:     "StyleClear",
 				Clean:     "StyleClean",
@@ -1144,13 +1339,88 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumUntracked: 4,
 				},
 			},
-			want: "",
+			want: "StyleClear" + "StyleStaged3 StyleConflict1 StyleMod2 StyleStash1 StyleUntracked4",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := &Formater{
 				Config: Config{Styles: tt.styles, Symbols: tt.symbols},
+				st:     tt.st,
+			}
+
+			compareStrings(t, tt.want, f.flags())
+		})
+	}
+}
+
+func TestFlagsWithEmptySymbolsAndFlagsWithoutCount(t *testing.T) {
+	tests := []struct {
+		name    string
+		styles  styles
+		symbols symbols
+		options options
+		st      *gitstatus.Status
+		want    string
+	}{
+		{
+			name: "empty symbols hide when flags_without_count=true",
+			styles: styles{
+				Clear:    "StyleClear",
+				Modified: "StyleMod",
+				Stashed:  "StyleStash",
+			},
+			symbols: symbols{
+				Modified: "", // empty symbol should hide with flags_without_count=true
+				Stashed:  "SymbolStash",
+			},
+			options: options{
+				FlagsWithoutCount: true,
+			},
+			st: &gitstatus.Status{
+				NumStashed: 1,
+				Porcelain: gitstatus.Porcelain{
+					NumModified: 2,
+				},
+			},
+			want: "StyleClear" + "StyleStashSymbolStash",
+		},
+		{
+			name: "all empty symbols hide when flags_without_count=true",
+			styles: styles{
+				Clear:     "StyleClear",
+				Staged:    "StyleStaged",
+				Modified:  "StyleMod",
+				Conflict:  "StyleConflict",
+				Untracked: "StyleUntracked",
+				Stashed:   "StyleStash",
+			},
+			symbols: symbols{
+				Staged:    "",
+				Modified:  "",
+				Conflict:  "",
+				Untracked: "",
+				Stashed:   "",
+			},
+			options: options{
+				FlagsWithoutCount: true,
+			},
+			st: &gitstatus.Status{
+				NumStashed: 1,
+				Porcelain: gitstatus.Porcelain{
+					NumStaged:    3,
+					NumModified:  2,
+					NumConflicts: 1,
+					NumUntracked: 4,
+				},
+			},
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := &Formater{
+				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Options: tt.options},
 				st:     tt.st,
 			}
 
