@@ -2,10 +2,82 @@ package tmux
 
 import (
 	"io"
+	"strings"
 	"testing"
 
 	"github.com/arl/gitstatus"
 )
+
+// expandPlaceholders converts readable placeholder strings to actual test strings
+func expandPlaceholders(s string) string {
+	// Style placeholders
+	s = strings.ReplaceAll(s, "[style:clear]", "StyleClear")
+	s = strings.ReplaceAll(s, "[style:state]", "StyleState")
+	s = strings.ReplaceAll(s, "[style:branch]", "StyleBranch")
+	s = strings.ReplaceAll(s, "[style:remote]", "StyleRemote")
+	s = strings.ReplaceAll(s, "[style:divergence]", "StyleDivergence")
+	s = strings.ReplaceAll(s, "[style:staged]", "StyleStaged")
+	s = strings.ReplaceAll(s, "[style:conflict]", "StyleConflict")
+	s = strings.ReplaceAll(s, "[style:modified]", "StyleMod")
+	s = strings.ReplaceAll(s, "[style:untracked]", "StyleUntracked")
+	s = strings.ReplaceAll(s, "[style:stash]", "StyleStash")
+	s = strings.ReplaceAll(s, "[style:clean]", "StyleClean")
+	s = strings.ReplaceAll(s, "[style:insertions]", "StyleInsertions")
+	s = strings.ReplaceAll(s, "[style:deletions]", "StyleDeletions")
+	
+	// Symbol placeholders
+	s = strings.ReplaceAll(s, "[symbol:branch]", "SymbolBranch")
+	s = strings.ReplaceAll(s, "[symbol:hash]", "SymbolHash")
+	s = strings.ReplaceAll(s, "[symbol:ahead]", "SymbolAhead")
+	s = strings.ReplaceAll(s, "[symbol:behind]", "SymbolBehind")
+	s = strings.ReplaceAll(s, "[symbol:staged]", "SymbolStaged")
+	s = strings.ReplaceAll(s, "[symbol:conflict]", "SymbolConflict")
+	s = strings.ReplaceAll(s, "[symbol:modified]", "SymbolMod")
+	s = strings.ReplaceAll(s, "[symbol:untracked]", "SymbolUntracked")
+	s = strings.ReplaceAll(s, "[symbol:stash]", "SymbolStash")
+	s = strings.ReplaceAll(s, "[symbol:clean]", "SymbolClean")
+	s = strings.ReplaceAll(s, "[symbol:insertions]", "SymbolInsertions")
+	s = strings.ReplaceAll(s, "[symbol:deletions]", "SymbolDeletions")
+	
+	return s
+}
+
+// expandStyles creates a styles struct with expanded placeholders
+func expandStyles(s styles) styles {
+	return styles{
+		Clear:      expandPlaceholders(s.Clear),
+		State:      expandPlaceholders(s.State),
+		Branch:     expandPlaceholders(s.Branch),
+		Remote:     expandPlaceholders(s.Remote),
+		Divergence: expandPlaceholders(s.Divergence),
+		Staged:     expandPlaceholders(s.Staged),
+		Conflict:   expandPlaceholders(s.Conflict),
+		Modified:   expandPlaceholders(s.Modified),
+		Untracked:  expandPlaceholders(s.Untracked),
+		Stashed:    expandPlaceholders(s.Stashed),
+		Clean:      expandPlaceholders(s.Clean),
+		Insertions: expandPlaceholders(s.Insertions),
+		Deletions:  expandPlaceholders(s.Deletions),
+	}
+}
+
+// expandSymbols creates a symbols struct with expanded placeholders
+func expandSymbols(s symbols) symbols {
+	return symbols{
+		Branch:     expandPlaceholders(s.Branch),
+		HashPrefix: expandPlaceholders(s.HashPrefix),
+		Ahead:      expandPlaceholders(s.Ahead),
+		Behind:     expandPlaceholders(s.Behind),
+		Staged:     expandPlaceholders(s.Staged),
+		Conflict:   expandPlaceholders(s.Conflict),
+		Modified:   expandPlaceholders(s.Modified),
+		Untracked:  expandPlaceholders(s.Untracked),
+		Stashed:    expandPlaceholders(s.Stashed),
+		Clean:      expandPlaceholders(s.Clean),
+		Insertions: expandPlaceholders(s.Insertions),
+		Deletions:  expandPlaceholders(s.Deletions),
+	}
+}
 
 func TestFlags(t *testing.T) {
 	tests := []struct {
@@ -19,48 +91,48 @@ func TestFlags(t *testing.T) {
 		{
 			name: "clean flag",
 			styles: styles{
-				Clear: "StyleClear",
-				Clean: "StyleClean",
+				Clear: "[style:clear]",
+				Clean: "[style:clean]",
 			},
 			symbols: symbols{
-				Clean: "SymbolClean",
+				Clean: "[symbol:clean]",
 			},
 			layout: []string{"branch", "..", "remote", "- ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: "StyleClear" + "StyleCleanSymbolClean",
+			want: "[style:clear]" + "[style:clean][symbol:clean]",
 		},
 		{
 			name: "stash + clean flag",
 			styles: styles{
-				Clear:   "StyleClear",
-				Clean:   "StyleClean",
-				Stashed: "StyleStash",
+				Clear:   "[style:clear]",
+				Clean:   "[style:clean]",
+				Stashed: "[style:stash]",
 			},
 			symbols: symbols{
-				Clean:   "SymbolClean",
-				Stashed: "SymbolStash",
+				Clean:   "[symbol:clean]",
+				Stashed: "[symbol:stash]",
 			},
 			layout: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean:    true,
 				NumStashed: 1,
 			},
-			want: "StyleClearStyleStashSymbolStash1 StyleCleanSymbolClean",
+			want: "[style:clear][style:stash][symbol:stash]1 [style:clean][symbol:clean]",
 		},
 		{
 			name: "mixed flags",
 			styles: styles{
-				Clear:    "StyleClear",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
-				Staged:   "StyleStaged",
+				Clear:    "[style:clear]",
+				Modified: "[style:modified]",
+				Stashed:  "[style:stash]",
+				Staged:   "[style:staged]",
 			},
 			symbols: symbols{
-				Modified: "SymbolMod",
-				Stashed:  "SymbolStash",
-				Staged:   "SymbolStaged",
+				Modified: "[symbol:modified]",
+				Stashed:  "[symbol:stash]",
+				Staged:   "[symbol:staged]",
 			},
 			layout: []string{"branch", "..", "remote", "- ", "flags"},
 			st: &gitstatus.Status{
@@ -70,18 +142,18 @@ func TestFlags(t *testing.T) {
 					NumStaged:   3,
 				},
 			},
-			want: "StyleClear" + "StyleStagedSymbolStaged3 StyleModSymbolMod2 StyleStashSymbolStash1",
+			want: "[style:clear]" + "[style:staged][symbol:staged]3 [style:modified][symbol:modified]2 [style:stash][symbol:stash]1",
 		},
 		{
 			name: "mixed flags 2",
 			styles: styles{
-				Clear:     "StyleClear",
-				Conflict:  "StyleConflict",
-				Untracked: "StyleUntracked",
+				Clear:     "[style:clear]",
+				Conflict:  "[style:conflict]",
+				Untracked: "[style:untracked]",
 			},
 			symbols: symbols{
-				Conflict:  "SymbolConflict",
-				Untracked: "SymbolUntracked",
+				Conflict:  "[symbol:conflict]",
+				Untracked: "[symbol:untracked]",
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -89,13 +161,13 @@ func TestFlags(t *testing.T) {
 					NumUntracked: 17,
 				},
 			},
-			want: "StyleClear" + "StyleConflictSymbolConflict42 StyleUntrackedSymbolUntracked17",
+			want: "[style:clear]" + "[style:conflict][symbol:conflict]42 [style:untracked][symbol:untracked]17",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := &Formater{
-				Config: Config{Styles: tt.styles, Symbols: tt.symbols, Layout: tt.layout},
+				Config: Config{Styles: expandStyles(tt.styles), Symbols: expandSymbols(tt.symbols), Layout: tt.layout},
 				st:     tt.st,
 			}
 
@@ -1430,12 +1502,13 @@ func TestFlagsWithEmptySymbolsAndFlagsWithoutCount(t *testing.T) {
 }
 
 func compareStrings(t *testing.T, want, got string) {
-	if got != want {
+	expandedWant := expandPlaceholders(want)
+	if got != expandedWant {
 		t.Errorf(`
 	got:
 %q
 
 	want:
-%q`, got, want)
+%q`, got, expandedWant)
 	}
 }
