@@ -19,48 +19,48 @@ func TestFlags(t *testing.T) {
 		{
 			name: "clean flag",
 			styles: styles{
-				Clear: "StyleClear",
-				Clean: "StyleClean",
+				Clear: "[style:clear]",
+				Clean: "[style:clean]",
 			},
 			symbols: symbols{
-				Clean: "SymbolClean",
+				Clean: "[symbol:clean]",
 			},
 			layout: []string{"branch", "..", "remote", "- ", "flags"},
 			st: &gitstatus.Status{
 				IsClean: true,
 			},
-			want: "StyleClear" + "StyleCleanSymbolClean",
+			want: "[style:clear]" + "[style:clean][symbol:clean]",
 		},
 		{
 			name: "stash + clean flag",
 			styles: styles{
-				Clear:   "StyleClear",
-				Clean:   "StyleClean",
-				Stashed: "StyleStash",
+				Clear:   "[style:clear]",
+				Clean:   "[style:clean]",
+				Stashed: "[style:stashed]",
 			},
 			symbols: symbols{
-				Clean:   "SymbolClean",
-				Stashed: "SymbolStash",
+				Clean:   "[symbol:clean]",
+				Stashed: "[symbol:stashed]",
 			},
 			layout: []string{"branch", "..", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
 				IsClean:    true,
 				NumStashed: 1,
 			},
-			want: "StyleClearStyleStashSymbolStash1 StyleCleanSymbolClean",
+			want: "[style:clear][style:stashed][symbol:stashed]1 [style:clean][symbol:clean]",
 		},
 		{
 			name: "mixed flags",
 			styles: styles{
-				Clear:    "StyleClear",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
-				Staged:   "StyleStaged",
+				Clear:    "[style:clear]",
+				Modified: "[style:mod]",
+				Stashed:  "[style:stashed]",
+				Staged:   "[style:staged]",
 			},
 			symbols: symbols{
-				Modified: "SymbolMod",
-				Stashed:  "SymbolStash",
-				Staged:   "SymbolStaged",
+				Modified: "[symbol:mod]",
+				Stashed:  "[symbol:stashed]",
+				Staged:   "[symbol:staged]",
 			},
 			layout: []string{"branch", "..", "remote", "- ", "flags"},
 			st: &gitstatus.Status{
@@ -70,18 +70,18 @@ func TestFlags(t *testing.T) {
 					NumStaged:   3,
 				},
 			},
-			want: "StyleClear" + "StyleStagedSymbolStaged3 StyleModSymbolMod2 StyleStashSymbolStash1",
+			want: "[style:clear]" + "[style:staged][symbol:staged]3 [style:mod][symbol:mod]2 [style:stashed][symbol:stashed]1",
 		},
 		{
 			name: "mixed flags 2",
 			styles: styles{
-				Clear:     "StyleClear",
-				Conflict:  "StyleConflict",
-				Untracked: "StyleUntracked",
+				Clear:     "[style:clear]",
+				Conflict:  "[style:conflict]",
+				Untracked: "[style:untracked]",
 			},
 			symbols: symbols{
-				Conflict:  "SymbolConflict",
-				Untracked: "SymbolUntracked",
+				Conflict:  "[symbol:conflict]",
+				Untracked: "[symbol:untracked]",
 			},
 			st: &gitstatus.Status{
 				Porcelain: gitstatus.Porcelain{
@@ -89,7 +89,7 @@ func TestFlags(t *testing.T) {
 					NumUntracked: 17,
 				},
 			},
-			want: "StyleClear" + "StyleConflictSymbolConflict42 StyleUntrackedSymbolUntracked17",
+			want: "[style:clear]" + "[style:conflict][symbol:conflict]42 [style:untracked][symbol:untracked]17",
 		},
 	}
 	for _, tt := range tests {
@@ -117,11 +117,11 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 		{
 			name: "case 1a: non-empty symbol, count=1, flags_without_count=false",
 			styles: styles{
-				Clear:   "StyleClear",
-				Staged:  "StyleStaged",
+				Clear:  "[style:clear]",
+				Staged: "[style:staged]",
 			},
 			symbols: symbols{
-				Staged: "SymbolStaged",
+				Staged: "[symbol:staged]",
 			},
 			options: options{
 				FlagsWithoutCount: false,
@@ -131,17 +131,17 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 					NumStaged: 1,
 				},
 			},
-			want: "StyleClearStyleStagedSymbolStaged1",
+			want: "[style:clear][style:staged][symbol:staged]1",
 		},
 		// Case 1: non-empty symbol, count=1, flags_without_count=true
 		{
 			name: "case 1b: non-empty symbol, count=1, flags_without_count=true",
 			styles: styles{
-				Clear:   "StyleClear",
-				Staged:  "StyleStaged",
+				Clear:  "[style:clear]",
+				Staged: "[style:staged]",
 			},
 			symbols: symbols{
-				Staged: "SymbolStaged",
+				Staged: "[symbol:staged]",
 			},
 			options: options{
 				FlagsWithoutCount: true,
@@ -151,14 +151,14 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 					NumStaged: 1,
 				},
 			},
-			want: "StyleClearStyleStagedSymbolStaged",
+			want: "[style:clear][style:staged][symbol:staged]",
 		},
 		// Case 2: empty symbol, count=1, flags_without_count=false
 		{
 			name: "case 2a: empty symbol, count=1, flags_without_count=false",
 			styles: styles{
-				Clear:   "StyleClear",
-				Staged:  "StyleStaged",
+				Clear:  "[style:clear]",
+				Staged: "[style:staged]",
 			},
 			symbols: symbols{
 				Staged: "",
@@ -171,14 +171,14 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 					NumStaged: 1,
 				},
 			},
-			want: "StyleClearStyleStaged1",
+			want: "[style:clear][style:staged]1",
 		},
 		// Case 2: empty symbol, count=1, flags_without_count=true
 		{
 			name: "case 2b: empty symbol, count=1, flags_without_count=true",
 			styles: styles{
-				Clear:   "StyleClear",
-				Staged:  "StyleStaged",
+				Clear:  "[style:clear]",
+				Staged: "[style:staged]",
 			},
 			symbols: symbols{
 				Staged: "",
@@ -197,11 +197,11 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 		{
 			name: "case 3a: count=0, flags_without_count=false",
 			styles: styles{
-				Clear:   "StyleClear",
-				Staged:  "StyleStaged",
+				Clear:  "[style:clear]",
+				Staged: "[style:staged]",
 			},
 			symbols: symbols{
-				Staged: "SymbolStaged",
+				Staged: "[symbol:staged]",
 			},
 			options: options{
 				FlagsWithoutCount: false,
@@ -217,11 +217,11 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 		{
 			name: "case 3b: count=0, flags_without_count=true",
 			styles: styles{
-				Clear:   "StyleClear",
-				Staged:  "StyleStaged",
+				Clear:  "[style:clear]",
+				Staged: "[style:staged]",
 			},
 			symbols: symbols{
-				Staged: "SymbolStaged",
+				Staged: "[symbol:staged]",
 			},
 			options: options{
 				FlagsWithoutCount: true,
@@ -237,15 +237,15 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 		{
 			name: "mixed flags: some empty symbols, some non-empty, flags_without_count=false",
 			styles: styles{
-				Clear:    "StyleClear",
-				Staged:   "StyleStaged",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
+				Clear:    "[style:clear]",
+				Staged:   "[style:staged]",
+				Modified: "[style:mod]",
+				Stashed:  "[style:stashed]",
 			},
 			symbols: symbols{
-				Staged:   "",      // empty symbol, should show count only
-				Modified: "M",     // non-empty symbol, should show symbol+count
-				Stashed:  "",      // empty symbol, should show count only
+				Staged:   "",  // empty symbol, should show count only
+				Modified: "M", // non-empty symbol, should show symbol+count
+				Stashed:  "",  // empty symbol, should show count only
 			},
 			options: options{
 				FlagsWithoutCount: false,
@@ -257,21 +257,21 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 					NumModified: 3,
 				},
 			},
-			want: "StyleClearStyleStaged1 StyleModM3 StyleStash2",
+			want: "[style:clear][style:staged]1 [style:mod]M3 [style:stashed]2",
 		},
 		// Mixed case: multiple flags with different symbol states, flags_without_count=true
 		{
 			name: "mixed flags: some empty symbols, some non-empty, flags_without_count=true",
 			styles: styles{
-				Clear:    "StyleClear",
-				Staged:   "StyleStaged",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
+				Clear:    "[style:clear]",
+				Staged:   "[style:staged]",
+				Modified: "[style:mod]",
+				Stashed:  "[style:stashed]",
 			},
 			symbols: symbols{
-				Staged:   "",      // empty symbol, should show nothing
-				Modified: "M",     // non-empty symbol, should show symbol only
-				Stashed:  "",      // empty symbol, should show nothing
+				Staged:   "",  // empty symbol, should show nothing
+				Modified: "M", // non-empty symbol, should show symbol only
+				Stashed:  "",  // empty symbol, should show nothing
 			},
 			options: options{
 				FlagsWithoutCount: true,
@@ -283,7 +283,7 @@ func TestFlagsWithoutCountBehavior(t *testing.T) {
 					NumModified: 3,
 				},
 			},
-			want: "StyleClearStyleModM",
+			want: "[style:clear][style:mod]M",
 		},
 	}
 	for _, tt := range tests {
@@ -310,15 +310,15 @@ func TestFlagsWithoutCount(t *testing.T) {
 		{
 			name: "flags with counts (default)",
 			styles: styles{
-				Clear:    "StyleClear",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
-				Staged:   "StyleStaged",
+				Clear:    "[style:clear]",
+				Modified: "[style:mod]",
+				Stashed:  "[style:stashed]",
+				Staged:   "[style:staged]",
 			},
 			symbols: symbols{
-				Modified: "SymbolMod",
-				Stashed:  "SymbolStash",
-				Staged:   "SymbolStaged",
+				Modified: "[symbol:mod]",
+				Stashed:  "[symbol:stashed]",
+				Staged:   "[symbol:staged]",
 			},
 			options: options{
 				FlagsWithoutCount: false,
@@ -330,20 +330,20 @@ func TestFlagsWithoutCount(t *testing.T) {
 					NumStaged:   3,
 				},
 			},
-			want: "StyleClear" + "StyleStagedSymbolStaged3 StyleModSymbolMod2 StyleStashSymbolStash1",
+			want: "[style:clear]" + "[style:staged][symbol:staged]3 [style:mod][symbol:mod]2 [style:stashed][symbol:stashed]1",
 		},
 		{
 			name: "flags without counts",
 			styles: styles{
-				Clear:    "StyleClear",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
-				Staged:   "StyleStaged",
+				Clear:    "[style:clear]",
+				Modified: "[style:mod]",
+				Stashed:  "[style:stashed]",
+				Staged:   "[style:staged]",
 			},
 			symbols: symbols{
-				Modified: "SymbolMod",
-				Stashed:  "SymbolStash",
-				Staged:   "SymbolStaged",
+				Modified: "[symbol:mod]",
+				Stashed:  "[symbol:stashed]",
+				Staged:   "[symbol:staged]",
 			},
 			options: options{
 				FlagsWithoutCount: true,
@@ -355,24 +355,24 @@ func TestFlagsWithoutCount(t *testing.T) {
 					NumStaged:   3,
 				},
 			},
-			want: "StyleClear" + "StyleStagedSymbolStaged StyleModSymbolMod StyleStashSymbolStash",
+			want: "[style:clear]" + "[style:staged][symbol:staged] [style:mod][symbol:mod] [style:stashed][symbol:stashed]",
 		},
 		{
 			name: "all flags without counts",
 			styles: styles{
-				Clear:     "StyleClear",
-				Conflict:  "StyleConflict",
-				Modified:  "StyleMod",
-				Stashed:   "StyleStash",
-				Staged:    "StyleStaged",
-				Untracked: "StyleUntracked",
+				Clear:     "[style:clear]",
+				Conflict:  "[style:conflict]",
+				Modified:  "[style:mod]",
+				Stashed:   "[style:stashed]",
+				Staged:    "[style:staged]",
+				Untracked: "[style:untracked]",
 			},
 			symbols: symbols{
-				Conflict:  "SymbolConflict",
-				Modified:  "SymbolMod",
-				Stashed:   "SymbolStash",
-				Staged:    "SymbolStaged",
-				Untracked: "SymbolUntracked",
+				Conflict:  "[symbol:conflict]",
+				Modified:  "[symbol:mod]",
+				Stashed:   "[symbol:stashed]",
+				Staged:    "[symbol:staged]",
+				Untracked: "[symbol:untracked]",
 			},
 			options: options{
 				FlagsWithoutCount: true,
@@ -386,18 +386,18 @@ func TestFlagsWithoutCount(t *testing.T) {
 					NumUntracked: 7,
 				},
 			},
-			want: "StyleClear" + "StyleStagedSymbolStaged StyleConflictSymbolConflict StyleModSymbolMod StyleStashSymbolStash StyleUntrackedSymbolUntracked",
+			want: "[style:clear]" + "[style:staged][symbol:staged] [style:conflict][symbol:conflict] [style:mod][symbol:mod] [style:stashed][symbol:stashed] [style:untracked][symbol:untracked]",
 		},
 		{
 			name: "clean with stash without count",
 			styles: styles{
-				Clear:   "StyleClear",
-				Clean:   "StyleClean",
-				Stashed: "StyleStash",
+				Clear:   "[style:clear]",
+				Clean:   "[style:clean]",
+				Stashed: "[style:stashed]",
 			},
 			symbols: symbols{
-				Clean:   "SymbolClean",
-				Stashed: "SymbolStash",
+				Clean:   "[symbol:clean]",
+				Stashed: "[symbol:stashed]",
 			},
 			options: options{
 				FlagsWithoutCount: true,
@@ -406,7 +406,7 @@ func TestFlagsWithoutCount(t *testing.T) {
 				IsClean:    true,
 				NumStashed: 1,
 			},
-			want: "StyleClearStyleStashSymbolStash StyleCleanSymbolClean",
+			want: "[style:clear][style:stashed][symbol:stashed] [style:clean][symbol:clean]",
 		},
 	}
 	for _, tt := range tests {
@@ -433,8 +433,8 @@ func TestDivergence(t *testing.T) {
 		{
 			name: "no divergence",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -451,8 +451,8 @@ func TestDivergence(t *testing.T) {
 		{
 			name: "ahead only",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -464,13 +464,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 0,
 				},
 			},
-			want: "StyleClearStyleDivergence" + "↓·4",
+			want: "[style:clear][style:divergence]" + "↓·4",
 		},
 		{
 			name: "behind only",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -482,13 +482,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 12,
 				},
 			},
-			want: "StyleClearStyleDivergence" + "↑·12",
+			want: "[style:clear][style:divergence]" + "↑·12",
 		},
 		{
 			name: "diverged both ways",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -500,13 +500,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 128,
 				},
 			},
-			want: "StyleClearStyleDivergence" + "↑·128↓·41",
+			want: "[style:clear][style:divergence]" + "↑·128↓·41",
 		},
 		{
 			name: "divergence-space:true and ahead:0",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -521,13 +521,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 12,
 				},
 			},
-			want: "StyleClearStyleDivergence" + "↑·12",
+			want: "[style:clear][style:divergence]" + "↑·12",
 		},
 		{
 			name: "divergence-space:false and diverged both ways",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -543,13 +543,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 128,
 				},
 			},
-			want: "StyleClearStyleDivergence" + "↑·128 ↓·41",
+			want: "[style:clear][style:divergence]" + "↑·128 ↓·41",
 		},
 		{
 			name: "divergence-space:true and diverged both ways",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -565,13 +565,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 128,
 				},
 			},
-			want: "StyleClearStyleDivergence" + "↓·41 ↑·128",
+			want: "[style:clear][style:divergence]" + "↓·41 ↑·128",
 		},
 		{
 			name: "swap divergence ahead only",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -586,13 +586,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 0,
 				},
 			},
-			want: "StyleClearStyleDivergence" + "↓·4",
+			want: "[style:clear][style:divergence]" + "↓·4",
 		},
 		{
 			name: "swap divergence behind only",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -607,13 +607,13 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 12,
 				},
 			},
-			want: "StyleClearStyleDivergence" + "↑·12",
+			want: "[style:clear][style:divergence]" + "↑·12",
 		},
 		{
 			name: "swap divergence both ways",
 			styles: styles{
-				Clear:      "StyleClear",
-				Divergence: "StyleDivergence",
+				Clear:      "[style:clear]",
+				Divergence: "[style:divergence]",
 			},
 			symbols: symbols{
 				Ahead:  "↓·",
@@ -628,7 +628,7 @@ func TestDivergence(t *testing.T) {
 					BehindCount: 128,
 				},
 			},
-			want: "StyleClearStyleDivergence" + "↓·41↑·128",
+			want: "[style:clear][style:divergence]" + "↓·41↑·128",
 		},
 	}
 	for _, tt := range tests {
@@ -894,16 +894,16 @@ func TestFormat(t *testing.T) {
 		{
 			name: "default format",
 			styles: styles{
-				Clear:    "StyleClear",
-				Clean:    "StyleClean",
-				Branch:   "StyleBranch",
-				Modified: "StyleMod",
-				Remote:   "StyleRemote",
+				Clear:    "[style:clear]",
+				Clean:    "[style:clean]",
+				Branch:   "[style:branch]",
+				Modified: "[style:mod]",
+				Remote:   "[style:remote]",
 			},
 			symbols: symbols{
-				Branch:   "SymbolBranch",
-				Clean:    "SymbolClean",
-				Modified: "SymbolMod",
+				Branch:   "[symbol:branch]",
+				Clean:    "[symbol:clean]",
+				Modified: "[symbol:mod]",
 			},
 			layout: []string{"branch", " .. ", "remote", " - ", "flags"},
 			st: &gitstatus.Status{
@@ -913,26 +913,26 @@ func TestFormat(t *testing.T) {
 					NumModified:  2,
 				},
 			},
-			want: "StyleClear" + "StyleBranchSymbolBranch" +
-				"StyleClear" + "StyleBranch" + "Local" +
-				"StyleClear" + " .. " +
-				"StyleClear" + "StyleRemoteRemote" +
-				"StyleClear" + " - " +
-				"StyleClear" + "StyleModSymbolMod2" +
+			want: "[style:clear]" + "[style:branch][symbol:branch]" +
+				"[style:clear]" + "[style:branch]" + "Local" +
+				"[style:clear]" + " .. " +
+				"[style:clear]" + "[style:remote]Remote" +
+				"[style:clear]" + " - " +
+				"[style:clear]" + "[style:mod][symbol:mod]2" +
 				resetStyles,
 		},
 		{
 			name: "branch, different delimiter, flags",
 			styles: styles{
-				Clear:    "StyleClear",
-				Branch:   "StyleBranch",
-				Remote:   "StyleRemote",
-				Modified: "StyleMod",
+				Clear:    "[style:clear]",
+				Branch:   "[style:branch]",
+				Remote:   "[style:remote]",
+				Modified: "[style:mod]",
 			},
 			symbols: symbols{
-				Branch:   "SymbolBranch",
-				Ahead:    "SymbolAhead",
-				Modified: "SymbolMod",
+				Branch:   "[symbol:branch]",
+				Ahead:    "[symbol:ahead]",
+				Modified: "[symbol:mod]",
 			},
 			layout: []string{"branch", "~~", "flags"},
 			st: &gitstatus.Status{
@@ -943,22 +943,22 @@ func TestFormat(t *testing.T) {
 					AheadCount:   1,
 				},
 			},
-			want: "StyleClear" + "StyleBranchSymbolBranch" +
-				"StyleClear" + "StyleBranch" + "Local" +
-				"StyleClear" + "~~" +
-				"StyleClear" + "StyleModSymbolMod2" +
+			want: "[style:clear]" + "[style:branch][symbol:branch]" +
+				"[style:clear]" + "[style:branch]" + "Local" +
+				"[style:clear]" + "~~" +
+				"[style:clear]" + "[style:mod][symbol:mod]2" +
 				resetStyles,
 		},
 		{
 			name: "remote only",
 			styles: styles{
-				Clear:  "StyleClear",
-				Branch: "StyleBranch",
-				Remote: "StyleRemote",
+				Clear:  "[style:clear]",
+				Branch: "[style:branch]",
+				Remote: "[style:remote]",
 			},
 			symbols: symbols{
-				Branch: "SymbolBranch",
-				Ahead:  "SymbolAhead",
+				Branch: "[symbol:branch]",
+				Ahead:  "[symbol:ahead]",
 			},
 			layout: []string{"remote"},
 			st: &gitstatus.Status{
@@ -968,20 +968,20 @@ func TestFormat(t *testing.T) {
 					AheadCount:   1,
 				},
 			},
-			want: "StyleClear" + "StyleRemoteRemote " +
-				"StyleClear" + "SymbolAhead1" +
+			want: "[style:clear]" + "[style:remote]Remote " +
+				"[style:clear]" + "[symbol:ahead]1" +
 				resetStyles,
 		},
 		{
 			name: "empty",
 			styles: styles{
-				Clear:    "StyleClear",
-				Branch:   "StyleBranch",
-				Modified: "StyleMod",
+				Clear:    "[style:clear]",
+				Branch:   "[style:branch]",
+				Modified: "[style:mod]",
 			},
 			symbols: symbols{
-				Branch:   "SymbolBranch",
-				Modified: "SymbolMod",
+				Branch:   "[symbol:branch]",
+				Modified: "[symbol:mod]",
 			},
 			layout: []string{},
 			st: &gitstatus.Status{
@@ -995,12 +995,12 @@ func TestFormat(t *testing.T) {
 		{
 			name: "branch and remote, branch_max_len not zero",
 			styles: styles{
-				Clear:  "StyleClear",
-				Branch: "StyleBranch",
-				Remote: "StyleRemote",
+				Clear:  "[style:clear]",
+				Branch: "[style:branch]",
+				Remote: "[style:remote]",
 			},
 			symbols: symbols{
-				Branch: "SymbolBranch",
+				Branch: "[symbol:branch]",
 			},
 			layout: []string{"branch", "/", "remote"},
 			options: options{
@@ -1014,21 +1014,21 @@ func TestFormat(t *testing.T) {
 					RemoteBranch: "remote/branchName",
 				},
 			},
-			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "branchNa…" +
-				"StyleClear" + "/" +
-				"StyleClear" + "StyleRemote" + "remote/b…" +
+			want: "[style:clear]" + "[style:branch]" + "[symbol:branch]" +
+				"[style:clear]" + "[style:branch]" + "branchNa…" +
+				"[style:clear]" + "/" +
+				"[style:clear]" + "[style:remote]" + "remote/b…" +
 				resetStyles,
 		},
 		{
 			name: "branch and remote, branch_max_len not zero and trim left",
 			styles: styles{
-				Clear:  "StyleClear",
-				Branch: "StyleBranch",
-				Remote: "StyleRemote",
+				Clear:  "[style:clear]",
+				Branch: "[style:branch]",
+				Remote: "[style:remote]",
 			},
 			symbols: symbols{
-				Branch: "SymbolBranch",
+				Branch: "[symbol:branch]",
 			},
 			layout: []string{"branch", "remote"},
 			options: options{
@@ -1042,19 +1042,19 @@ func TestFormat(t *testing.T) {
 					RemoteBranch: "remote/nameBranch",
 				},
 			},
-			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "...Branch " +
-				"StyleClear" + "StyleRemote" + "...Branch" +
+			want: "[style:clear]" + "[style:branch]" + "[symbol:branch]" +
+				"[style:clear]" + "[style:branch]" + "...Branch " +
+				"[style:clear]" + "[style:remote]" + "...Branch" +
 				resetStyles,
 		},
 		{
 			name: "issue-32",
 			styles: styles{
-				Clear:  "StyleClear",
-				Branch: "StyleBranch",
+				Clear:  "[style:clear]",
+				Branch: "[style:branch]",
 			},
 			symbols: symbols{
-				Branch: "SymbolBranch",
+				Branch: "[symbol:branch]",
 			},
 			layout: []string{"branch"},
 			st: &gitstatus.Status{
@@ -1062,18 +1062,18 @@ func TestFormat(t *testing.T) {
 					LocalBranch: "branchName",
 				},
 			},
-			want: "StyleClear" + "StyleBranch" + "SymbolBranch" +
-				"StyleClear" + "StyleBranch" + "branchName" +
+			want: "[style:clear]" + "[style:branch]" + "[symbol:branch]" +
+				"[style:clear]" + "[style:branch]" + "branchName" +
 				resetStyles,
 		},
 		{
 			name: "hide clean option true",
 			styles: styles{
-				Clear: "StyleClear",
-				Clean: "StyleClean",
+				Clear: "[style:clear]",
+				Clean: "[style:clean]",
 			},
 			symbols: symbols{
-				Clean: "SymbolClean",
+				Clean: "[symbol:clean]",
 			},
 			layout: []string{"flags"},
 			st: &gitstatus.Status{
@@ -1087,11 +1087,11 @@ func TestFormat(t *testing.T) {
 		{
 			name: "hide clean option false",
 			styles: styles{
-				Clear: "StyleClear",
-				Clean: "StyleClean",
+				Clear: "[style:clear]",
+				Clean: "[style:clean]",
 			},
 			symbols: symbols{
-				Clean: "SymbolClean",
+				Clean: "[symbol:clean]",
 			},
 			layout: []string{"flags"},
 			st: &gitstatus.Status{
@@ -1100,7 +1100,7 @@ func TestFormat(t *testing.T) {
 			options: options{
 				HideClean: false,
 			},
-			want: "StyleClear" + "StyleCleanSymbolClean" + resetStyles,
+			want: "[style:clear]" + "[style:clean][symbol:clean]" + resetStyles,
 		},
 	}
 	for _, tt := range tests {
@@ -1133,18 +1133,18 @@ func Test_stats(t *testing.T) {
 		{
 			name:       "insertions",
 			insertions: 12,
-			want:       "StyleClear" + "StyleInsertionsSymbolInsertions12",
+			want:       "[style:clear]" + "[style:insertions][symbol:insertions]12",
 		},
 		{
 			name:      "deletions",
 			deletions: 12,
-			want:      "StyleClear" + "StyleDeletionsSymbolDeletions12",
+			want:      "[style:clear]" + "[style:deletions][symbol:deletions]12",
 		},
 		{
 			name:       "insertions and deletions",
 			insertions: 1,
 			deletions:  2,
-			want:       "StyleClear" + "StyleInsertionsSymbolInsertions1" + " " + "StyleDeletionsSymbolDeletions2",
+			want:       "[style:clear]" + "[style:insertions][symbol:insertions]1" + " " + "[style:deletions][symbol:deletions]2",
 		},
 	}
 	for _, tt := range tests {
@@ -1152,13 +1152,13 @@ func Test_stats(t *testing.T) {
 			f := &Formater{
 				Config: Config{
 					Styles: styles{
-						Clear:      "StyleClear",
-						Deletions:  "StyleDeletions",
-						Insertions: "StyleInsertions",
+						Clear:      "[style:clear]",
+						Deletions:  "[style:deletions]",
+						Insertions: "[style:insertions]",
 					},
 					Symbols: symbols{
-						Deletions:  "SymbolDeletions",
-						Insertions: "SymbolInsertions",
+						Deletions:  "[symbol:deletions]",
+						Insertions: "[symbol:insertions]",
 					},
 					Layout: []string{"stats"},
 				},
@@ -1184,12 +1184,12 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 		{
 			name: "empty stashed symbol shows stash count (flags_without_count=false default)",
 			styles: styles{
-				Clear:    "StyleClear",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
+				Clear:    "[style:clear]",
+				Modified: "[style:mod]",
+				Stashed:  "[style:stashed]",
 			},
 			symbols: symbols{
-				Modified: "SymbolMod",
+				Modified: "[symbol:mod]",
 				Stashed:  "", // empty symbol should show count with default flags_without_count=false
 			},
 			st: &gitstatus.Status{
@@ -1198,18 +1198,18 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumModified: 2,
 				},
 			},
-			want: "StyleClear" + "StyleModSymbolMod2 StyleStash5",
+			want: "[style:clear]" + "[style:mod][symbol:mod]2 [style:stashed]5",
 		},
 		{
 			name: "empty modified symbol shows modified count (flags_without_count=false default)",
 			styles: styles{
-				Clear:    "StyleClear",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
+				Clear:    "[style:clear]",
+				Modified: "[style:mod]",
+				Stashed:  "[style:stashed]",
 			},
 			symbols: symbols{
 				Modified: "", // empty symbol should show count with default flags_without_count=false
-				Stashed:  "SymbolStash",
+				Stashed:  "[symbol:stashed]",
 			},
 			st: &gitstatus.Status{
 				NumStashed: 1,
@@ -1217,18 +1217,18 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumModified: 2,
 				},
 			},
-			want: "StyleClear" + "StyleMod2 StyleStashSymbolStash1",
+			want: "[style:clear]" + "[style:mod]2 [style:stashed][symbol:stashed]1",
 		},
 		{
 			name: "empty staged symbol shows staged count (flags_without_count=false default)",
 			styles: styles{
-				Clear:   "StyleClear",
-				Staged:  "StyleStaged",
-				Stashed: "StyleStash",
+				Clear:   "[style:clear]",
+				Staged:  "[style:staged]",
+				Stashed: "[style:stashed]",
 			},
 			symbols: symbols{
 				Staged:  "", // empty symbol should show count with default flags_without_count=false
-				Stashed: "SymbolStash",
+				Stashed: "[symbol:stashed]",
 			},
 			st: &gitstatus.Status{
 				NumStashed: 1,
@@ -1236,18 +1236,18 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumStaged: 3,
 				},
 			},
-			want: "StyleClear" + "StyleStaged3 StyleStashSymbolStash1",
+			want: "[style:clear]" + "[style:staged]3 [style:stashed][symbol:stashed]1",
 		},
 		{
 			name: "empty untracked symbol shows untracked count (flags_without_count=false default)",
 			styles: styles{
-				Clear:     "StyleClear",
-				Untracked: "StyleUntracked",
-				Stashed:   "StyleStash",
+				Clear:     "[style:clear]",
+				Untracked: "[style:untracked]",
+				Stashed:   "[style:stashed]",
 			},
 			symbols: symbols{
 				Untracked: "", // empty symbol should show count with default flags_without_count=false
-				Stashed:   "SymbolStash",
+				Stashed:   "[symbol:stashed]",
 			},
 			st: &gitstatus.Status{
 				NumStashed: 1,
@@ -1255,18 +1255,18 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumUntracked: 7,
 				},
 			},
-			want: "StyleClear" + "StyleStashSymbolStash1 StyleUntracked7",
+			want: "[style:clear]" + "[style:stashed][symbol:stashed]1 [style:untracked]7",
 		},
 		{
 			name: "empty conflict symbol shows conflict count (flags_without_count=false default)",
 			styles: styles{
-				Clear:    "StyleClear",
-				Conflict: "StyleConflict",
-				Stashed:  "StyleStash",
+				Clear:    "[style:clear]",
+				Conflict: "[style:conflict]",
+				Stashed:  "[style:stashed]",
 			},
 			symbols: symbols{
 				Conflict: "", // empty symbol should show count with default flags_without_count=false
-				Stashed:  "SymbolStash",
+				Stashed:  "[symbol:stashed]",
 			},
 			st: &gitstatus.Status{
 				NumStashed: 1,
@@ -1274,52 +1274,52 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumConflicts: 3,
 				},
 			},
-			want: "StyleClear" + "StyleConflict3 StyleStashSymbolStash1",
+			want: "[style:clear]" + "[style:conflict]3 [style:stashed][symbol:stashed]1",
 		},
 		{
 			name: "empty clean symbol hides clean flag",
 			styles: styles{
-				Clear:   "StyleClear",
-				Clean:   "StyleClean",
-				Stashed: "StyleStash",
+				Clear:   "[style:clear]",
+				Clean:   "[style:clean]",
+				Stashed: "[style:stashed]",
 			},
 			symbols: symbols{
 				Clean:   "", // empty symbol should hide this flag
-				Stashed: "SymbolStash",
+				Stashed: "[symbol:stashed]",
 			},
 			st: &gitstatus.Status{
 				IsClean:    true,
 				NumStashed: 1,
 			},
-			want: "StyleClear" + "StyleStashSymbolStash1",
+			want: "[style:clear]" + "[style:stashed][symbol:stashed]1",
 		},
 		{
 			name: "empty stashed symbol in clean state shows stash count (flags_without_count=false default)",
 			styles: styles{
-				Clear: "StyleClear",
-				Clean: "StyleClean",
-				Stashed: "StyleStash",
+				Clear:   "[style:clear]",
+				Clean:   "[style:clean]",
+				Stashed: "[style:stashed]",
 			},
 			symbols: symbols{
-				Clean:   "SymbolClean",
+				Clean:   "[symbol:clean]",
 				Stashed: "", // empty symbol should show count with default flags_without_count=false
 			},
 			st: &gitstatus.Status{
 				IsClean:    true,
 				NumStashed: 1,
 			},
-			want: "StyleClear" + "StyleStash1 StyleCleanSymbolClean",
+			want: "[style:clear]" + "[style:stashed]1 [style:clean][symbol:clean]",
 		},
 		{
 			name: "all symbols empty shows counts (flags_without_count=false default)",
 			styles: styles{
-				Clear:     "StyleClear",
-				Clean:     "StyleClean",
-				Staged:    "StyleStaged",
-				Modified:  "StyleMod",
-				Conflict:  "StyleConflict",
-				Untracked: "StyleUntracked",
-				Stashed:   "StyleStash",
+				Clear:     "[style:clear]",
+				Clean:     "[style:clean]",
+				Staged:    "[style:staged]",
+				Modified:  "[style:mod]",
+				Conflict:  "[style:conflict]",
+				Untracked: "[style:untracked]",
+				Stashed:   "[style:stashed]",
 			},
 			symbols: symbols{
 				Clean:     "",
@@ -1339,7 +1339,7 @@ func TestFlagsWithEmptySymbols(t *testing.T) {
 					NumUntracked: 4,
 				},
 			},
-			want: "StyleClear" + "StyleStaged3 StyleConflict1 StyleMod2 StyleStash1 StyleUntracked4",
+			want: "[style:clear]" + "[style:staged]3 [style:conflict]1 [style:mod]2 [style:stashed]1 [style:untracked]4",
 		},
 	}
 	for _, tt := range tests {
@@ -1366,13 +1366,13 @@ func TestFlagsWithEmptySymbolsAndFlagsWithoutCount(t *testing.T) {
 		{
 			name: "empty symbols hide when flags_without_count=true",
 			styles: styles{
-				Clear:    "StyleClear",
-				Modified: "StyleMod",
-				Stashed:  "StyleStash",
+				Clear:    "[style:clear]",
+				Modified: "[style:mod]",
+				Stashed:  "[style:stashed]",
 			},
 			symbols: symbols{
 				Modified: "", // empty symbol should hide with flags_without_count=true
-				Stashed:  "SymbolStash",
+				Stashed:  "[symbol:stashed]",
 			},
 			options: options{
 				FlagsWithoutCount: true,
@@ -1383,17 +1383,17 @@ func TestFlagsWithEmptySymbolsAndFlagsWithoutCount(t *testing.T) {
 					NumModified: 2,
 				},
 			},
-			want: "StyleClear" + "StyleStashSymbolStash",
+			want: "[style:clear]" + "[style:stashed][symbol:stashed]",
 		},
 		{
 			name: "all empty symbols hide when flags_without_count=true",
 			styles: styles{
-				Clear:     "StyleClear",
-				Staged:    "StyleStaged",
-				Modified:  "StyleMod",
-				Conflict:  "StyleConflict",
-				Untracked: "StyleUntracked",
-				Stashed:   "StyleStash",
+				Clear:     "[style:clear]",
+				Staged:    "[style:staged]",
+				Modified:  "[style:mod]",
+				Conflict:  "[style:conflict]",
+				Untracked: "[style:untracked]",
+				Stashed:   "[style:stashed]",
 			},
 			symbols: symbols{
 				Staged:    "",
