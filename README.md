@@ -21,11 +21,11 @@
 ![demo](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
 
 
- - **easy**. Install and forget about it
- - **minimal**. Just shows what you need, when you need it
- - **discrete**. Get out of your way if current directory is not in a Git tree
- - **shell-agnostic**. Does not rely on shell-features so works with all of them
- - **customizable**. Colors, symbols and layout are configurable
+ - **easy**: install and forget
+ - **minimal**: shows what you need, when you need it
+ - **discrete**: shows nothing when you're not in a git-managed directory
+ - **shell-agnostic**: doesn't rely on any shell-specific features, so will work with all of them
+ - **customizable**: colors, symbols and layout are all configurable
 
 ---
 
@@ -94,8 +94,8 @@ Note that `tmux v2.1` was released in 2015 so you're probably better off updatin
 
 ### Command line interface
 
-`gitmux` is not meant to be used directly but it still has a command line interface
-that can be used to troubleshoot your installation, or create the default configuration:
+`gitmux` is not meant to be call directly but it still has a command line interface
+that can be used to create the default configuration, troubleshoot your installation or during development:
 
 ```
 $ gitmux -h
