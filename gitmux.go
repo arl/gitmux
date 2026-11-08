@@ -1,3 +1,28 @@
+// Gitmux shows the status of a Git working tree in the tmux status bar.
+//
+// It is meant to be called from tmux, by adding it to the status bar
+// configuration in .tmux.conf, for example:
+//
+//	set -g status-right '#(gitmux "#{pane_current_path}")'
+//
+// Gitmux prints the Git status of the given directory (defaults to the working
+// directory) as a tmux format string. It shows nothing when the directory is
+// not managed by Git.
+//
+// Usage:
+//
+//	gitmux [options] [dir]
+//
+// The options are:
+//
+//	-cfg FILE       read gitmux config from FILE.
+//	-printcfg       prints default configuration file.
+//	-dbg            outputs Git status as JSON and print errors.
+//	-timeout DUR    exits if still running after given duration (ex: 2s, 500ms).
+//	-V              prints gitmux version and exits.
+//
+// The output (symbols, styles, layout and other options) can be customized via
+// a YAML configuration file, see 'gitmux -printcfg' for the default one.
 package main
 
 import (
