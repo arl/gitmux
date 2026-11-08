@@ -1,3 +1,4 @@
+// Package json formats a Git status as JSON, it's mostly used for debugging.
 package json
 
 import (

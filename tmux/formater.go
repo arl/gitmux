@@ -1,3 +1,8 @@
+// Package tmux formats a Git status as a tmux format string, suitable for tmux
+// status bar.
+//
+// The output is configured through [Config]: symbols, tmux styles, layout
+// (which components are shown and in which order) and additional options.
 package tmux
 
 import (
