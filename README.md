@@ -1,11 +1,8 @@
 <p align="center">
-<img width="50%" height="50%" src="https://github.com/arl/gitmux/raw/readme-images/logo-transparent.png" />
+<img width="50%" height="50%" src="https://github.com/arl/gitmux/raw/readme-images/gitmux-social.png" />
 </p>
-<p align="center">Gitmux shows git status in your tmux status bar</p>
 <hr>
-
 <p align="center">
-
 <a href="https://github.com/arl/gitmux/actions/workflows/ci-cd.yaml">
   <img alt="tests" src="https://github.com/arl/gitmux/actions/workflows/ci-cd.yaml/badge.svg" />
 </a>
@@ -18,14 +15,19 @@
 </a>
 </p>
 
+
+# gitmux
+
+Gitmux is a tmux addon to show git status in your status bar.
+
+
 ![demo](https://raw.githubusercontent.com/arl/gitmux/readme-images/demo-small.gif)
 
 
  - **easy**: install and forget
  - **minimal**: shows what you need, when you need it
- - **discrete**: shows nothing when you're not in a git-managed directory
- - **shell-agnostic**: doesn't rely on any shell-specific features, so will work with all of them
- - **customizable**: colors, symbols and layout are all configurable
+ - **shell-agnostic**: works with your shell, since it does not rely on shell features
+ - **customizable**: colors, symbols and layout are configurable
 
 ---
 
