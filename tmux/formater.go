@@ -155,14 +155,6 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 
 	f.st = st
 
-	// Overall working tree state
-	if f.st.IsInitial {
-		branch := truncate(f.st.LocalBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
-		s := fmt.Sprintf("%s%s%s [no commits yet] %s", f.Styles.Clear, f.Styles.Branch, branch, f.flags())
-		_, err := io.WriteString(w, s)
-		return err
-	}
-
 	_, err := fmt.Fprintf(w, "%s%s", f.Styles.Clear, f.format())
 	return err
 }
@@ -325,7 +317,14 @@ func (f *Formater) currentRef() string {
 	}
 
 	branch := truncate(f.st.LocalBranch, f.Options.Ellipsis, f.Options.BranchMaxLen, f.Options.BranchTrim)
-	return fmt.Sprintf("%s%s%s", f.Styles.Clear, f.Styles.Branch, branch)
+	s := fmt.Sprintf("%s%s%s", f.Styles.Clear, f.Styles.Branch, branch)
+
+	// In a repository without any commit yet, there's no ref to show besides
+	// the branch name, make it explicit.
+	if f.st.IsInitial {
+		s += " [no commits yet]"
+	}
+	return s
 }
 
 // appendFlag appends a flag to the flags slice based on configuration options
