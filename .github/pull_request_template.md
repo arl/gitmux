@@ -11,5 +11,10 @@ _How does this Pull Request address the problem?_
    (.gitmux.yml) should be modified with the new option
  - There's a test that verifies that gitmux output always remains the same
    across versions when using the default configuration. You can run it with:
-  `go test -run TestScriptst`
+  `go test -run TestScripts .` But of course all tests should pass.
  - `README.md` should always be updated.
+
+## Before opening a Pull Request
+
+Important and/or breaking changes (changes of the default output, of the
+configuration format, etc.) should first be discussed in an issue.
