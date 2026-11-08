@@ -1030,7 +1030,7 @@ func TestFormat(t *testing.T) {
 			symbols: symbols{
 				Branch: "[symbol:branch]",
 			},
-			layout: []string{"branch", "remote"},
+			layout: []string{"branch", " ", "remote"},
 			options: options{
 				BranchMaxLen: 9,
 				BranchTrim:   dirLeft,
@@ -1043,7 +1043,8 @@ func TestFormat(t *testing.T) {
 				},
 			},
 			want: "[style:clear]" + "[style:branch]" + "[symbol:branch]" +
-				"[style:clear]" + "[style:branch]" + "...Branch " +
+				"[style:clear]" + "[style:branch]" + "...Branch" +
+				"[style:clear]" + " " +
 				"[style:clear]" + "[style:remote]" + "...Branch" +
 				resetFg,
 		},
@@ -1149,6 +1150,50 @@ func TestFormat(t *testing.T) {
 			},
 			want: "[style:clear]" + "[style:branch]" +
 				"[style:clear]" + "[style:branch]" + "fea… [no commits yet]" +
+				resetFg,
+		},
+		{
+			name: "issue-97: no space added between components",
+			styles: styles{
+				Clear:  "[style:clear]",
+				Branch: "[style:branch]",
+				Remote: "[style:remote]...",
+			},
+			layout: []string{"branch", "remote-branch"},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch:  "main",
+					RemoteBranch: "origin/main",
+				},
+			},
+			want: "[style:clear]" + "[style:branch]" +
+				"[style:clear]" + "[style:branch]" + "main" +
+				"[style:clear]" + "[style:remote]..." + "origin/main" +
+				resetFg,
+		},
+		{
+			name: "issue-97: spaces around missing components are compressed",
+			styles: styles{
+				Clear:    "#[none]",
+				Branch:   "#[fg=white]",
+				Modified: "#[fg=red]",
+			},
+			symbols: symbols{
+				Modified: "M",
+			},
+			layout: []string{"branch", " ", "remote-branch", " ", "divergence", " - ", "flags"},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch: "main",
+					NumModified: 1,
+				},
+			},
+			want: "#[none]" + "#[fg=white]" +
+				"#[none]" + "#[fg=white]" + "main" +
+				"#[none]" + " " +
+				"#[none]" +
+				"#[none]" + "- " +
+				"#[none]" + "#[fg=red]M1" +
 				resetFg,
 		},
 		{
@@ -1509,5 +1554,30 @@ func compareStrings(t *testing.T, want, got string) {
 
 	want:
 %q`, got, want)
+	}
+}
+
+func Test_compressSpaces(t *testing.T) {
+	tests := []struct {
+		in, want string
+	}{
+		{"", ""},
+		{"a", "a"},
+		{"a b", "a b"},
+		{"a  b", "a b"},
+		{"   ", " "},
+		{" a ", " a "},
+		{"a #[fg=red] b", "a #[fg=red]b"},
+		{"a #[fg=red]#[none]  #[bg=blue] b", "a #[fg=red]#[none]#[bg=blue]b"},
+		{"#[fg=#{@thm_fg}]a  b", "#[fg=#{@thm_fg}]a b"},
+		{"a  #[fg=red", "a #[fg=red"},
+		{"a ## b", "a ## b"},
+		{"a\u00a0\u00a0b", "a\u00a0\u00a0b"},
+		{"⎇  main", "⎇ main"},
+	}
+	for _, tt := range tests {
+		if got := compressSpaces(tt.in); got != tt.want {
+			t.Errorf("compressSpaces(%q) = %q, want %q", tt.in, got, tt.want)
+		}
 	}
 }
