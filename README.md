@@ -149,7 +149,7 @@ tmux:
         clean: '#[fg=green,bold]'
         insertions: '#[fg=green]'
         deletions: '#[fg=red]'
-    layout: [branch, .., remote-branch, divergence, '- ', flags]
+    layout: [branch, " ", remote-branch, " ", divergence, " - ", flags]
     options:
         branch_max_len: 0
         branch_trim: right
@@ -232,12 +232,11 @@ they appear on `tmux` status bar.
 For example, the default `gitmux` layout shows is:
 
 ```yaml
-layout: [branch, .., remote-branch, divergence, " - ", flags]
+layout: [branch, " ", remote-branch, " ", divergence, " - ", flags]
 ```
 
 It shows, in that order:
  - the local branch name,
- - 2 dots characters `..`,
  - the remote branch name
  - the local/remote divergence
  - a `-` character
@@ -246,6 +245,12 @@ It shows, in that order:
 Note that elements only appear when they make sense, for example if local and
 remote branch are aligned, the divergence string won't show up. Same thing for
 the remote branch, etc.
+
+`gitmux` doesn't add any space between layout components, so you're free to put
+them where you want (or nowhere). Since some components may not be shown,
+consecutive spaces are compressed into a single one, so that you don't end up
+with multiple spaces where a component is missing. If you really want multiple
+spaces, use non-breaking spaces (`U+00A0`), these are left untouched.
 
 But you can anyway choose to never show some components if you wish, or to present
 them in a different order.
@@ -268,13 +273,13 @@ Some example layouts:
  - default layout:
 
 ```yaml
-layout: [branch, .., remote-branch, divergence, " - ", flags]
+layout: [branch, " ", remote-branch, " ", divergence, " - ", flags]
 ```
 
  - some examples layouts:
 
 ```yaml
-layout: [branch, divergence, " - ", flags]
+layout: [branch, " ", divergence, " - ", flags]
 ```
 ```yaml
 layout: [flags, " ", branch]
@@ -282,21 +287,29 @@ layout: [flags, " ", branch]
 ```yaml
 layout: [branch, "|", flags, "|", stats]
 ```
+```yaml
+# local and remote branches separated by `...`, e.g. `main...origin/main`, and
+# no `...` when there's no remote branch. To do so, the `remote` style is
+# prefixed with `...`, so it only shows up when the remote branch does.
+layout: [branch, remote-branch]
+# in the 'styles' section
+remote: '#[fg=cyan]...'
+```
 
 
 ### Additional options
 
 This is the list of additional configuration `options`:
 
-| Option               | Description                                                                     |      Default       |
-| :------------------- | :------------------------------------------------------------------------------ | :----------------: |
-| `branch_max_len`     | Maximum displayed length for local and remote branch names                      |   `0` (no limit)   |
-| `branch_trim`        | Trim left, right or from the center of the branch (`right`, `left` or `center`) | `right` (trailing) |
-| `ellipsis`           | Character to show branch name has been truncated                                |        `…`         |
-| `hide_clean`         | Hides the clean flag entirely                                                   |      `false`       |
-| `swap_divergence`    | Swaps order of behind & ahead upstream counts                                   |      `false`       |
-| `divergence_space`   | Add a space between behind & ahead upstream counts                              |      `false`       |
-| `flags_without_count`| Show flags symbols without counts*                                              |      `false`       |
+| Option                | Description                                                                     |      Default       |
+| :-------------------- | :------------------------------------------------------------------------------ | :----------------: |
+| `branch_max_len`      | Maximum displayed length for local and remote branch names                      |   `0` (no limit)   |
+| `branch_trim`         | Trim left, right or from the center of the branch (`right`, `left` or `center`) | `right` (trailing) |
+| `ellipsis`            | Character to show branch name has been truncated                                |        `…`         |
+| `hide_clean`          | Hides the clean flag entirely                                                   |      `false`       |
+| `swap_divergence`     | Swaps order of behind & ahead upstream counts                                   |      `false`       |
+| `divergence_space`    | Add a space between behind & ahead upstream counts                              |      `false`       |
+| `flags_without_count` | Show flags symbols without counts*                                              |      `false`       |
 
 *When `flags_without_count` is true, shows only symbols (empty symbols show nothing). When false (default), shows symbols with counts (empty symbols show counts only).
 

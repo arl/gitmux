@@ -195,49 +195,80 @@ func (s styles) setsBackground() bool {
 }
 
 func (f *Formater) format() string {
-	var comps []string
-
-	// Add spacing between non-empty components.
-	joinComps := func() string {
-		i := 0
-		for _, s := range comps {
-			if s != "" {
-				comps[i] = s
-				i++
-			}
-		}
-		return strings.Join(comps[:i], " ")
-	}
-
 	sb := strings.Builder{}
 	for _, item := range f.Layout {
 		switch item {
 		case "branch":
-			comps = append(comps, f.specialState())
+			sb.WriteString(f.specialState())
 		case "remote":
-			comps = append(comps, f.remoteBranch())
-			comps = append(comps, f.divergence())
+			rb, div := f.remoteBranch(), f.divergence()
+			sb.WriteString(rb)
+			if rb != "" && div != "" {
+				sb.WriteString(" ")
+			}
+			sb.WriteString(div)
 		case "remote-branch":
-			comps = append(comps, f.remoteBranch())
+			sb.WriteString(f.remoteBranch())
 		case "divergence":
-			comps = append(comps, f.divergence())
+			sb.WriteString(f.divergence())
 		case "flags":
-			comps = append(comps, f.flags())
+			sb.WriteString(f.flags())
 		case "stats":
-			comps = append(comps, f.stats())
+			sb.WriteString(f.stats())
 		default:
-			sb.WriteString(joinComps())
 			sb.WriteString(f.Styles.Clear)
 			sb.WriteString(item)
-			comps = comps[:0]
 		}
 	}
 
-	sb.WriteString(joinComps())
+	// Since some components may not be shown, depending on the current Git
+	// status, spaces placed in the layout around them could end up being
+	// consecutive. Compress them.
+	s := compressSpaces(sb.String())
 
 	// Reset foreground and background styles to default, since there could be
 	// successive elements in user tmux status strings.
-	sb.WriteString(f.resetStyles())
+	return s + f.resetStyles()
+}
+
+// compressSpaces replaces any sequence of consecutive ASCII spaces (U+0020) in
+// s with a single one. Spaces are considered consecutive if they are only
+// separated by tmux style strings (i.e '#[...]'), since these are invisible.
+// Other kinds of spaces, such as non-breaking spaces (U+00A0), are left
+// untouched so that they can be used to deliberately show multiple spaces.
+func compressSpaces(s string) string {
+	var sb strings.Builder
+	sb.Grow(len(s))
+
+	space := false // whether the last visible character written was a space
+	for i := 0; i < len(s); {
+		switch {
+		case strings.HasPrefix(s[i:], "##"):
+			// Escaped '#'.
+			sb.WriteString("##")
+			i += 2
+			space = false
+		case strings.HasPrefix(s[i:], "#["):
+			// Style string, copy it as-is, it's invisible.
+			end := strings.IndexByte(s[i:], ']')
+			if end == -1 {
+				sb.WriteString(s[i:])
+				return sb.String()
+			}
+			sb.WriteString(s[i : i+end+1])
+			i += end + 1
+		case s[i] == ' ':
+			if !space {
+				sb.WriteByte(' ')
+			}
+			space = true
+			i++
+		default:
+			sb.WriteByte(s[i])
+			space = false
+			i++
+		}
+	}
 	return sb.String()
 }
 
@@ -332,7 +363,7 @@ func (f *Formater) appendFlag(flags []string, style, symbol string, count int) [
 	if count == 0 {
 		return flags
 	}
-	
+
 	if f.Options.FlagsWithoutCount {
 		// When flags_without_count is true, show symbol only (empty string if symbol is empty)
 		if symbol == "" {
@@ -340,7 +371,7 @@ func (f *Formater) appendFlag(flags []string, style, symbol string, count int) [
 		}
 		return append(flags, fmt.Sprintf("%s%s", style, symbol))
 	}
-	
+
 	// When flags_without_count is false, show symbol + count, or just count if symbol is empty
 	return append(flags, fmt.Sprintf("%s%s%d", style, symbol, count))
 }
