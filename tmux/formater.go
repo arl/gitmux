@@ -167,7 +167,40 @@ func (f *Formater) Format(w io.Writer, st *gitstatus.Status) error {
 	return err
 }
 
-const resetStyles = "#[fg=default,bg=default]"
+const (
+	resetFg   = "#[fg=default]"
+	resetFgBg = "#[fg=default,bg=default]"
+)
+
+// resetStyles returns the tmux style string written at the end of the output,
+// so that the elements following gitmux in the tmux status string are not
+// affected by gitmux styles.
+//
+// The foreground is always reset. The background is only reset if one of the
+// configured styles sets it. Otherwise, gitmux never touched the background,
+// and resetting it could override the background set by the surrounding tmux
+// status string.
+func (f *Formater) resetStyles() string {
+	if f.Styles.setsBackground() {
+		return resetFgBg
+	}
+	return resetFg
+}
+
+// setsBackground reports whether any of the styles sets the background color.
+func (s styles) setsBackground() bool {
+	all := []string{
+		s.Clear, s.State, s.Branch, s.Remote, s.Divergence,
+		s.Staged, s.Conflict, s.Modified, s.Untracked, s.Stashed, s.Clean,
+		s.Insertions, s.Deletions,
+	}
+	for _, style := range all {
+		if strings.Contains(style, "bg=") {
+			return true
+		}
+	}
+	return false
+}
 
 func (f *Formater) format() string {
 	var comps []string
@@ -212,7 +245,7 @@ func (f *Formater) format() string {
 
 	// Reset foreground and background styles to default, since there could be
 	// successive elements in user tmux status strings.
-	sb.WriteString(resetStyles)
+	sb.WriteString(f.resetStyles())
 	return sb.String()
 }
 
