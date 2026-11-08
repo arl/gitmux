@@ -919,7 +919,7 @@ func TestFormat(t *testing.T) {
 				"[style:clear]" + "[style:remote]Remote" +
 				"[style:clear]" + " - " +
 				"[style:clear]" + "[style:mod][symbol:mod]2" +
-				resetStyles,
+				resetFg,
 		},
 		{
 			name: "branch, different delimiter, flags",
@@ -947,7 +947,7 @@ func TestFormat(t *testing.T) {
 				"[style:clear]" + "[style:branch]" + "Local" +
 				"[style:clear]" + "~~" +
 				"[style:clear]" + "[style:mod][symbol:mod]2" +
-				resetStyles,
+				resetFg,
 		},
 		{
 			name: "remote only",
@@ -970,7 +970,7 @@ func TestFormat(t *testing.T) {
 			},
 			want: "[style:clear]" + "[style:remote]Remote " +
 				"[style:clear]" + "[symbol:ahead]1" +
-				resetStyles,
+				resetFg,
 		},
 		{
 			name: "empty",
@@ -990,7 +990,7 @@ func TestFormat(t *testing.T) {
 					NumModified: 2,
 				},
 			},
-			want: resetStyles,
+			want: resetFg,
 		},
 		{
 			name: "branch and remote, branch_max_len not zero",
@@ -1018,7 +1018,7 @@ func TestFormat(t *testing.T) {
 				"[style:clear]" + "[style:branch]" + "branchNa…" +
 				"[style:clear]" + "/" +
 				"[style:clear]" + "[style:remote]" + "remote/b…" +
-				resetStyles,
+				resetFg,
 		},
 		{
 			name: "branch and remote, branch_max_len not zero and trim left",
@@ -1045,7 +1045,7 @@ func TestFormat(t *testing.T) {
 			want: "[style:clear]" + "[style:branch]" + "[symbol:branch]" +
 				"[style:clear]" + "[style:branch]" + "...Branch " +
 				"[style:clear]" + "[style:remote]" + "...Branch" +
-				resetStyles,
+				resetFg,
 		},
 		{
 			name: "issue-32",
@@ -1064,7 +1064,7 @@ func TestFormat(t *testing.T) {
 			},
 			want: "[style:clear]" + "[style:branch]" + "[symbol:branch]" +
 				"[style:clear]" + "[style:branch]" + "branchName" +
-				resetStyles,
+				resetFg,
 		},
 		{
 			name: "hide clean option true",
@@ -1082,7 +1082,7 @@ func TestFormat(t *testing.T) {
 			options: options{
 				HideClean: true,
 			},
-			want: resetStyles,
+			want: resetFg,
 		},
 		{
 			name: "hide clean option false",
@@ -1100,7 +1100,30 @@ func TestFormat(t *testing.T) {
 			options: options{
 				HideClean: false,
 			},
-			want: "[style:clear]" + "[style:clean][symbol:clean]" + resetStyles,
+			want: "[style:clear]" + "[style:clean][symbol:clean]" + resetFg,
+		},
+		{
+			name: "styles with background",
+			styles: styles{
+				Clear:    "#[fg=default]",
+				Branch:   "#[fg=white,bg=blue]",
+				Modified: "#[fg=red]",
+			},
+			symbols: symbols{
+				Modified: "[symbol:mod]",
+			},
+			layout: []string{"branch", " ", "flags"},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					LocalBranch: "main",
+					NumModified: 1,
+				},
+			},
+			want: "#[fg=default]" + "#[fg=white,bg=blue]" +
+				"#[fg=default]" + "#[fg=white,bg=blue]" + "main" +
+				"#[fg=default]" + " " +
+				"#[fg=default]" + "#[fg=red][symbol:mod]1" +
+				resetFgBg,
 		},
 	}
 	for _, tt := range tests {
