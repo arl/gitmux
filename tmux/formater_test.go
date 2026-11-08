@@ -1103,6 +1103,55 @@ func TestFormat(t *testing.T) {
 			want: "[style:clear]" + "[style:clean][symbol:clean]" + resetFg,
 		},
 		{
+			name: "initial repository respects layout",
+			styles: styles{
+				Clear:     "[style:clear]",
+				Branch:    "[style:branch]",
+				Untracked: "[style:untracked]",
+			},
+			symbols: symbols{
+				Branch:    "[symbol:branch]",
+				Untracked: "[symbol:untracked]",
+			},
+			layout: []string{" ", "flags", " ", "branch", " "},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					IsInitial:    true,
+					LocalBranch:  "main",
+					NumUntracked: 3,
+				},
+			},
+			want: "[style:clear]" + " " +
+				"[style:clear]" + "[style:untracked][symbol:untracked]3" +
+				"[style:clear]" + " " +
+				"[style:clear]" + "[style:branch][symbol:branch]" +
+				"[style:clear]" + "[style:branch]" + "main [no commits yet]" +
+				"[style:clear]" + " " +
+				resetFg,
+		},
+		{
+			name: "initial repository, branch_max_len only truncates branch name",
+			styles: styles{
+				Clear:  "[style:clear]",
+				Branch: "[style:branch]",
+			},
+			layout: []string{"branch"},
+			options: options{
+				BranchMaxLen: 4,
+				BranchTrim:   dirRight,
+				Ellipsis:     "…",
+			},
+			st: &gitstatus.Status{
+				Porcelain: gitstatus.Porcelain{
+					IsInitial:   true,
+					LocalBranch: "feature",
+				},
+			},
+			want: "[style:clear]" + "[style:branch]" +
+				"[style:clear]" + "[style:branch]" + "fea… [no commits yet]" +
+				resetFg,
+		},
+		{
 			name: "styles with background",
 			styles: styles{
 				Clear:    "#[fg=default]",
